@@ -38,7 +38,7 @@ project "NextAPI"
 
     postbuildcommands
     {
-        ("{COPY} ../NextAPI/glut/bin/x64" .. " ../bin/" .. outputdir .. "/Executables")
+        ("{COPY} ../NextAPI/glut/binary/x64" .. " ../bin/" .. outputdir .. "/Executables")
     }
     
     links
