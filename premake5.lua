@@ -70,6 +70,63 @@ project "NextAPI"
     filter "files:**.c"
         flags {"NoPCH"}
 
+
+project "Engine"
+    location "Engine"
+    kind "StaticLib"
+    language "C++"
+    cppdialect "C++17"
+    staticruntime "off"
+    
+    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("int/" .. outputdir .. "/%{prj.name}")
+    
+    libdirs{"NextAPI/glut/lib"}
+    includedirs{"NextAPI", "Engine/Tesla"}
+    
+    files
+    {
+        "%{prj.name}/**.h",
+        "%{prj.name}/**.cpp",
+        "%{prj.name}/**.c"
+    }
+    
+    links
+    {
+        "NextAPI",
+        "freeglut"
+    }
+
+    pchheader "TSPch.h"
+    pchsource "Engine/TSPch.cpp"
+    
+    filter "system:windows"
+        systemversion "latest"
+    
+        defines
+        {
+            "WINDOWS"
+        }
+    
+    filter "configurations:Debug"
+        defines { "NEXT_DEBUG" }
+        runtime "debug"
+        optimize "off"
+        symbols "on"
+        
+    filter "configurations:Development"
+        defines { "NEXT_DEVELOPMENT" }
+        runtime "release"
+        optimize "debug"
+        symbols "on"
+        
+    filter "configurations:Release"
+        defines { "NEXT_RELEASE" }
+        runtime "release"
+        optimize "speed"
+        symbols "off"
+
+
 project "Software 3D Renderer"
     location "Software 3D Renderer"
     kind "ConsoleApp"
@@ -81,7 +138,7 @@ project "Software 3D Renderer"
     objdir ("int/" .. outputdir .. "/%{prj.name}")
 
     libdirs{"NextAPI/glut/lib"}
-    includedirs{"NextAPI"}
+    includedirs{"Engine"}
 
     files
     {
@@ -92,7 +149,7 @@ project "Software 3D Renderer"
 
     links
     {
-        "NextAPI",
+        "Engine",
         "freeglut"
     }
 

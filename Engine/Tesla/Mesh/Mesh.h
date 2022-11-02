@@ -1,7 +1,8 @@
 ﻿#pragma once
 #include <vector>
 #include "array"
-#include "Math.h"
+#include "../Math/Math.h"
+#include "../Renderer/RenderQueue.h"
 
 namespace TESLA
 {
@@ -22,13 +23,24 @@ namespace TESLA
     
     struct Mesh
     {
-        Mesh(std::vector<Triangle>& triangles, Matrix4x4 view, Matrix4x4 projection):
+        Mesh(std::vector<Triangle>& triangles):
         triangles(triangles),
         scaleMatrix(TESLA::Matrix4x4::Identity()), rotationMatrix(TESLA::Matrix4x4::Identity()),
         translationMatrix(TESLA::Matrix4x4::Identity()),
-        view(view), projection(projection){}
+        view(view), projection(TESLA::Matrix4x4::Identity())
+        {
+            RenderQueue::AddToQueue(this);
+        }
 
-        Mesh(){}
+        Mesh()
+        {
+            RenderQueue::AddToQueue(this);
+        }
+
+        ~Mesh()
+        {
+            RenderQueue::RemoveFromQueue(this);
+        }
         
         void Translate(TESLA::Vector translation)
         {
@@ -137,12 +149,12 @@ namespace TESLA
         Matrix4x4 scaleMatrix;
         Matrix4x4 rotationMatrix;
         Matrix4x4 translationMatrix;
-        
-        Matrix4x4 view;
     public:
         Vector position;
         Vector rotation;
         Vector size;
+        
+        Matrix4x4 view;
         Matrix4x4 projection;
     };
 }

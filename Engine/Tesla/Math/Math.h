@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "complex"
 
 namespace TESLA
 {
@@ -30,7 +31,7 @@ namespace TESLA
 
         float Magnitude()
         {
-            return sqrt(x*x + y*y + z*z);
+            return std::sqrt(x*x + y*y + z*z);
         }
 
         Vector Normalize()
