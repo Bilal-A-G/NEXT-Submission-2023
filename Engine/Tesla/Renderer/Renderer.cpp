@@ -4,7 +4,7 @@
 #include "Mesh/Mesh.h"
 #include "NextAPI/app.h"
 
-void TESLA::Renderer::Update(TESLA::PerspectiveCamera* camera)
+void TESLA::Renderer::Update(TESLA::Camera* camera)
 {
     for (auto element : RenderQueue::GetQueue())
     {

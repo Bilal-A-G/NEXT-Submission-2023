@@ -1,8 +1,8 @@
 ﻿#include "TSpch.h"
-#include "PerspectiveCamera.h"
+#include "Camera.h"
 #include "glut/include/GL/freeglut_std.h"
 
-TESLA::Matrix4x4 TESLA::PerspectiveCamera::GetProjection()
+TESLA::Matrix4x4 TESLA::Camera::GetProjection()
 {
     float aspectRatio = GLUT_SCREEN_HEIGHT/GLUT_SCREEN_WIDTH;
     float fovRad = 1.0f / tan(m_fov/2 / 3.1415 * 180);
@@ -16,12 +16,12 @@ TESLA::Matrix4x4 TESLA::PerspectiveCamera::GetProjection()
     };
 }
 
-TESLA::Matrix4x4 TESLA::PerspectiveCamera::GetView()
+TESLA::Matrix4x4 TESLA::Camera::GetView()
 {
     return TESLA::Matrix4x4::Identity();
 }
 
-void TESLA::PerspectiveCamera::Rotate(float angle, TESLA::Vector axis)
+void TESLA::Camera::Rotate(float angle, TESLA::Vector axis)
 {
     float cosTheta = cos(angle);
     float sinTheta = sin(angle);
@@ -79,7 +79,7 @@ void TESLA::PerspectiveCamera::Rotate(float angle, TESLA::Vector axis)
     this->rotation = this->rotation + axis * angle;
 }
 
-void TESLA::PerspectiveCamera::Translate(TESLA::Vector translation)
+void TESLA::Camera::Translate(TESLA::Vector translation)
 {
     m_translationMatrix = m_translationMatrix * Matrix4x4
     {

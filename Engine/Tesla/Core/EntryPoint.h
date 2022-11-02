@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include "../Camera/PerspectiveCamera.h"
+#include "../Camera/Camera.h"
 
-inline TESLA::PerspectiveCamera* mainCamera = new TESLA::PerspectiveCamera(90, 0.1, 1000);
+inline TESLA::Camera* mainCamera = new TESLA::Camera(90, 0.1, 1000);
 
 extern void Awake();
 extern void UpdateLoop(float deltaTime);

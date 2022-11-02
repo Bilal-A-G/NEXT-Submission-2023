@@ -3,10 +3,10 @@
 
 namespace TESLA
 {
-    class PerspectiveCamera
+    class Camera
     {
     public:
-        PerspectiveCamera(float fov, float nearPlane, float farPlane):
+        Camera(float fov, float nearPlane, float farPlane):
         m_fov(fov), m_nearPlane(nearPlane), m_farPlane(farPlane){}
     
         void Translate(TESLA::Vector translation);
