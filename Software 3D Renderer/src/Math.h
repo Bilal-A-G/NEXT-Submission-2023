@@ -6,8 +6,6 @@ namespace TESLA
     
     struct Vector
     {
-        float x,y,z,w;
-    public:
         Vector(float x, float y, float z, float w):
         x(x), y(y), z(z), w(w){}
         
@@ -16,9 +14,42 @@ namespace TESLA
 
         Vector(){}
 
+        Vector PerspectiveDivide() const
+        {
+            Vector returnVector{x, y, z};
+        
+            if(w != 0)
+            {
+                returnVector.x/=w;
+                returnVector.y/=w;
+                returnVector.z/=w;
+            }
+
+            return returnVector;
+        }
+
+        float Magnitude()
+        {
+            return sqrt(x*x + y*y + z*z);
+        }
+
+        Vector Normalize()
+        {
+            if(this->Magnitude() == 0)
+            {
+                return Vector{0,0,0,w};
+            }
+            return *this/this->Magnitude();
+        }
+
+        Vector Abs()
+        {
+            return {abs(x), abs(y), abs(z), w};
+        }
+
         Vector operator *(const Vector& other) const
         {
-            return {other.x * x, other.y * y, other.z * z, other.w * w};
+            return {other.x * x, other.y * y, other.z * z, w};
         }
 
         Vector operator *(const float& other) const
@@ -26,18 +57,43 @@ namespace TESLA
             return  {x * other, y * other, z * other, w};
         }
 
-        //Defined later on because matrix's body isn't here yet
+        Vector operator /(const Vector& other) const
+        {
+            return {x/other.x, y/other.y, z/other.z, w};
+        }
+
+        Vector operator /(const float& other) const
+        {
+            return {x/other, y/other, z/other, w};
+        }
+
+        Vector operator +(const Vector& other) const
+        {
+            return {x + other.x, y + other.y, z + other.z, w};    
+        }
+        
+        //Defined later in the file due to matrices not being defined yet
         Vector operator *(const Matrix4x4& b) const;
+    public:
+        float x,y,z,w;
     };
 
     struct Matrix4x4
     {
-        Vector r1, r2, r3, r4;
-    public:
         Matrix4x4(Vector r1, Vector r2, Vector r3, Vector r4):
         r1(r1), r2(r2), r3(r3), r4(r4){}
 
         Matrix4x4(){}
+
+        static Matrix4x4 Identity()
+        {
+            return Matrix4x4{
+                {1.0f, 0.0f, 0.0f, 0.0f},
+                {0.0f, 1.0f, 0.0f, 0.0f},
+                {0.0f, 0.0f, 1.0f, 0.0f},
+                {0.0f, 0.0f, 0.0f, 1.0f}
+            };
+        }
 
         Matrix4x4 operator *(const Matrix4x4& b) const
         {
@@ -63,6 +119,7 @@ namespace TESLA
                 (r3.x * b.r1.z + r3.y * b.r2.z + r3.z * b.r3.z + r3.w * b.r4.z),
                 (r3.x * b.r1.w + r3.y * b.r2.w + r3.z * b.r3.w + r3.w * b.r4.w)
             );
+            
             returnMatrix.r4 = Vector(
                 (r4.x * b.r1.x + r4.y * b.r2.x + r4.z * b.r3.x + r4.w * b.r4.x),
                 (r4.x * b.r1.y + r4.y * b.r2.y + r4.z * b.r3.y + r4.w * b.r4.y),
@@ -107,57 +164,19 @@ namespace TESLA
         
             return returnMatrix;
         }
+    public:
+        Vector r1, r2, r3, r4;
     };
 
     inline Vector Vector::operator*(const Matrix4x4& b) const
     {
         Vector returnVector;
 
-        returnVector.x = x * b.r1.x + y * b.r2.x + z * b.r3.x + b.r4.x;
-        returnVector.y = x * b.r1.y + y * b.r2.y + z * b.r3.y + b.r4.y;
-        returnVector.z = x * b.r1.z + y * b.r2.z + z * b.r3.z + b.r4.z;
-        returnVector.w = x * b.r1.w + y * b.r2.w + z * b.r3.w + b.r4.w;
+        returnVector.x = x * b.r1.x + y * b.r1.y + z * b.r1.z + b.r1.w;
+        returnVector.y = x * b.r2.x + y * b.r2.y + z * b.r2.z + b.r2.w;
+        returnVector.z = x * b.r3.x + y * b.r3.y + z * b.r3.z + b.r3.w;
+        returnVector.w = x * b.r4.x + y * b.r4.y + z * b.r4.z + b.r4.w;
         
-        return returnVector;
-    }
-
-
-    class Triangle
-    {
-    public:
-        std::array<Vector, 3> vertices;
-    public:
-        Triangle(std::initializer_list<Vector> vertices):vertices()
-        {
-            this->vertices[0] = data(vertices)[0];
-            this->vertices[1] = data(vertices)[1];
-            this->vertices[2] = data(vertices)[2];
-        }
-
-        Triangle(){}
-    };
-
-    struct Mesh
-    {
-        std::vector<Triangle> triangles;
-    public:
-        Mesh(std::vector<Triangle> triangles):
-        triangles(triangles){}
-
-        Mesh(){}
-    };
-
-    static Vector PerspectiveDivide(Vector a)
-    {
-        Vector returnVector{a.x, a.y, a.z};
-        
-        if(a.w != 0)
-        {
-            returnVector.x/=a.w;
-            returnVector.y/=a.w;
-            returnVector.z/=a.w;
-        }
-
         return returnVector;
     }
     
