@@ -18,7 +18,13 @@ TESLA::Matrix4x4 TESLA::Camera::GetProjection()
 
 TESLA::Matrix4x4 TESLA::Camera::GetView()
 {
-    return TESLA::Matrix4x4::Identity();
+    return TESLA::Matrix4x4
+    {
+            {1.0f, 0.0f, 0.0f, position.x},
+            {0.0f, 1.0f, 0.0f, position.y},
+            {0.0f, 0.0f, 1.0f, position.z},
+            {0.0f, 0.0f, 0.0f, 1.0f}
+    };
 }
 
 void TESLA::Camera::Rotate(float angle, TESLA::Vector axis)

@@ -14,11 +14,11 @@ namespace TESLA
         TESLA::Matrix4x4 GetProjection();
         TESLA::Matrix4x4 GetView();
     public:
-        TESLA::Vector position;
-        TESLA::Vector rotation;
+        TESLA::Vector position = {0.0f, 0.0f, 0.0f, 0.0f};
+        TESLA::Vector rotation = {0.0f, 0.0f, 0.0f, 0.0f};
     private:
-        TESLA::Matrix4x4 m_rotationMatrix;
-        TESLA::Matrix4x4 m_translationMatrix;
+        TESLA::Matrix4x4 m_rotationMatrix = TESLA::Matrix4x4::Identity();
+        TESLA::Matrix4x4 m_translationMatrix = TESLA::Matrix4x4::Identity();
 
         float m_fov;
         float m_nearPlane;
