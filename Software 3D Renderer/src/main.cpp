@@ -1,14 +1,13 @@
 #include <iostream>
 #include "../../NextAPI/NextAPI/app.h"
 #include "Tesla/Core/EntryPoint.h"
-#include "Tesla/Input/Input.h"
 #include "Tesla/Mesh/Mesh.h"
 #include "Tesla/Math/Math.h"
 
 TESLA::Mesh* cube;
 TESLA::Mesh* cube2;
 
-constexpr float cubeSize = 50;
+constexpr float cubeSize = 2.0f;
 bool debounce;
 
 void Awake()
@@ -54,14 +53,19 @@ void Awake()
 
 	cube = new TESLA::Mesh(triangles);
 	cube->Scale(cubeSize, TESLA::Vector(1,1,1));
-	cube->Translate(TESLA::Vector(-500, -250, 0));
+	cube->Translate(TESLA::Vector(0, 3, 8));
+
+	cube2 = new TESLA::Mesh(triangles);
+	cube2->Scale(cubeSize/2, TESLA::Vector(1, 1, 1));
+	cube2->Translate(TESLA::Vector(0,0,3));
 }
 
-float camSpeed = 3;
+float camSpeed = 0.1f;
 
 void UpdateLoop(float deltaTime)
 {
-	cube->Rotate(0.05, {1, 1, 1});
+	cube->Rotate(0.01f, TESLA::Vector(0, 1, 0));
+	cube2->Rotate(0.001f, TESLA::Vector(1, 1, 1));
 	
 	if(App::IsKeyPressed('A'))
 	{
@@ -79,17 +83,25 @@ void UpdateLoop(float deltaTime)
 	{
 		mainCamera->Translate({0, 0, camSpeed});
 	}
+	if(App::IsKeyPressed(VK_CONTROL))
+	{
+		mainCamera->Translate({0, -camSpeed, 0});
+	}
+	if(App::IsKeyPressed(VK_SPACE))
+	{
+		mainCamera->Translate({0, camSpeed, 0});
+	}
 	
 	if(App::IsKeyPressed(VK_LBUTTON))
 	{
 		if(debounce) return;
 		debounce = true;
-		std::cout << "Left clicked";
+		std::cout << "Left clicked \n";
 	}
 	else
 	{
 		if(!debounce) return;
-		std::cout << "Button released?";
+		std::cout << "Left released \n";
 		debounce = false;
 	}
 }

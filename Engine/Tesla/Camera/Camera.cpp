@@ -1,18 +1,18 @@
 ﻿#include "TSpch.h"
 #include "Camera.h"
-#include "glut/include/GL/freeglut_std.h"
+#include "NextAPI/AppSettings.h"
 
 TESLA::Matrix4x4 TESLA::Camera::GetProjection()
 {
-    float aspectRatio = GLUT_SCREEN_HEIGHT/GLUT_SCREEN_WIDTH;
-    float fovRad = 1.0f / tan(m_fov/2 / 3.1415 * 180);
+    float aspectRatio = APP_VIRTUAL_HEIGHT * 2/APP_VIRTUAL_WIDTH;
+    float fovRad = 1.0f / tan(m_fov / 3.1415 * 180 /2);
     
     return TESLA::Matrix4x4
     {
         {aspectRatio * fovRad, 0.0f, 0.f, 0.0f},
         {0.0f, fovRad, 0.0f, 0.0f},
-        {0.0f, 0.0f, m_farPlane/(m_farPlane - m_nearPlane), 1.0f},
-        {0.0f, 0.0f, -m_farPlane * m_nearPlane/(m_farPlane - m_nearPlane), 0.0f}
+        {0.0f, 0.0f, m_farPlane/(m_nearPlane - m_farPlane), -m_farPlane * m_nearPlane/(m_nearPlane - m_farPlane)},
+        {0.0f, 0.0f, 1.0f, 0.0f}
     };
 }
 

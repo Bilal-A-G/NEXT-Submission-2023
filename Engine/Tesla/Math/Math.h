@@ -50,12 +50,12 @@ namespace TESLA
 
         Vector operator *(const Vector& other) const
         {
-            return {other.x * x, other.y * y, other.z * z, w};
+            return {other.x * x, other.y * y, other.z * z, other.w * w};
         }
 
         Vector operator *(const float& other) const
         {
-            return  {x * other, y * other, z * other, w};
+            return  {x * other, y * other, z * other, w * other};
         }
 
         Vector operator /(const Vector& other) const
@@ -72,9 +72,20 @@ namespace TESLA
         {
             return {x + other.x, y + other.y, z + other.z, w};    
         }
-        
-        //Defined later in the file due to matrices not being defined yet
-        Vector operator *(const Matrix4x4& b) const;
+
+        void operator+=(const Vector& other)
+        {
+            x = x + other.x;
+            y = y + other.y;
+            z = z + other.z;
+        }
+
+        void operator*=(const Vector& other)
+        {
+            x = x * other.x;
+            y = y * other.y;
+            z = z * other.z;
+        }
     public:
         float x,y,z,w;
     };
@@ -131,6 +142,18 @@ namespace TESLA
             return returnMatrix;
         }
 
+        Vector operator*(const Vector& b) const
+        {
+            Vector returnVector;
+
+            returnVector.x = r1.x * b.x + r1.y * b.y + r1.z * b.z + r1.w * b.w;
+            returnVector.y = r2.x * b.x + r2.y * b.y + r2.z * b.z + r2.w * b.w;
+            returnVector.z = r3.x * b.x + r3.y * b.y + r3.z * b.z + r3.w * b.w;
+            returnVector.w = r4.x * b.x + r4.y * b.y + r4.z * b.z + r4.w * b.w;
+
+            return  returnVector;
+        }
+
         Matrix4x4 operator+(const Matrix4x4& b) const
         {
             Matrix4x4 returnMatrix;
@@ -168,17 +191,4 @@ namespace TESLA
     public:
         Vector r1, r2, r3, r4;
     };
-
-    inline Vector Vector::operator*(const Matrix4x4& b) const
-    {
-        Vector returnVector;
-
-        returnVector.x = x * b.r1.x + y * b.r1.y + z * b.r1.z + b.r1.w;
-        returnVector.y = x * b.r2.x + y * b.r2.y + z * b.r2.z + b.r2.w;
-        returnVector.z = x * b.r3.x + y * b.r3.y + z * b.r3.z + b.r3.w;
-        returnVector.w = x * b.r4.x + y * b.r4.y + z * b.r4.z + b.r4.w;
-        
-        return returnVector;
-    }
-    
 }
