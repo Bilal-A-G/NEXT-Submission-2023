@@ -6,5 +6,7 @@
 #include "memory"
 #include "iostream"
 #include "cmath"
+#include "fstream"
+#include "strstream"
 #include "Tesla/Math/Math.h"
 

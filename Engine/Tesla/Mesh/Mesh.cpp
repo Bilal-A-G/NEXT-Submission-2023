@@ -97,6 +97,7 @@ std::vector<TESLA::Triangle> TESLA::Mesh::GetProjectedTriangles()
             
     for(int i = 0; i < m_modelTriangles.size(); i++)
     {
+        //Backface culling!
         if(TESLA::Vector::Dot(m_normals[i], mainCamera->position - m_modelTriangles[i].vertices[0]) < 0.0f)
         {
             TESLA::Triangle projTri = m_modelTriangles[i];
@@ -111,7 +112,7 @@ std::vector<TESLA::Triangle> TESLA::Mesh::GetProjectedTriangles()
 
                 //Translating to normalized device space
                 projTri.vertices[v] += Vector(1.0f, 1.0f, 0.0f);
-                projTri.vertices[v] = Vector(projTri.vertices[v].x * APP_VIRTUAL_WIDTH, projTri.vertices[v].y * APP_VIRTUAL_HEIGHT * 2.0f, 0.0f) * 0.5f;
+                projTri.vertices[v] = Vector(projTri.vertices[v].x * APP_VIRTUAL_WIDTH, projTri.vertices[v].y * APP_VIRTUAL_HEIGHT * 2, 0.0f) * 0.5f;
             }
 
             projectedTriangles.push_back(projTri);
