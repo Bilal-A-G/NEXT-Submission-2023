@@ -10,21 +10,21 @@ void TESLA::Renderer::Update(TESLA::Camera* camera)
     {
         if(auto mesh = static_cast<Mesh*>(element))
         {
-            mesh->projection = camera->GetProjection();
-            mesh->view = camera->GetView();
-            
-            std::vector<Triangle> projTris = mesh->GetProjectedTriangles();
-            
-            for (int i = 0; i < projTris.size(); i++)
+            std::vector<Face> faces = mesh->GetProjectedFaces(camera->GetView(), camera->GetProjection());
+            mesh->RecalculateLighting(faces, TESLA::Vector(0, 9, 0), 0.5);
+            for (Face face : faces)
             {
-                App::DrawLine(projTris[i].vertices[0].x, projTris[i].vertices[0].y,
-                              projTris[i].vertices[1].x, projTris[i].vertices[1].y);
+                std::array<Vector, 3> currentVertices = face.triangle.vertices;
+                Vector currentColour = face.colour;
+                
+                App::DrawLine(currentVertices[0].x, currentVertices[0].y,
+                              currentVertices[1].x, currentVertices[1].y, currentColour.x, currentColour.y, currentColour.z);
 	
-                App::DrawLine(projTris[i].vertices[1].x, projTris[i].vertices[1].y,
-                              projTris[i].vertices[2].x, projTris[i].vertices[2].y);
+                App::DrawLine(currentVertices[1].x, currentVertices[1].y,
+                              currentVertices[2].x, currentVertices[2].y, currentColour.x, currentColour.y, currentColour.z);
 
-                App::DrawLine(projTris[i].vertices[2].x, projTris[i].vertices[2].y,
-                              projTris[i].vertices[0].x, projTris[i].vertices[0].y);
+                App::DrawLine(currentVertices[2].x, currentVertices[2].y,
+                              currentVertices[0].x, currentVertices[0].y, currentColour.x, currentColour.y, currentColour.z);
             }
         }
     }

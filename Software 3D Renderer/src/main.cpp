@@ -5,23 +5,23 @@
 #include "Tesla/Math/Math.h"
 #include "Tesla/Mesh/ObjLoader.h"
 
-TESLA::Mesh* suzanne;
+TESLA::Mesh* mesh;
 
 constexpr float cubeSize = 2.0f;
 bool debounce;
 
 void Awake()
 {
-	suzanne = new TESLA::Mesh(TESLA::ObjLoader::LoadFromOBJFile("Suzanne"));
-	suzanne->Scale(cubeSize, TESLA::Vector(1,1,1));
-	suzanne->Translate(TESLA::Vector(0, 3, 8));
+	mesh = new TESLA::Mesh(TESLA::ObjLoader::LoadFromOBJFile("Suzanne"), TESLA::Vector(1.0f, 0.0f, 0.0f));
+	mesh->Scale(cubeSize, TESLA::Vector(1,1,1));
+	mesh->Translate(TESLA::Vector(0, 3, 8));
 }
 
 float camSpeed = 0.1f;
 
 void UpdateLoop(float deltaTime)
 {
-	suzanne->Rotate(0.01f, TESLA::Vector(0, 1, 0));
+	mesh->Rotate(0.01f, TESLA::Vector(1, 1, 1));
 	if(App::IsKeyPressed('A'))
 	{
 		mainCamera->Translate({-camSpeed, 0, 0});
@@ -63,5 +63,5 @@ void UpdateLoop(float deltaTime)
 
 void CleanUp()
 {	
-	delete(suzanne);
+	delete(mesh);
 }

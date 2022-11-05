@@ -20,15 +20,35 @@ namespace TESLA
     public:
         std::array<Vector, 3> vertices;
     };
+
+    struct Face
+    {
+    public:
+        Face(Triangle triangle, Vector colour):
+            triangle(triangle), colour(colour){}
+
+        Face(){}
+        void RecalculateNormal()
+        {
+            normal = TESLA::Vector::Cross(triangle.vertices[1] - triangle.vertices[0],
+            triangle.vertices[2] - triangle.vertices[1]).Normalize();
+        }
+    public:
+        Triangle triangle;
+        Vector normal;
+        Vector colour;
+    };
     
     struct Mesh
     {
-        Mesh(std::vector<Triangle>& triangles):
-        m_triangles(triangles), scaleMatrix(TESLA::Matrix4x4::Identity()), rotationMatrix(TESLA::Matrix4x4::Identity()),
-        translationMatrix(TESLA::Matrix4x4::Identity()), view(view), projection(TESLA::Matrix4x4::Identity())
+        Mesh(std::vector<Triangle>& triangles, Vector colour = TESLA::Vector(1.0f, 1.0f, 1.0f)):
+        scaleMatrix(TESLA::Matrix4x4::Identity()), rotationMatrix(TESLA::Matrix4x4::Identity()), translationMatrix(TESLA::Matrix4x4::Identity()),
+        colour(colour)
         {
-            CalculateModelTriangles();
-            CalculateNormals();
+            for (int i = 0; i < triangles.size(); i++)
+            {
+                m_faces.push_back(Face(triangles[i], this->colour));
+            }
             RenderQueue::AddToQueue(this);
         }
 
@@ -41,25 +61,18 @@ namespace TESLA
         void Rotate(float angle, TESLA::Vector axis);
         void Scale(float scale, TESLA::Vector axis);
 
-        std::vector<Triangle> GetProjectedTriangles();
-        std::vector<Vector> GetNormals() {return  m_normals;};
-        std::vector<Triangle> GetModelTriangles(){return  m_modelTriangles;}
-        void CalculateNormals();
-        void CalculateModelTriangles();
+        std::vector<Face> GetProjectedFaces(Matrix4x4 view, Matrix4x4 projection);
+        void RecalculateLighting(std::vector<Face>& projectedFaces, Vector lightPosition, float lightIntensity);
     private:
-        std::vector<Triangle> m_triangles;
-        std::vector<Triangle> m_modelTriangles;
-        std::vector<Vector> m_normals;
+        std::vector<Face> m_faces;
         
         Matrix4x4 scaleMatrix;
         Matrix4x4 rotationMatrix;
         Matrix4x4 translationMatrix;
     public:
+        Vector colour;
         Vector position;
         Vector rotation;
         Vector size;
-        
-        Matrix4x4 view;
-        Matrix4x4 projection;
     };
 }

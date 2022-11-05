@@ -66,9 +66,23 @@ namespace TESLA
             return  {x * other, y * other, z * other, w * other};
         }
 
+        void operator *= (const float& other)
+        {
+            x = x * other;
+            y = y * other;
+            z = z * other;
+        }
+
         Vector operator /(const float& other) const
         {
             return {x/other, y/other, z/other, w};
+        }
+
+        void operator /= (const float& other)
+        {
+            x = x / other;
+            y = y / other;
+            z = z / other;
         }
 
         Vector operator +(const Vector& other) const
@@ -76,16 +90,23 @@ namespace TESLA
             return {x + other.x, y + other.y, z + other.z, w};    
         }
 
-        Vector operator -(const Vector& other) const
-        {
-            return {x - other.x, y - other.y, z - other.z, w};
-        }
-
         void operator +=(const Vector& other)
         {
             x = x + other.x;
             y = y + other.y;
             z = z + other.z;
+        }
+
+        Vector operator -(const Vector& other) const
+        {
+            return {x - other.x, y - other.y, z - other.z, w};
+        }
+
+        void operator -=(const Vector& other)
+        {
+            x = x - other.x;
+            y = y - other.y;
+            z = z - other.z;
         }
     public:
         float x,y,z,w;

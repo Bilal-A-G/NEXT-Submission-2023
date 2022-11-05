@@ -1,6 +1,5 @@
 ﻿#include "TSPch.h"
 #include "Mesh.h"
-
 #include "Core/EntryPoint.h"
 #include "NextAPI/AppSettings.h"
 
@@ -89,70 +88,62 @@ void TESLA::Mesh::Scale(float scale, TESLA::Vector axis)
     this->size = this->size + normalizedAxis * scale;
 }
 
-std::vector<TESLA::Triangle> TESLA::Mesh::GetProjectedTriangles()
+std::vector<TESLA::Face> TESLA::Mesh::GetProjectedFaces(Matrix4x4 view, Matrix4x4 projection)
 {
-    std::vector<Triangle> projectedTriangles;
-    CalculateModelTriangles();
-    CalculateNormals();
-            
-    for(int i = 0; i < m_modelTriangles.size(); i++)
+    std::vector<Face> projectedFaces;
+    TESLA::Matrix4x4 model = translationMatrix * scaleMatrix * rotationMatrix;
+    
+    for(Face face : m_faces)
     {
-        //Backface culling!
-        if(TESLA::Vector::Dot(m_normals[i], mainCamera->position - m_modelTriangles[i].vertices[0]) < 0.0f)
+        TESLA::Face projFace(face.triangle, face.colour);
+        
+        for(int i = 0; i < 3; i++)
         {
-            TESLA::Triangle projTri = m_modelTriangles[i];
+            projFace.triangle.vertices[i] = view * model * projFace.triangle.vertices[i];
+            projFace.RecalculateNormal();
+        }
+        
+        //Backface culling!
+        if(TESLA::Vector::Dot(projFace.normal, mainCamera->position - projFace.triangle.vertices[0]) < 0.0f)
+        {
+            TESLA::Face nonCulledFace = projFace;
             
             for (int v = 0; v < 3; v++)
             {
-                //Mvp stuff
-                projTri.vertices[v] = projection * m_modelTriangles[i].vertices[v];
-
+                //MVP stuff
+                nonCulledFace.triangle.vertices[v] = projection * nonCulledFace.triangle.vertices[v];
+                
                 //Doing the perspective divide
-                projTri.vertices[v] = projTri.vertices[v].PerspectiveDivide();
+                nonCulledFace.triangle.vertices[v] = nonCulledFace.triangle.vertices[v].PerspectiveDivide();
 
                 //Translating to normalized device space
-                projTri.vertices[v] += Vector(1.0f, 1.0f, 0.0f);
-                projTri.vertices[v] = Vector(projTri.vertices[v].x * APP_VIRTUAL_WIDTH, projTri.vertices[v].y * APP_VIRTUAL_HEIGHT * 2, 0.0f) * 0.5f;
+                nonCulledFace.triangle.vertices[v] += Vector(1.0f, 1.0f, 0.0f);
+                nonCulledFace.triangle.vertices[v] = Vector(nonCulledFace.triangle.vertices[v].x * APP_VIRTUAL_WIDTH, nonCulledFace.triangle.vertices[v].y * APP_VIRTUAL_HEIGHT * 2, 0.0f) * 0.5f;
             }
 
-            projectedTriangles.push_back(projTri);
+            projectedFaces.push_back(nonCulledFace);
         }
     }
     
-    return projectedTriangles;
+    return projectedFaces;
 }
 
-void TESLA::Mesh::CalculateModelTriangles()
+void TESLA::Mesh::RecalculateLighting(std::vector<Face>& projectedFaces, Vector lightPosition, float lightIntensity)
 {
-    m_modelTriangles.clear();
-    
-    const TESLA::Matrix4x4 model = translationMatrix * scaleMatrix * rotationMatrix;
-    for (Triangle triangle : m_triangles)
+    for (Face& face : projectedFaces)
     {
-        TESLA::Triangle movedTri = triangle;
-        
-        for (int i = 0; i < 3; i++)
-        {
-            movedTri.vertices[i] = view * model * triangle.vertices[i];
-        }
+        TESLA::Vector ambient = TESLA::Vector(1,1,1) * 0.1;
 
-        m_modelTriangles.push_back(movedTri);
+        TESLA::Vector lightDirection = (lightPosition - (face.triangle.vertices[0] + face.triangle.vertices[1] + face.triangle.vertices[2])/3).Normalize();
+        float incidentAngle = std::max(TESLA::Vector::Dot(face.normal, lightDirection), 0.0f);
+        
+        TESLA::Vector diffuse = TESLA::Vector(1,1,1) * incidentAngle * lightIntensity;
+
+        TESLA::Vector totalColour = ambient + diffuse;
+        face.colour = Vector(totalColour.x * colour.x, totalColour.y * colour.y, totalColour.z * colour.z);
     }
 }
 
-
-void TESLA::Mesh::CalculateNormals()
-{
-    m_normals.clear();
-    
-    for (Triangle triangle : m_modelTriangles)
-    {
-        Vector lineA = triangle.vertices[1] - triangle.vertices[0];
-        Vector lineB = triangle.vertices[2] - triangle.vertices[1];
-        
-        m_normals.push_back(TESLA::Vector::Cross(lineA, lineB).Normalize());
-    }
-}
 
 
 
