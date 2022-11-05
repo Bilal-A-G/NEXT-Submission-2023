@@ -5,7 +5,6 @@
 #include "Tesla/Math/Math.h"
 
 TESLA::Mesh* cube;
-TESLA::Mesh* cube2;
 
 constexpr float cubeSize = 2.0f;
 bool debounce;
@@ -27,46 +26,40 @@ void Awake()
 	std::vector<TESLA::Triangle> triangles
 	{
 		//Front
-		{bottomLeft, topLeft, topRight},
-		{topRight, bottomRight, bottomLeft},
+		{bottomLeft, bottomRight, topRight},
+		{topRight, topLeft, bottomLeft},
 
 		//Back
-		{ bottomLeftBack, topLeftBack, topRightBack},
+		{bottomLeftBack, topLeftBack, topRightBack},
 		{topRightBack, bottomRightBack, bottomLeftBack},
 
-		//Left
-		{topLeftBack, topLeft, bottomLeft},
-		{bottomLeft, bottomLeftBack, topLeftBack},
-
-		//Right
-		{topRight, topRightBack, bottomRightBack},
-		{bottomRightBack, bottomRight, topRight},
-
-		//Up
-		{topLeftBack, topRightBack, topRight},
-		{topRight, topLeft, topLeftBack},
-
-		//Down
-		{bottomRightBack, bottomLeftBack, bottomLeft},
-		{bottomLeft, bottomRight, bottomRightBack},
+		 //Left
+		{bottomLeft, topLeft, topLeftBack},
+		{topLeftBack, bottomLeftBack, bottomLeft},
+		 
+		  //Right
+		{bottomRightBack, topRightBack, topRight},
+		{topRight, bottomRight, bottomRightBack},
+		 
+		  //Bottom
+		{bottomRightBack, bottomRight, bottomLeft},
+		{bottomLeft, bottomLeftBack, bottomRightBack},
+		 
+		  //Top
+		{topRight, topRightBack, topLeftBack},
+		{topLeftBack, topLeft, topRight},
 	};
 
 	cube = new TESLA::Mesh(triangles);
 	cube->Scale(cubeSize, TESLA::Vector(1,1,1));
 	cube->Translate(TESLA::Vector(0, 3, 8));
-
-	cube2 = new TESLA::Mesh(triangles);
-	cube2->Scale(cubeSize/2, TESLA::Vector(1, 1, 1));
-	cube2->Translate(TESLA::Vector(0,0,3));
 }
 
 float camSpeed = 0.1f;
 
 void UpdateLoop(float deltaTime)
 {
-	cube->Rotate(0.01f, TESLA::Vector(0, 1, 0));
-	cube2->Rotate(0.001f, TESLA::Vector(1, 1, 1));
-	
+	cube->Rotate(0.01f, TESLA::Vector(1, 1, 1));
 	if(App::IsKeyPressed('A'))
 	{
 		mainCamera->Translate({-camSpeed, 0, 0});

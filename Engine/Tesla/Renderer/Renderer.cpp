@@ -13,13 +13,18 @@ void TESLA::Renderer::Update(TESLA::Camera* camera)
             mesh->projection = camera->GetProjection();
             mesh->view = camera->GetView();
             
-            for (Triangle triangle : mesh->GetProjectedTriangles())
+            std::vector<Triangle> projTris = mesh->GetProjectedTriangles();
+            
+            for (int i = 0; i < projTris.size(); i++)
             {
-                App::DrawLine(triangle.vertices[0].x, triangle.vertices[0].y,
-                    triangle.vertices[1].x, triangle.vertices[1].y);
+                App::DrawLine(projTris[i].vertices[0].x, projTris[i].vertices[0].y,
+                              projTris[i].vertices[1].x, projTris[i].vertices[1].y);
 	
-                App::DrawLine(triangle.vertices[1].x, triangle.vertices[1].y,
-                    triangle.vertices[2].x, triangle.vertices[2].y);
+                App::DrawLine(projTris[i].vertices[1].x, projTris[i].vertices[1].y,
+                              projTris[i].vertices[2].x, projTris[i].vertices[2].y);
+
+                App::DrawLine(projTris[i].vertices[2].x, projTris[i].vertices[2].y,
+                              projTris[i].vertices[0].x, projTris[i].vertices[0].y);
             }
         }
     }

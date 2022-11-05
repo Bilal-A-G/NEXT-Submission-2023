@@ -1,5 +1,7 @@
 ﻿#include "TSPch.h"
 #include "Mesh.h"
+
+#include "Core/EntryPoint.h"
 #include "NextAPI/AppSettings.h"
 
 void TESLA::Mesh::Translate(TESLA::Vector translation)
@@ -12,7 +14,7 @@ void TESLA::Mesh::Translate(TESLA::Vector translation)
         {0.0f, 0.0f, 0.0f, 1.0f}
     };
 
-    this->position = this->position * translation;
+    this->position = this->position + translation;
 }
 
 void TESLA::Mesh::Rotate(float angle, TESLA::Vector axis)
@@ -90,30 +92,68 @@ void TESLA::Mesh::Scale(float scale, TESLA::Vector axis)
 std::vector<TESLA::Triangle> TESLA::Mesh::GetProjectedTriangles()
 {
     std::vector<Triangle> projectedTriangles;
-    const TESLA::Matrix4x4 model = translationMatrix * scaleMatrix * rotationMatrix;
+    CalculateModelTriangles();
+    CalculateNormals();
             
-    for(auto triangle : triangles)
+    for(int i = 0; i < m_modelTriangles.size(); i++)
     {
-        TESLA::Triangle projTri = triangle;
-
-        for (int i = 0; i < 3; i++)
+        if(TESLA::Vector::Dot(m_normals[i], mainCamera->position - m_modelTriangles[i].vertices[0]) < 0.0f)
         {
-            //Mvp stuff
-            projTri.vertices[i] = projection * view * model * triangle.vertices[i];
+            TESLA::Triangle projTri = m_modelTriangles[i];
+            
+            for (int v = 0; v < 3; v++)
+            {
+                //Mvp stuff
+                projTri.vertices[v] = projection * m_modelTriangles[i].vertices[v];
 
-            //Doing the perspective divide
-            projTri.vertices[i] = projTri.vertices[i].PerspectiveDivide();
+                //Doing the perspective divide
+                projTri.vertices[v] = projTri.vertices[v].PerspectiveDivide();
 
-            //Translating to normalized device space
-            projTri.vertices[i] += Vector(1.0f, 1.0f, 0.0f);
-            projTri.vertices[i] *= Vector(APP_VIRTUAL_WIDTH, APP_VIRTUAL_HEIGHT * 2.0f, 0.0f) * 0.5f;
+                //Translating to normalized device space
+                projTri.vertices[v] += Vector(1.0f, 1.0f, 0.0f);
+                projTri.vertices[v] = Vector(projTri.vertices[v].x * APP_VIRTUAL_WIDTH, projTri.vertices[v].y * APP_VIRTUAL_HEIGHT * 2.0f, 0.0f) * 0.5f;
+            }
+
+            projectedTriangles.push_back(projTri);
         }
-
-        projectedTriangles.push_back(projTri);
     }
-
+    
     return projectedTriangles;
 }
+
+void TESLA::Mesh::CalculateModelTriangles()
+{
+    m_modelTriangles.clear();
+    
+    const TESLA::Matrix4x4 model = translationMatrix * scaleMatrix * rotationMatrix;
+    for (Triangle triangle : m_triangles)
+    {
+        TESLA::Triangle movedTri = triangle;
+        
+        for (int i = 0; i < 3; i++)
+        {
+            movedTri.vertices[i] = view * model * triangle.vertices[i];
+        }
+
+        m_modelTriangles.push_back(movedTri);
+    }
+}
+
+
+void TESLA::Mesh::CalculateNormals()
+{
+    m_normals.clear();
+    
+    for (Triangle triangle : m_modelTriangles)
+    {
+        Vector lineA = triangle.vertices[1] - triangle.vertices[0];
+        Vector lineB = triangle.vertices[2] - triangle.vertices[1];
+        
+        m_normals.push_back(TESLA::Vector::Cross(lineA, lineB).Normalize());
+    }
+}
+
+
 
 
 

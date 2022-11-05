@@ -48,19 +48,22 @@ namespace TESLA
             return {abs(x), abs(y), abs(z), w};
         }
 
-        Vector operator *(const Vector& other) const
+        static float Dot(Vector a, Vector b)
         {
-            return {other.x * x, other.y * y, other.z * z, other.w * w};
+            Vector normA = a.Normalize();
+            Vector normB = b.Normalize();
+            
+            return normA.x * normB.x + normA.y * normB.y + normA.z * normB.z + normA.w * normB.w;
+        }
+
+        static Vector Cross(Vector a, Vector b)
+        {
+            return {(a.y * b.z - a.z * b.y), (a.z * b.x - b.z * a.x), (a.x * b.y - b.x * a.y)};
         }
 
         Vector operator *(const float& other) const
         {
             return  {x * other, y * other, z * other, w * other};
-        }
-
-        Vector operator /(const Vector& other) const
-        {
-            return {x/other.x, y/other.y, z/other.z, w};
         }
 
         Vector operator /(const float& other) const
@@ -73,18 +76,16 @@ namespace TESLA
             return {x + other.x, y + other.y, z + other.z, w};    
         }
 
-        void operator+=(const Vector& other)
+        Vector operator -(const Vector& other) const
+        {
+            return {x - other.x, y - other.y, z - other.z, w};
+        }
+
+        void operator +=(const Vector& other)
         {
             x = x + other.x;
             y = y + other.y;
             z = z + other.z;
-        }
-
-        void operator*=(const Vector& other)
-        {
-            x = x * other.x;
-            y = y * other.y;
-            z = z * other.z;
         }
     public:
         float x,y,z,w;

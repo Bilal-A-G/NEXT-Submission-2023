@@ -24,14 +24,11 @@ namespace TESLA
     struct Mesh
     {
         Mesh(std::vector<Triangle>& triangles):
-        triangles(triangles), scaleMatrix(TESLA::Matrix4x4::Identity()), rotationMatrix(TESLA::Matrix4x4::Identity()),
+        m_triangles(triangles), scaleMatrix(TESLA::Matrix4x4::Identity()), rotationMatrix(TESLA::Matrix4x4::Identity()),
         translationMatrix(TESLA::Matrix4x4::Identity()), view(view), projection(TESLA::Matrix4x4::Identity())
         {
-            RenderQueue::AddToQueue(this);
-        }
-
-        Mesh()
-        {
+            CalculateModelTriangles();
+            CalculateNormals();
             RenderQueue::AddToQueue(this);
         }
 
@@ -45,8 +42,15 @@ namespace TESLA
         void Scale(float scale, TESLA::Vector axis);
 
         std::vector<Triangle> GetProjectedTriangles();
+        std::vector<Vector> GetNormals() {return  m_normals;};
+        std::vector<Triangle> GetModelTriangles(){return  m_modelTriangles;}
+        void CalculateNormals();
+        void CalculateModelTriangles();
     private:
-        std::vector<Triangle> triangles;
+        std::vector<Triangle> m_triangles;
+        std::vector<Triangle> m_modelTriangles;
+        std::vector<Vector> m_normals;
+        
         Matrix4x4 scaleMatrix;
         Matrix4x4 rotationMatrix;
         Matrix4x4 translationMatrix;
