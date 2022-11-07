@@ -16,13 +16,14 @@ namespace TESLA
     public:
         TESLA::Vector position = {0.0f, 0.0f, 0.0f, 0.0f};
         TESLA::Vector rotation = {0.0f, 0.0f, 0.0f, 0.0f};
+        Vector right = {1.0f, 0.0f, 0.0f};
+        Vector up = {0.0f, 1.0f, 0.0f};
+        Vector forward = {0.0f, 0.0f, 1.0f};
     private:
-        TESLA::Matrix4x4 m_rotationMatrix = TESLA::Matrix4x4::Identity();
-        TESLA::Matrix4x4 m_translationMatrix = TESLA::Matrix4x4::Identity();
-
         float m_fov;
         float m_nearPlane;
         float m_farPlane;
+        TESLA::Matrix4x4 m_rotationMatrix = TESLA::Matrix4x4::Identity();
     };
 
 }

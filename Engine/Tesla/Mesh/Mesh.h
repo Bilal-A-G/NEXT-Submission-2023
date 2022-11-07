@@ -41,7 +41,7 @@ namespace TESLA
     
     struct Mesh
     {
-        Mesh(std::vector<Triangle>& triangles, Vector colour = TESLA::Vector(1.0f, 1.0f, 1.0f)):
+        Mesh(std::vector<Triangle> triangles, Vector colour = TESLA::Vector(1.0f, 1.0f, 1.0f)):
         scaleMatrix(TESLA::Matrix4x4::Identity()), rotationMatrix(TESLA::Matrix4x4::Identity()), translationMatrix(TESLA::Matrix4x4::Identity()),
         colour(colour)
         {

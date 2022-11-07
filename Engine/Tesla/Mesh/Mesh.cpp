@@ -91,7 +91,7 @@ void TESLA::Mesh::Scale(float scale, TESLA::Vector axis)
 std::vector<TESLA::Face> TESLA::Mesh::GetProjectedFaces(Matrix4x4 view, Matrix4x4 projection)
 {
     std::vector<Face> projectedFaces;
-    TESLA::Matrix4x4 model = translationMatrix * scaleMatrix * rotationMatrix;
+    TESLA::Matrix4x4 model = translationMatrix * rotationMatrix * scaleMatrix;
     
     for(Face face : m_faces)
     {
@@ -100,11 +100,12 @@ std::vector<TESLA::Face> TESLA::Mesh::GetProjectedFaces(Matrix4x4 view, Matrix4x
         for(int i = 0; i < 3; i++)
         {
             projFace.triangle.vertices[i] = view * model * projFace.triangle.vertices[i];
-            projFace.RecalculateNormal();
         }
+
+        projFace.RecalculateNormal();
         
         //Backface culling!
-        if(TESLA::Vector::Dot(projFace.normal, mainCamera->position - projFace.triangle.vertices[0]) < 0.0f)
+        if(TESLA::Vector::Dot(projFace.normal, (mainCamera->position - projFace.triangle.vertices[0]).Normalize()) < 0.0f)
         {
             TESLA::Face nonCulledFace = projFace;
             
@@ -143,9 +144,3 @@ void TESLA::Mesh::RecalculateLighting(std::vector<Face>& projectedFaces, Vector 
         face.colour = Vector(totalColour.x * colour.x, totalColour.y * colour.y, totalColour.z * colour.z);
     }
 }
-
-
-
-
-
-

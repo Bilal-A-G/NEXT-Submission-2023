@@ -18,13 +18,12 @@ TESLA::Matrix4x4 TESLA::Camera::GetProjection()
 
 TESLA::Matrix4x4 TESLA::Camera::GetView()
 {
-    return TESLA::Matrix4x4
-    {
-            {1.0f, 0.0f, 0.0f, position.x},
-            {0.0f, 1.0f, 0.0f, position.y},
-            {0.0f, 0.0f, 1.0f, position.z},
-            {0.0f, 0.0f, 0.0f, 1.0f}
-    };
+    Vector target = Vector(0, 0, 1);
+    Vector rotatedTarget =  m_rotationMatrix * target;
+    target = position + rotatedTarget;
+    
+    TESLA::Matrix4x4 pointAtMatrix = TESLA::Matrix4x4::PointAt(position, target, up);
+    return Matrix4x4::LookAt(pointAtMatrix);
 }
 
 void TESLA::Camera::Rotate(float angle, TESLA::Vector axis)
@@ -59,10 +58,10 @@ void TESLA::Camera::Rotate(float angle, TESLA::Vector axis)
     {
         rotationX = TESLA::Matrix4x4
         {
-            {1.0f, 0.0f, 0.0f, 0.0f},
-            {0.0f, cosTheta, sinTheta, 0.0f},
-            {0.0f, -sinTheta, cosTheta, 0.0f},
-            {0.0f, 0.0f, 0.0f, 1.0f}
+                {1.0f, 0.0f, 0.0f, 0.0f},
+                {0.0f, cosTheta, sinTheta, 0.0f},
+                {0.0f, -sinTheta, cosTheta, 0.0f},
+                {0.0f, 0.0f, 0.0f, 1.0f}
         };
     }
             
@@ -81,21 +80,13 @@ void TESLA::Camera::Rotate(float angle, TESLA::Vector axis)
         };
     }
 
-    m_rotationMatrix = m_rotationMatrix * (rotationY * rotationX * rotationZ);
-    this->rotation = this->rotation + axis * angle;
+    this->m_rotationMatrix = this->m_rotationMatrix * (rotationY * rotationX * rotationZ);
+    rotation += axis * angle;
 }
 
 void TESLA::Camera::Translate(TESLA::Vector translation)
 {
-    m_translationMatrix = m_translationMatrix * Matrix4x4
-    {
-        {1.0f, 0.0f, 0.0f, translation.x},
-        {0.0f, 1.0f, 0.0f, translation.y},
-        {0.0f, 0.0f, 1.0f, translation.z},
-        {0.0f, 0.0f, 0.0f, 1.0f}
-    };
-
-    position = position + translation;
+    position += translation;
 }
 
 

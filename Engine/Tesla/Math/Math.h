@@ -50,10 +50,7 @@ namespace TESLA
 
         static float Dot(Vector a, Vector b)
         {
-            Vector normA = a.Normalize();
-            Vector normB = b.Normalize();
-            
-            return normA.x * normB.x + normA.y * normB.y + normA.z * normB.z + normA.w * normB.w;
+            return a.x * b.x + a.y * b.y + a.z * b.z;
         }
 
         static Vector Cross(Vector a, Vector b)
@@ -71,11 +68,12 @@ namespace TESLA
             x = x * other;
             y = y * other;
             z = z * other;
+            w = w * other;
         }
 
         Vector operator /(const float& other) const
         {
-            return {x/other, y/other, z/other, w};
+            return {x/other, y/other, z/other, w/other};
         }
 
         void operator /= (const float& other)
@@ -83,11 +81,12 @@ namespace TESLA
             x = x / other;
             y = y / other;
             z = z / other;
-        }
+            w = w / other;
+        } 
 
         Vector operator +(const Vector& other) const
         {
-            return {x + other.x, y + other.y, z + other.z, w};    
+            return {x + other.x, y + other.y, z + other.z, w + other.w};    
         }
 
         void operator +=(const Vector& other)
@@ -95,11 +94,12 @@ namespace TESLA
             x = x + other.x;
             y = y + other.y;
             z = z + other.z;
+            w = w + other.w;
         }
 
         Vector operator -(const Vector& other) const
         {
-            return {x - other.x, y - other.y, z - other.z, w};
+            return {x - other.x, y - other.y, z - other.z, w - other.w};
         }
 
         void operator -=(const Vector& other)
@@ -107,6 +107,7 @@ namespace TESLA
             x = x - other.x;
             y = y - other.y;
             z = z - other.z;
+            w = w - other.w;
         }
     public:
         float x,y,z,w;
@@ -127,6 +128,38 @@ namespace TESLA
                 {0.0f, 0.0f, 1.0f, 0.0f},
                 {0.0f, 0.0f, 0.0f, 1.0f}
             };
+        }
+
+        static Matrix4x4 PointAt(Vector position, Vector target, Vector up)
+        {
+            Vector forward = (target - position).Normalize();
+            Vector localUp = (up - forward * TESLA::Vector::Dot(up, forward)).Normalize();
+            Vector right = TESLA::Vector::Cross(localUp, forward);
+
+            Matrix4x4 pointAt = TESLA::Matrix4x4
+            {
+                {right.x, right.y, right.z, 0.0f},
+                {localUp.x, localUp.y, localUp.z, 0.0f},
+                {forward.x + position.x, forward.y + position.y, forward.z + position.z, 0.0f},
+                {position.x, position.y, position.z, 1.0f}
+            };
+
+            return pointAt;
+        }
+
+        static Matrix4x4 LookAt(Matrix4x4 pointAt)
+        {
+            Matrix4x4 lookAt = TESLA::Matrix4x4
+            {
+                {pointAt.r1.x, pointAt.r2.x, pointAt.r3.x, 0.0f},
+                {pointAt.r1.y, pointAt.r2.y, pointAt.r3.y, 0.0f},
+                {pointAt.r1.z, pointAt.r2.z, pointAt.r3.z, 0.0f},
+                {-TESLA::Vector::Dot(pointAt.r1, pointAt.r4),
+                    -TESLA::Vector::Dot(pointAt.r2, pointAt.r4),
+                    -TESLA::Vector::Dot(pointAt.r3, pointAt.r4), 1.0f},
+            };
+
+            return lookAt;
         }
 
         Matrix4x4 operator *(const Matrix4x4& b) const
