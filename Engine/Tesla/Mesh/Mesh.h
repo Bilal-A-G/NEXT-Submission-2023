@@ -30,8 +30,8 @@ namespace TESLA
         Face(){}
         void RecalculateNormal()
         {
-            normal = TESLA::Vector::Cross(triangle.vertices[1] - triangle.vertices[0],
-            triangle.vertices[2] - triangle.vertices[1]).Normalize();
+            normal = TESLA::Vector::Cross(triangle.vertices[2] - triangle.vertices[0],
+            triangle.vertices[1] - triangle.vertices[0]).Normalize();
         }
     public:
         Triangle triangle;

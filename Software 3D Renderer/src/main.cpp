@@ -8,18 +8,14 @@
 TESLA::Mesh* mesh;
 TESLA::Mesh* mesh2;
 
-constexpr float cubeSize = 1.0f;
+constexpr float meshSize = 1.0f;
 bool debounce;
 
 void Awake()
 {
-	mesh = new TESLA::Mesh(TESLA::ObjLoader::LoadFromOBJFile("Cube"), TESLA::Vector(1.0f, 0.0f, 0.0f));
-	mesh->Scale(cubeSize, TESLA::Vector(1,1,1));
+	mesh = new TESLA::Mesh(TESLA::ObjLoader::LoadFromOBJFile("Smoothzanne"), TESLA::Vector(1.0f, 0.0f, 0.0f));
+	mesh->Scale(meshSize, TESLA::Vector(1,1,1));
 	mesh->Translate(TESLA::Vector(0, 0, 1.5));
-
-	mesh2 = new TESLA::Mesh(TESLA::ObjLoader::LoadFromOBJFile("Cube"), TESLA::Vector(0.0f, 1.0f, 0.0f));
-	mesh2->Scale(cubeSize, TESLA::Vector(1,1,1));
-	mesh2->Translate(TESLA::Vector(-2, 0, 4));
 }
 
 float camSpeed = 0.01f;
