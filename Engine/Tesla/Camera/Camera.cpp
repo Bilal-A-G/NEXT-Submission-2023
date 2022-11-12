@@ -4,25 +4,25 @@
 
 TESLA::Matrix4x4 TESLA::Camera::GetProjection()
 {
-    float aspectRatio = APP_VIRTUAL_HEIGHT * 2/APP_VIRTUAL_WIDTH;
-    float fovRad = 1.0f / tan(m_fov / 3.1415 * 180 /2);
+    float aspectRatio = (float)APP_VIRTUAL_HEIGHT/(float)APP_VIRTUAL_WIDTH;
+    float fovRad = 1.0f / tanf(m_fov * 0.5f / 180.0f * 3.14159f);
     
     return TESLA::Matrix4x4
     {
         {aspectRatio * fovRad, 0.0f, 0.f, 0.0f},
         {0.0f, fovRad, 0.0f, 0.0f},
-        {0.0f, 0.0f, m_farPlane/(m_nearPlane - m_farPlane), -m_farPlane * m_nearPlane/(m_nearPlane - m_farPlane)},
-        {0.0f, 0.0f, 1.0f, 0.0f}
+        {0.0f, 0.0f, m_farPlane/(m_farPlane - m_nearPlane), 1.0f},
+        {0.0f, 0.0f, (-m_farPlane * m_nearPlane)/(m_farPlane - m_nearPlane), 0.0f}
     };
 }
 
 TESLA::Matrix4x4 TESLA::Camera::GetView()
 {
-    Vector target = Vector(0, 0, 1);
-    Vector rotatedTarget =  m_rotationMatrix * target;
-    target = position + rotatedTarget;
+    Vector rotatedTarget =  m_rotationMatrix * forward;
+    forward = rotatedTarget.Normalize();
+    right = TESLA::Vector::Cross(forward, up);
     
-    TESLA::Matrix4x4 pointAtMatrix = TESLA::Matrix4x4::PointAt(position, target, up);
+    TESLA::Matrix4x4 pointAtMatrix = TESLA::Matrix4x4::PointAt(position, position + rotatedTarget, up);
     return Matrix4x4::LookAt(pointAtMatrix);
 }
 

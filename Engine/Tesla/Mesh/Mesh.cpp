@@ -99,7 +99,7 @@ std::vector<TESLA::Face> TESLA::Mesh::GetProjectedFaces(Matrix4x4 view, Matrix4x
         
         for(int i = 0; i < 3; i++)
         {
-            projFace.triangle.vertices[i] = view * model * projFace.triangle.vertices[i];
+            projFace.triangle.vertices[i] = (projFace.triangle.vertices[i] * model);
         }
 
         projFace.RecalculateNormal();
@@ -107,22 +107,20 @@ std::vector<TESLA::Face> TESLA::Mesh::GetProjectedFaces(Matrix4x4 view, Matrix4x
         //Backface culling!
         if(TESLA::Vector::Dot(projFace.normal, (mainCamera->position - projFace.triangle.vertices[0]).Normalize()) < 0.0f)
         {
-            TESLA::Face nonCulledFace = projFace;
-            
             for (int v = 0; v < 3; v++)
             {
                 //MVP stuff
-                nonCulledFace.triangle.vertices[v] = projection * nonCulledFace.triangle.vertices[v];
+                projFace.triangle.vertices[v] = view * projection * projFace.triangle.vertices[v];
                 
                 //Doing the perspective divide
-                nonCulledFace.triangle.vertices[v] = nonCulledFace.triangle.vertices[v].PerspectiveDivide();
+                projFace.triangle.vertices[v] = projFace.triangle.vertices[v].PerspectiveDivide();
 
                 //Translating to normalized device space
-                nonCulledFace.triangle.vertices[v] += Vector(1.0f, 1.0f, 0.0f);
-                nonCulledFace.triangle.vertices[v] = Vector(nonCulledFace.triangle.vertices[v].x * APP_VIRTUAL_WIDTH, nonCulledFace.triangle.vertices[v].y * APP_VIRTUAL_HEIGHT * 2, 0.0f) * 0.5f;
+                projFace.triangle.vertices[v] += Vector(1.0f, 1.0f, 0.0f, 0.0f);
+                projFace.triangle.vertices[v] = Vector(projFace.triangle.vertices[v].x * (float)APP_VIRTUAL_WIDTH, projFace.triangle.vertices[v].y * (float)APP_VIRTUAL_HEIGHT, 0.0f)/2;
             }
 
-            projectedFaces.push_back(nonCulledFace);
+            projectedFaces.push_back(projFace);
         }
     }
     

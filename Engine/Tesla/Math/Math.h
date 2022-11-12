@@ -17,13 +17,14 @@ namespace TESLA
 
         Vector PerspectiveDivide() const
         {
-            Vector returnVector{x, y, z};
+            Vector returnVector{x, y, z, w};
         
             if(w != 0)
             {
                 returnVector.x/=w;
                 returnVector.y/=w;
                 returnVector.z/=w;
+                returnVector.w = 0.0f;
             }
 
             return returnVector;
@@ -109,6 +110,9 @@ namespace TESLA
             z = z - other.z;
             w = w - other.w;
         }
+
+        //Defined later on
+        Vector operator *(const Matrix4x4& other);
     public:
         float x,y,z,w;
     };
@@ -140,7 +144,7 @@ namespace TESLA
             {
                 {right.x, right.y, right.z, 0.0f},
                 {localUp.x, localUp.y, localUp.z, 0.0f},
-                {forward.x + position.x, forward.y + position.y, forward.z + position.z, 0.0f},
+                {forward.x, forward.y, forward.z, 0.0f},
                 {position.x, position.y, position.z, 1.0f}
             };
 
@@ -201,10 +205,10 @@ namespace TESLA
         {
             Vector returnVector;
 
-            returnVector.x = r1.x * b.x + r1.y * b.y + r1.z * b.z + r1.w * b.w;
-            returnVector.y = r2.x * b.x + r2.y * b.y + r2.z * b.z + r2.w * b.w;
-            returnVector.z = r3.x * b.x + r3.y * b.y + r3.z * b.z + r3.w * b.w;
-            returnVector.w = r4.x * b.x + r4.y * b.y + r4.z * b.z + r4.w * b.w;
+            returnVector.x = b.x * r1.x + b.y * r2.x + b.z * r3.x + r4.x;
+            returnVector.y = b.x * r1.y + b.y * r2.y + b.z * r3.y + r4.y;
+            returnVector.z = b.x * r1.z + b.y * r2.z + b.z * r3.z + r4.z;
+            returnVector.w = b.x * r1.w + b.y * r2.w + b.z * r3.w + r4.w;
 
             return  returnVector;
         }
@@ -246,4 +250,17 @@ namespace TESLA
     public:
         Vector r1, r2, r3, r4;
     };
+
+    inline Vector Vector::operator*(const Matrix4x4& other)
+    {
+        Vector returnVector;
+
+        returnVector.x = other.r1.x * x + other.r1.y * y + other.r1.z * z + other.r1.w;
+        returnVector.y = other.r2.x * x + other.r2.y * y + other.r2.z * z + other.r2.w;
+        returnVector.z = other.r3.x * x + other.r3.y * y + other.r3.z * z + other.r3.w;
+        returnVector.w = other.r4.x * x + other.r4.y * y + other.r4.z * z + other.r4.w;
+
+        return  returnVector;
+    }
+
 }
