@@ -17,18 +17,15 @@ void Awake()
 	mesh->Scale(cubeSize, TESLA::Vector(1,1,1));
 	mesh->Translate(TESLA::Vector(0, 0, 1.5));
 
-	// mesh2 = new TESLA::Mesh(TESLA::ObjLoader::LoadFromOBJFile("Cube"), TESLA::Vector(0.0f, 1.0f, 0.0f));
-	// mesh2->Scale(cubeSize, TESLA::Vector(1,1,1));
-	// mesh2->Translate(TESLA::Vector(-5, -1, -20));
+	mesh2 = new TESLA::Mesh(TESLA::ObjLoader::LoadFromOBJFile("Cube"), TESLA::Vector(0.0f, 1.0f, 0.0f));
+	mesh2->Scale(cubeSize, TESLA::Vector(1,1,1));
+	mesh2->Translate(TESLA::Vector(-2, 0, 4));
 }
 
 float camSpeed = 0.01f;
 
 void UpdateLoop(float deltaTime)
 {
-	//mesh->Rotate(0.01f, TESLA::Vector(0, 1, 0));
-	// mesh2->Rotate(0.05f, TESLA::Vector(0, 1, 0));
-	
 	if(App::IsKeyPressed('A'))
 	{
 		mainCamera->position += mainCamera->right * camSpeed;
@@ -74,6 +71,8 @@ void UpdateLoop(float deltaTime)
 		std::cout << "Left released \n";
 		debounce = false;
 	}
+
+	mainCamera->Rotate(0.0f, mainCamera->up);
 }
 
 void CleanUp()

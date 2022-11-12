@@ -18,7 +18,7 @@ TESLA::Matrix4x4 TESLA::Camera::GetProjection()
 
 TESLA::Matrix4x4 TESLA::Camera::GetView()
 {
-    Vector rotatedTarget =  m_rotationMatrix * forward;
+    Vector rotatedTarget =  TESLA::Vector(0, 0, 1) * m_rotationMatrix;
     forward = rotatedTarget.Normalize();
     right = TESLA::Vector::Cross(forward, up);
     
@@ -80,8 +80,8 @@ void TESLA::Camera::Rotate(float angle, TESLA::Vector axis)
         };
     }
 
-    this->m_rotationMatrix = this->m_rotationMatrix * (rotationY * rotationX * rotationZ);
-    rotation += axis * angle;
+    m_rotationMatrix = m_rotationMatrix * (rotationY * rotationX * rotationZ);
+    rotation = rotation + axis * angle;
 }
 
 void TESLA::Camera::Translate(TESLA::Vector translation)
