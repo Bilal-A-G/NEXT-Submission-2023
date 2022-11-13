@@ -115,8 +115,8 @@ namespace TESLA
             outFace.colour = in.colour;
             
             p0 = insidePoints[0];
-            p1 = TESLA::IntersectPlane(planePos, normal, insidePoints[0], outsidePoints[0]);
-            p2 = TESLA::IntersectPlane(planePos, normal, insidePoints[0], outsidePoints[1]);
+            p1 = TESLA::IntersectPlane(planePos, normal, insidePoints[0], outsidePoints[1]);
+            p2 = TESLA::IntersectPlane(planePos, normal, insidePoints[0], outsidePoints[2]);
             
             outFace.triangle = {p0, p1, p2};
             faceQueue.push_back(outFace);
@@ -127,8 +127,8 @@ namespace TESLA
                 outFace.colour = in.colour;
             
                 p0 = insidePoints[i];
-                p1 = i == 1 ? TESLA::IntersectPlane(planePos, normal, insidePoints[0], outsidePoints[0]) : insidePoints[1];
-                p2 = TESLA::IntersectPlane(planePos, normal, insidePoints[i], outsidePoints[0]);
+                p1 = i == 1 ? TESLA::IntersectPlane(planePos, normal, insidePoints[0], outsidePoints[2]) : insidePoints[1];
+                p2 = TESLA::IntersectPlane(planePos, normal, insidePoints[i], outsidePoints[2]);
             
                 outFace.triangle = {p0, p1, p2};
                 faceQueue.push_back(outFace);

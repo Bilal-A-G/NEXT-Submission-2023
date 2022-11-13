@@ -20,7 +20,7 @@ float camSpeed = 0.01f;
 
 void UpdateLoop(float deltaTime)
 {
-	mesh->Rotate(0.01, TESLA::Vector(0, 1, 0));
+	//mesh->Rotate(0.01, TESLA::Vector(0, 1, 0));
 	
 	if(App::IsKeyPressed('A'))
 	{
