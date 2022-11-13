@@ -119,6 +119,8 @@ std::vector<TESLA::Face> TESLA::Mesh::GetProjectedFaces(Matrix4x4 view, Matrix4x
 
     for (Face& face : passedFaces)
     {
+        face.RecalculateNormal();
+        
         for (int k = 0; k < 3; k++)
         {
             //Perspective
