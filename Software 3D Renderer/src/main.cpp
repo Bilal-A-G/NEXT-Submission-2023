@@ -6,10 +6,8 @@
 #include "Tesla/Mesh/ObjLoader.h"
 
 TESLA::Mesh* mesh;
-TESLA::Mesh* mesh2;
 
 constexpr float meshSize = 1.0f;
-bool debounce;
 
 void Awake()
 {
@@ -22,6 +20,8 @@ float camSpeed = 0.01f;
 
 void UpdateLoop(float deltaTime)
 {
+	mesh->Rotate(0.01, TESLA::Vector(0, 1, 0));
+	
 	if(App::IsKeyPressed('A'))
 	{
 		mainCamera->position += mainCamera->right * camSpeed;
@@ -54,21 +54,6 @@ void UpdateLoop(float deltaTime)
 	{
 		mainCamera->Translate(mainCamera->up * camSpeed);
 	}
-	
-	if(App::IsKeyPressed(VK_LBUTTON))
-	{
-		if(debounce) return;
-		debounce = true;
-		std::cout << "Left clicked \n";
-	}
-	else
-	{
-		if(!debounce) return;
-		std::cout << "Left released \n";
-		debounce = false;
-	}
-
-	mainCamera->Rotate(0.0f, mainCamera->up);
 }
 
 void CleanUp()

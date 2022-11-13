@@ -75,4 +75,70 @@ namespace TESLA
         Vector rotation;
         Vector size;
     };
+
+    inline void ClipAgainstPlane(Vector planePos, Vector planeNormal, TESLA::Face in, std::vector<TESLA::Face>& faceQueue)
+    {
+        Vector normal = planeNormal.Normalize();
+        auto dist = [&](Vector point)
+        {
+            return(normal.x * point.x + normal.y * point.y + normal.z * point.z - TESLA::Vector::Dot(normal, planePos));
+        };
+        
+        std::array<Vector, 3> insidePoints;
+        int insideSize = 0;
+        
+        std::array<Vector, 3> outsidePoints;
+
+        for (int i = 0; i < 3; i++)
+        {
+            Vector currentVertex = in.triangle.vertices[i];
+            float distance = dist(currentVertex);
+            if (distance >= 0)
+            {
+                insidePoints[i] = currentVertex;
+                insideSize++;
+            }
+            else
+            {
+                outsidePoints[i] = currentVertex;
+            }
+        }
+
+        Face outFace;
+        Vector p0;
+        Vector p1;
+        Vector p2;
+        
+        switch (insideSize)
+        {
+        case 1:
+            outFace.colour = in.colour;
+            
+            p0 = insidePoints[0];
+            p1 = TESLA::IntersectPlane(planePos, normal, insidePoints[0], outsidePoints[0]);
+            p2 = TESLA::IntersectPlane(planePos, normal, insidePoints[0], outsidePoints[1]);
+            
+            outFace.triangle = {p0, p1, p2};
+            faceQueue.push_back(outFace);
+            break;
+        case 2:
+            for (int i = 0; i < 2; i++)
+            {
+                outFace.colour = in.colour;
+            
+                p0 = insidePoints[i];
+                p1 = i == 1 ? TESLA::IntersectPlane(planePos, normal, insidePoints[0], outsidePoints[0]) : insidePoints[1];
+                p2 = TESLA::IntersectPlane(planePos, normal, insidePoints[i], outsidePoints[0]);
+            
+                outFace.triangle = {p0, p1, p2};
+                faceQueue.push_back(outFace);
+            }
+            break;
+        case 3:
+            faceQueue.push_back(in);
+            break;
+        default:
+            break;
+        }
+    }
 }

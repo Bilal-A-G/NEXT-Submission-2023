@@ -1,5 +1,7 @@
 ﻿#include "TSpch.h"
 #include "EntryPoint.h"
+
+#include "Input/Input.h"
 #include "Renderer/Renderer.h"
 
 void Init()
@@ -9,6 +11,7 @@ void Init()
 
 void Update(float deltaTime)
 {
+    TESLA::Input::Update();
     UpdateLoop(deltaTime);
 }
 

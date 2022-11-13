@@ -263,4 +263,17 @@ namespace TESLA
         return  returnVector;
     }
 
+    inline Vector IntersectPlane(Vector planePos, Vector planeNormal, Vector lineStart, Vector lineEnd)
+    {
+        const Vector normal = planeNormal.Normalize();
+        const float planeD = -TESLA::Vector::Dot(normal, planePos);
+        const float aD = TESLA::Vector::Dot(lineStart, normal);
+        const float bD = TESLA::Vector::Dot(lineEnd, normal);
+        const float t = (-planeD - aD) / (bD - aD);
+        const Vector lineVec = lineEnd - lineStart;
+        const Vector lineIntersection = lineVec * t;
+        
+        return lineStart + lineIntersection;
+    }
+
 }

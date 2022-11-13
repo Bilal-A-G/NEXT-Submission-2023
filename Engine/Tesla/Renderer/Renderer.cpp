@@ -11,7 +11,7 @@ void TESLA::Renderer::Update(TESLA::Camera* camera)
         if(auto mesh = static_cast<Mesh*>(element))
         {
             std::vector<Face> faces = mesh->GetProjectedFaces(camera->GetView(), camera->GetProjection());
-            //mesh->RecalculateLighting(faces, TESLA::Vector(0, 9, 0), 0.5);
+            mesh->RecalculateLighting(faces, TESLA::Vector(0, 9, 0), 0.8);
             
             for (Face face : faces)
             {
