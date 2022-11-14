@@ -113,6 +113,7 @@ std::vector<TESLA::Face> TESLA::Mesh::GetProjectedFaces(Matrix4x4 view, Matrix4x
                 projFace.triangle.vertices[j] = view * projFace.triangle.vertices[j];
             }
 
+            //Depth clipping!!
             TESLA::ClipAgainstPlane({0.0f, 0.0f, 0.1f}, {0.0f, 0.0f, 1.0f}, projFace, passedFaces);
         }
     }
@@ -123,7 +124,7 @@ std::vector<TESLA::Face> TESLA::Mesh::GetProjectedFaces(Matrix4x4 view, Matrix4x
         
         for (int k = 0; k < 3; k++)
         {
-            //Perspective
+            //Projection
             face.triangle.vertices[k] = projection * face.triangle.vertices[k];
                 
             //Doing the perspective divide
@@ -143,7 +144,6 @@ void TESLA::Mesh::RecalculateLighting(std::vector<Face>& projectedFaces, Vector 
     for (Face& face : projectedFaces)
     {
         TESLA::Vector ambient = TESLA::Vector(1,1,1) * 0.2;
-
         TESLA::Vector lightDirection = (lightPosition - (face.triangle.vertices[0] + face.triangle.vertices[1] + face.triangle.vertices[2])/3).Normalize();
         float incidentAngle = std::max(TESLA::Vector::Dot(face.normal, lightDirection), 0.0f);
         

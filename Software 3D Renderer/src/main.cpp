@@ -18,7 +18,7 @@ void Awake()
 
 	mesh2 = new TESLA::Mesh(TESLA::ObjLoader::LoadFromOBJFile("Sphere"), TESLA::Vector(1.0f, 0.0f, 0.0f));
 	mesh2->Scale(meshSize, TESLA::Vector(1,1,1));
-	mesh2->Translate(TESLA::Vector(0, 3, 10));
+	mesh2->Translate(TESLA::Vector(0, 1, 7));
 }
 
 float camSpeed = 0.02f;

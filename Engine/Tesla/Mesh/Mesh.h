@@ -84,10 +84,20 @@ namespace TESLA
             return(normal.x * point.x + normal.y * point.y + normal.z * point.z - TESLA::Vector::Dot(normal, planePos));
         };
         
-        std::array<Vector, 3> insidePoints;
+        static std::vector<Vector> insidePoints;
+        insidePoints.clear();
+        if(insidePoints.capacity() != 3)
+        {
+            insidePoints.reserve(3);
+        }
         int insideSize = 0;
         
-        std::array<Vector, 3> outsidePoints;
+        static std::vector<Vector> outsidePoints;
+        outsidePoints.clear();
+        if(outsidePoints.capacity() != 3)
+        {
+            outsidePoints.reserve(3);
+        }
 
         for (int i = 0; i < 3; i++)
         {
@@ -95,12 +105,12 @@ namespace TESLA
             float distance = dist(currentVertex);
             if (distance >= 0)
             {
-                insidePoints[i] = currentVertex;
+                insidePoints.emplace_back(currentVertex);
                 insideSize++;
             }
             else
             {
-                outsidePoints[i] = currentVertex;
+                outsidePoints.emplace_back(currentVertex);
             }
         }
 
@@ -115,8 +125,8 @@ namespace TESLA
             outFace.colour = in.colour;
             
             p0 = insidePoints[0];
-            p1 = TESLA::IntersectPlane(planePos, normal, insidePoints[0], outsidePoints[1]);
-            p2 = TESLA::IntersectPlane(planePos, normal, insidePoints[0], outsidePoints[2]);
+            p1 = TESLA::IntersectPlane(planePos, normal, insidePoints[0], outsidePoints[0]);
+            p2 = TESLA::IntersectPlane(planePos, normal, insidePoints[0], outsidePoints[1]);
             
             outFace.triangle = {p0, p1, p2};
             faceQueue.push_back(outFace);
@@ -127,8 +137,8 @@ namespace TESLA
                 outFace.colour = in.colour;
             
                 p0 = insidePoints[i];
-                p1 = i == 1 ? TESLA::IntersectPlane(planePos, normal, insidePoints[0], outsidePoints[2]) : insidePoints[1];
-                p2 = TESLA::IntersectPlane(planePos, normal, insidePoints[i], outsidePoints[2]);
+                p1 = i == 1 ? TESLA::IntersectPlane(planePos, normal, insidePoints[0], outsidePoints[0]) : insidePoints[1];
+                p2 = TESLA::IntersectPlane(planePos, normal, insidePoints[i], outsidePoints[0]);
             
                 outFace.triangle = {p0, p1, p2};
                 faceQueue.push_back(outFace);
