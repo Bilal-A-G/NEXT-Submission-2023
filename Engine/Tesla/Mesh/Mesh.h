@@ -2,7 +2,6 @@
 #include <vector>
 #include "array"
 #include "../Math/Math.h"
-#include "../Renderer/RenderQueue.h"
 
 namespace TESLA
 {
@@ -28,7 +27,7 @@ namespace TESLA
             triangle(triangle), colour(colour){}
 
         Face(){}
-        void RecalculateNormal()
+        void CalculateNormal()
         {
             normal = TESLA::Vector::Cross(triangle.vertices[2] - triangle.vertices[0],
             triangle.vertices[1] - triangle.vertices[0]).Normalize();
@@ -41,39 +40,32 @@ namespace TESLA
     
     struct Mesh
     {
-        Mesh(std::vector<Triangle> triangles, Vector colour = TESLA::Vector(1.0f, 1.0f, 1.0f)):
-        scaleMatrix(TESLA::Matrix4x4::Identity()), rotationMatrix(TESLA::Matrix4x4::Identity()), translationMatrix(TESLA::Matrix4x4::Identity()),
-        colour(colour)
-        {
-            for (int i = 0; i < triangles.size(); i++)
-            {
-                m_faces.push_back(Face(triangles[i], this->colour));
-            }
-            RenderQueue::AddToQueue(this);
-        }
+        Mesh(std::vector<Triangle> triangles, Vector colour = TESLA::Vector(1.0f, 1.0f, 1.0f));
 
-        ~Mesh()
-        {
-            RenderQueue::RemoveFromQueue(this);
-        }
+        ~Mesh();
         
         void Translate(TESLA::Vector translation);
         void Rotate(float angle, TESLA::Vector axis);
         void Scale(float scale, TESLA::Vector axis);
 
+        Vector GetPosition(){return m_position;}
+        Vector GetRotation(){return m_rotation;}
+        Vector GetScale(){return m_scale;}
+
         std::vector<Face> GetProjectedFaces(Matrix4x4 view, Matrix4x4 projection);
-        void RecalculateLighting(std::vector<Face>& projectedFaces, Vector lightPosition, float lightIntensity);
+        void CalculateLighting(std::vector<Face>& projectedFaces, Vector lightPosition, float lightIntensity);
     private:
         std::vector<Face> m_faces;
         
-        Matrix4x4 scaleMatrix;
-        Matrix4x4 rotationMatrix;
-        Matrix4x4 translationMatrix;
+        Matrix4x4 m_scaleMatrix;
+        Matrix4x4 m_rotationMatrix;
+        Matrix4x4 m_translationMatrix;
+        
+        Vector m_position;
+        Vector m_rotation;
+        Vector m_scale;
     public:
         Vector colour;
-        Vector position;
-        Vector rotation;
-        Vector size;
     };
 
     inline void ClipAgainstPlane(Vector planePos, Vector planeNormal, TESLA::Face in, std::vector<TESLA::Face>& faceQueue)

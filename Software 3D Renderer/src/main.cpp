@@ -12,13 +12,13 @@ constexpr float meshSize = 1.0f;
 
 void Awake()
 {
-	mesh = new TESLA::Mesh(TESLA::ObjLoader::LoadFromOBJFile("Sphere"), TESLA::Vector(1.0f, 0.0f, 0.0f));
+	mesh = new TESLA::Mesh(TESLA::ObjLoader::LoadFromOBJFile("Torus"), TESLA::Vector(1.0f, 0.0f, 0.0f));
 	mesh->Scale(meshSize, TESLA::Vector(1,1,1));
-	mesh->Translate(TESLA::Vector(0, 0, 1.5));
+	mesh->Translate(TESLA::Vector(0, 0, 2));
 
-	mesh2 = new TESLA::Mesh(TESLA::ObjLoader::LoadFromOBJFile("Sphere"), TESLA::Vector(1.0f, 0.0f, 0.0f));
-	mesh2->Scale(meshSize, TESLA::Vector(1,1,1));
-	mesh2->Translate(TESLA::Vector(0, 1, 7));
+	// mesh2 = new TESLA::Mesh(TESLA::ObjLoader::LoadFromOBJFile("Smoothzanne"), TESLA::Vector(1.0f, 0.0f, 0.0f));
+	// mesh2->Scale(meshSize, TESLA::Vector(1,1,1));
+	// mesh2->Translate(TESLA::Vector(0, 1, 7));
 }
 
 float camSpeed = 0.02f;
@@ -26,7 +26,7 @@ float camSpeed = 0.02f;
 void UpdateLoop(float deltaTime)
 {
 	mesh->Rotate(0.01, TESLA::Vector(0, 1, 0));
-	mesh2->Rotate(0.01, TESLA::Vector(0, 1, 0));
+	// mesh2->Rotate(0.01, TESLA::Vector(0, 1, 0));
 	
 	if(App::IsKeyPressed('A'))
 	{
@@ -46,11 +46,11 @@ void UpdateLoop(float deltaTime)
 	}
 	if(App::IsKeyPressed('Q'))
 	{
-		mainCamera->Rotate(camSpeed, mainCamera->up);
+		mainCamera->Rotate(-camSpeed, mainCamera->up);
 	}
 	if(App::IsKeyPressed('E'))
 	{
-		mainCamera->Rotate(-camSpeed, mainCamera->up);	
+		mainCamera->Rotate(camSpeed, mainCamera->up);	
 	}
 	if(App::IsKeyPressed(VK_CONTROL))
 	{

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "vector"
+#include "Mesh/Mesh.h"
 
 namespace TESLA
 {
@@ -8,12 +9,12 @@ namespace TESLA
     public:
         RenderQueue() = delete;
         
-        static void AddToQueue(void* toAdd)
+        static void AddToQueue(Mesh* toAdd)
         {
             m_queue.push_back(toAdd);
         }
 
-        static void RemoveFromQueue(void* toRemove)
+        static void RemoveFromQueue(Mesh* toRemove)
         {
             for(int i = 0; i < m_queue.size(); i++)
             {
@@ -23,10 +24,10 @@ namespace TESLA
                 }
             }
         }
-
-        static std::vector<void*>& GetQueue(){return m_queue;}
+        
+        static std::vector<Mesh*>& GetQueue(){return m_queue;}
     private:
-        static std::vector<void*> m_queue;
+        static std::vector<Mesh*> m_queue;
     };
 }
 

@@ -2,10 +2,36 @@
 #include "Mesh.h"
 #include "Core/EntryPoint.h"
 #include "NextAPI/AppSettings.h"
+#include "Renderer/RenderQueue.h"
+
+TESLA::Mesh::~Mesh()
+{
+    RenderQueue::RemoveFromQueue(this);
+}
+
+TESLA::Mesh::Mesh(std::vector<Triangle> triangles, Vector colour)
+{
+    m_translationMatrix = Matrix4x4::Identity();
+    m_rotationMatrix = Matrix4x4::Identity();
+    m_scaleMatrix = Matrix4x4::Identity();
+
+    m_position = Vector(0,0,0);
+    m_rotation = Vector(0,0,0);
+    m_scale = Vector(1,1,1);
+    this->colour = colour;
+    
+    for (int i = 0; i < triangles.size(); i++)
+    {
+        m_faces.push_back(Face(triangles[i], this->colour));
+    }
+    RenderQueue::AddToQueue(this);
+}
+
+
 
 void TESLA::Mesh::Translate(TESLA::Vector translation)
 {
-    this->translationMatrix = this->translationMatrix * Matrix4x4
+    this->m_translationMatrix = this->m_translationMatrix * Matrix4x4
     {       
         {1.0f, 0.0f, 0.0f, translation.x},
         {0.0f, 1.0f, 0.0f, translation.y},
@@ -13,7 +39,7 @@ void TESLA::Mesh::Translate(TESLA::Vector translation)
         {0.0f, 0.0f, 0.0f, 1.0f}
     };
 
-    this->position = this->position + translation;
+    this->m_position = this->m_position + translation;
 }
 
 void TESLA::Mesh::Rotate(float angle, TESLA::Vector axis)
@@ -70,14 +96,14 @@ void TESLA::Mesh::Rotate(float angle, TESLA::Vector axis)
         };
     }
 
-    this->rotationMatrix = this->rotationMatrix * (rotationY * rotationX * rotationZ);
-    this->rotation = this->rotation + axis * angle;
+    this->m_rotationMatrix = this->m_rotationMatrix * (rotationY * rotationX * rotationZ);
+    this->m_rotation = this->m_rotation + axis * angle;
 }
 
 void TESLA::Mesh::Scale(float scale, TESLA::Vector axis)
 {
     Vector normalizedAxis = axis.Normalize();
-    this->scaleMatrix = this->scaleMatrix * TESLA::Matrix4x4
+    this->m_scaleMatrix = this->m_scaleMatrix * TESLA::Matrix4x4
     {
         {normalizedAxis.x * scale, 0.0f, 0.0f, 0.0f},
         {0.0f, normalizedAxis.y * scale, 0.0f, 0.0f},
@@ -85,13 +111,13 @@ void TESLA::Mesh::Scale(float scale, TESLA::Vector axis)
         {0.0f, 0.0f, 0.0f, 1.0f}
     };
 
-    this->size = this->size + normalizedAxis * scale;
+    this->m_scale = this->m_scale + normalizedAxis * scale;
 }
 
 std::vector<TESLA::Face> TESLA::Mesh::GetProjectedFaces(Matrix4x4 view, Matrix4x4 projection)
 {
     std::vector<Face> passedFaces;
-    TESLA::Matrix4x4 model = translationMatrix * rotationMatrix * scaleMatrix;
+    TESLA::Matrix4x4 model = m_translationMatrix * m_rotationMatrix * m_scaleMatrix;
     
     for(Face face : m_faces)
     {
@@ -99,10 +125,10 @@ std::vector<TESLA::Face> TESLA::Mesh::GetProjectedFaces(Matrix4x4 view, Matrix4x
         
         for(int i = 0; i < 3; i++)
         {
-            projFace.triangle.vertices[i] = (projFace.triangle.vertices[i] * model);
+            projFace.triangle.vertices[i] = model * projFace.triangle.vertices[i];
         }
 
-        projFace.RecalculateNormal();
+        projFace.CalculateNormal();
         
         //Backface culling!
         if(TESLA::Vector::Dot(projFace.normal, (mainCamera->position - projFace.triangle.vertices[0]).Normalize()) < 0.0f)
@@ -110,7 +136,7 @@ std::vector<TESLA::Face> TESLA::Mesh::GetProjectedFaces(Matrix4x4 view, Matrix4x
             for (int j = 0; j < 3; j++)
             {
                 //View
-                projFace.triangle.vertices[j] = view * projFace.triangle.vertices[j];
+                projFace.triangle.vertices[j] = projFace.triangle.vertices[j] * view;
             }
 
             //Depth clipping!!
@@ -120,12 +146,12 @@ std::vector<TESLA::Face> TESLA::Mesh::GetProjectedFaces(Matrix4x4 view, Matrix4x
 
     for (Face& face : passedFaces)
     {
-        face.RecalculateNormal();
+        face.CalculateNormal();
         
         for (int k = 0; k < 3; k++)
         {
             //Projection
-            face.triangle.vertices[k] = projection * face.triangle.vertices[k];
+            face.triangle.vertices[k] = face.triangle.vertices[k] * projection;
                 
             //Doing the perspective divide
             face.triangle.vertices[k] = face.triangle.vertices[k].PerspectiveDivide();
@@ -135,11 +161,11 @@ std::vector<TESLA::Face> TESLA::Mesh::GetProjectedFaces(Matrix4x4 view, Matrix4x
             face.triangle.vertices[k] = Vector(face.triangle.vertices[k].x * (float)APP_VIRTUAL_WIDTH, face.triangle.vertices[k].y * (float)APP_VIRTUAL_HEIGHT, 0.0f)/2;
         }
     }
-    
+
     return passedFaces;
 }
 
-void TESLA::Mesh::RecalculateLighting(std::vector<Face>& projectedFaces, Vector lightPosition, float lightIntensity)
+void TESLA::Mesh::CalculateLighting(std::vector<Face>& projectedFaces, Vector lightPosition, float lightIntensity)
 {
     for (Face& face : projectedFaces)
     {

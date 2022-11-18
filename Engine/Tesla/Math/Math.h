@@ -119,8 +119,8 @@ namespace TESLA
 
     struct Matrix4x4
     {
-        Matrix4x4(Vector r1, Vector r2, Vector r3, Vector r4):
-        r1(r1), r2(r2), r3(r3), r4(r4){}
+        Matrix4x4(Vector r0, Vector r1, Vector r2, Vector r3):
+        r0(r0), r1(r1), r2(r2), r3(r3){}
 
         Matrix4x4(){}
 
@@ -155,12 +155,12 @@ namespace TESLA
         {
             Matrix4x4 lookAt = TESLA::Matrix4x4
             {
-                {pointAt.r1.x, pointAt.r2.x, pointAt.r3.x, 0.0f},
-                {pointAt.r1.y, pointAt.r2.y, pointAt.r3.y, 0.0f},
-                {pointAt.r1.z, pointAt.r2.z, pointAt.r3.z, 0.0f},
-                {-TESLA::Vector::Dot(pointAt.r1, pointAt.r4),
-                    -TESLA::Vector::Dot(pointAt.r2, pointAt.r4),
-                    -TESLA::Vector::Dot(pointAt.r3, pointAt.r4), 1.0f},
+                {pointAt.r0.x, pointAt.r1.x, pointAt.r2.x, 0.0f},
+                {pointAt.r0.y, pointAt.r1.y, pointAt.r2.y, 0.0f},
+                {pointAt.r0.z, pointAt.r1.z, pointAt.r2.z, 0.0f},
+                {-TESLA::Vector::Dot(pointAt.r0, pointAt.r3),
+                    -TESLA::Vector::Dot(pointAt.r1, pointAt.r3),
+                    -TESLA::Vector::Dot(pointAt.r2, pointAt.r3), 1.0f},
             };
 
             return lookAt;
@@ -170,32 +170,32 @@ namespace TESLA
         {
             Matrix4x4 returnMatrix;
 
+            returnMatrix.r0 = Vector(
+                (r0.x * b.r0.x + r0.y * b.r1.x + r0.z * b.r2.x + r0.w * b.r3.x),
+                (r0.x * b.r0.y + r0.y * b.r1.y + r0.z * b.r2.y + r0.w * b.r3.y),
+                (r0.x * b.r0.z + r0.y * b.r1.z + r0.z * b.r2.z + r0.w * b.r3.z),
+                (r0.x * b.r0.w + r0.y * b.r1.w + r0.z * b.r2.w + r0.w * b.r3.w)
+            );
+
             returnMatrix.r1 = Vector(
-                (r1.x * b.r1.x + r1.y * b.r2.x + r1.z * b.r3.x + r1.w * b.r4.x),
-                (r1.x * b.r1.y + r1.y * b.r2.y + r1.z * b.r3.y + r1.w * b.r4.y),
-                (r1.x * b.r1.z + r1.y * b.r2.z + r1.z * b.r3.z + r1.w * b.r4.z),
-                (r1.x * b.r1.w + r1.y * b.r2.w + r1.z * b.r3.w + r1.w * b.r4.w)
+                (r1.x * b.r0.x + r1.y * b.r1.x + r1.z * b.r2.x + r1.w * b.r3.x),
+                (r1.x * b.r0.y + r1.y * b.r1.y + r1.z * b.r2.y + r1.w * b.r3.y),
+                (r1.x * b.r0.z + r1.y * b.r1.z + r1.z * b.r2.z + r1.w * b.r3.z),
+                (r1.x * b.r0.w + r1.y * b.r1.w + r1.z * b.r2.w + r1.w * b.r3.w)
             );
 
             returnMatrix.r2 = Vector(
-                (r2.x * b.r1.x + r2.y * b.r2.x + r2.z * b.r3.x + r2.w * b.r4.x),
-                (r2.x * b.r1.y + r2.y * b.r2.y + r2.z * b.r3.y + r2.w * b.r4.y),
-                (r2.x * b.r1.z + r2.y * b.r2.z + r2.z * b.r3.z + r2.w * b.r4.z),
-                (r2.x * b.r1.w + r2.y * b.r2.w + r2.z * b.r3.w + r2.w * b.r4.w)
-            );
-
-            returnMatrix.r3 = Vector(
-                (r3.x * b.r1.x + r3.y * b.r2.x + r3.z * b.r3.x + r3.w * b.r4.x),
-                (r3.x * b.r1.y + r3.y * b.r2.y + r3.z * b.r3.y + r3.w * b.r4.y),
-                (r3.x * b.r1.z + r3.y * b.r2.z + r3.z * b.r3.z + r3.w * b.r4.z),
-                (r3.x * b.r1.w + r3.y * b.r2.w + r3.z * b.r3.w + r3.w * b.r4.w)
+                (r2.x * b.r0.x + r2.y * b.r1.x + r2.z * b.r2.x + r2.w * b.r3.x),
+                (r2.x * b.r0.y + r2.y * b.r1.y + r2.z * b.r2.y + r2.w * b.r3.y),
+                (r2.x * b.r0.z + r2.y * b.r1.z + r2.z * b.r2.z + r2.w * b.r3.z),
+                (r2.x * b.r0.w + r2.y * b.r1.w + r2.z * b.r2.w + r2.w * b.r3.w)
             );
             
-            returnMatrix.r4 = Vector(
-                (r4.x * b.r1.x + r4.y * b.r2.x + r4.z * b.r3.x + r4.w * b.r4.x),
-                (r4.x * b.r1.y + r4.y * b.r2.y + r4.z * b.r3.y + r4.w * b.r4.y),
-                (r4.x * b.r1.z + r4.y * b.r2.z + r4.z * b.r3.z + r4.w * b.r4.z),
-                (r4.x * b.r1.w + r4.y * b.r2.w + r4.z * b.r3.w + r4.w * b.r4.w)
+            returnMatrix.r3 = Vector(
+                (r3.x * b.r0.x + r3.y * b.r1.x + r3.z * b.r2.x + r3.w * b.r3.x),
+                (r3.x * b.r0.y + r3.y * b.r1.y + r3.z * b.r2.y + r3.w * b.r3.y),
+                (r3.x * b.r0.z + r3.y * b.r1.z + r3.z * b.r2.z + r3.w * b.r3.z),
+                (r3.x * b.r0.w + r3.y * b.r1.w + r3.z * b.r2.w + r3.w * b.r3.w)
             );
         
             return returnMatrix;
@@ -205,10 +205,10 @@ namespace TESLA
         {
             Vector returnVector;
 
-            returnVector.x = b.x * r1.x + b.y * r2.x + b.z * r3.x + r4.x;
-            returnVector.y = b.x * r1.y + b.y * r2.y + b.z * r3.y + r4.y;
-            returnVector.z = b.x * r1.z + b.y * r2.z + b.z * r3.z + r4.z;
-            returnVector.w = b.x * r1.w + b.y * r2.w + b.z * r3.w + r4.w;
+            returnVector.x = r0.x * b.x + r0.y * b.y + r0.z * b.z + r0.w;
+            returnVector.y = r1.x * b.x + r1.y * b.y + r1.z * b.z + r1.w;
+            returnVector.z = r2.x * b.x + r2.y * b.y + r2.z * b.z + r2.w;
+            returnVector.w = r3.x * b.x + r3.y * b.y + r3.z * b.z + r3.w;
 
             return  returnVector;
         }
@@ -216,6 +216,13 @@ namespace TESLA
         Matrix4x4 operator+(const Matrix4x4& b) const
         {
             Matrix4x4 returnMatrix;
+
+            returnMatrix.r0 = Vector(
+                (r0.x + b.r0.x),
+                (r0.y + b.r0.y),
+                (r0.z + b.r0.z),
+                (r0.w + b.r0.w)
+            );
 
             returnMatrix.r1 = Vector(
                 (r1.x + b.r1.x),
@@ -237,28 +244,22 @@ namespace TESLA
                 (r3.z + b.r3.z),
                 (r3.w + b.r3.w)
             );
-
-            returnMatrix.r4 = Vector(
-                (r4.x + b.r4.x),
-                (r4.y + b.r4.y),
-                (r4.z + b.r4.z),
-                (r4.w + b.r4.w)
-            );
         
             return returnMatrix;
         }
     public:
-        Vector r1, r2, r3, r4;
+        Vector r0, r1, r2, r3;
     };
 
-    inline Vector Vector::operator*(const Matrix4x4& other)
+    inline Vector Vector::operator*(const Matrix4x4& b)
     {
+
         Vector returnVector;
 
-        returnVector.x = other.r1.x * x + other.r1.y * y + other.r1.z * z + other.r1.w;
-        returnVector.y = other.r2.x * x + other.r2.y * y + other.r2.z * z + other.r2.w;
-        returnVector.z = other.r3.x * x + other.r3.y * y + other.r3.z * z + other.r3.w;
-        returnVector.w = other.r4.x * x + other.r4.y * y + other.r4.z * z + other.r4.w;
+        returnVector.x = x * b.r0.x + y * b.r1.x + z * b.r2.x + b.r3.x;
+        returnVector.y = x * b.r0.y + y * b.r1.y + z * b.r2.y + b.r3.y;
+        returnVector.z = x * b.r0.z + y * b.r1.z + z * b.r2.z + b.r3.z;
+        returnVector.w = x * b.r0.w + y * b.r1.w + z * b.r2.w + b.r3.w;
 
         return  returnVector;
     }
