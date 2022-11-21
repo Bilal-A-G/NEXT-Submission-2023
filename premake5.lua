@@ -97,6 +97,11 @@ project "Engine"
         "freeglut"
     }
 
+    defines
+    {
+        "TS_ENGINE"
+    }
+
     pchheader "TSPch.h"
     pchsource "Engine/TSPch.cpp"
     
@@ -138,7 +143,7 @@ project "Software 3D Renderer"
     objdir ("int/" .. outputdir .. "/%{prj.name}")
 
     libdirs{"NextAPI/glut/lib"}
-    includedirs{"Engine"}
+    includedirs{"Engine", "NextAPI"}
 
     files
     {

@@ -3,26 +3,33 @@
 
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
+#include "Scenes/SceneManager.h"
 
 void Init()
 {
-    Awake();
+    for(TESLA::Scene* scene : scenes)
+    {
+        TESLA::SceneManager::AddScene(scene);
+    }
+
+    TESLA::SceneManager::Init();
 }
 
 void Update(float deltaTime)
 {
     TESLA::Input::Update();
-    UpdateLoop(deltaTime);
+    TESLA::SceneManager::Update(deltaTime);
 }
 
 void Render()
 {
     TESLA::Renderer::Update(mainCamera);
+    TESLA::SceneManager::Render();
 }
 
 void Shutdown()
 {
-    CleanUp();
+    TESLA::SceneManager::Disable();
     delete(mainCamera);
 }
 
