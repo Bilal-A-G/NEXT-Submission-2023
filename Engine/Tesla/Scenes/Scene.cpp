@@ -9,13 +9,22 @@ void TESLA::Scene::CreateEntity(TESLA::Entity* entity)
     m_entities.push_back(entity);
 }
 
-void TESLA::Scene::CreateComponent(ComponentBase* component)
+void TESLA::Scene::CreateComponent(ComponentBase* component, int entityId)
 {
     const int componentIndex = component->GetEnum();
             
     if(m_components.size() <= componentIndex + 1)
     {
         m_components.resize(componentIndex + 1);
+    }
+
+    for (int i = 0; i < m_components[componentIndex].size(); i++)
+    {
+        if(m_components[componentIndex][i]->m_entityId == entityId)
+        {
+            delete(component);
+            return;
+        }
     }
             
     m_components[componentIndex].push_back(component);

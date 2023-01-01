@@ -22,7 +22,7 @@ namespace TESLA
     
         std::string GetName(){return m_name;}
         void CreateEntity(TESLA::Entity* entity);
-        void CreateComponent(ComponentBase* component);
+        void CreateComponent(ComponentBase* component, int entityId);
         ComponentBase* GetComponent(ComponentEnum index, int entityId);
     private:
         const std::string m_name;

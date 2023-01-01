@@ -15,7 +15,7 @@ TESLA::ComponentBase* TESLA::Entity::GetComponent(ComponentEnum enumType)
 
 void TESLA::Entity::AddComponentToScene(TESLA::ComponentBase* component)
 {
-    TESLA::SceneManager::m_activeScene->CreateComponent(component);
+    TESLA::SceneManager::m_activeScene->CreateComponent(component, m_id);
 }
 
 

@@ -8,7 +8,8 @@ namespace TESLA
     public:
         Entity();
         ComponentBase* GetComponent(ComponentEnum enumType);
-        template<typename T> void AddComponent()
+        template<typename T>
+        void AddComponent()
         {
             ComponentBase* instantiatedComponent = reinterpret_cast<ComponentBase*>(new T());
             instantiatedComponent->m_entityId = m_id;
