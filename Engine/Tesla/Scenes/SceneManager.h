@@ -15,7 +15,7 @@ namespace TESLA
         static void Update(float deltaTime){m_activeScene->Update(deltaTime);}
         static void Render(){m_activeScene->Render();}
         static void Disable(){m_activeScene->Disable();}
-    private:
+    public:
         static Scene* m_activeScene;
         static std::vector<Scene*> m_scenes;
     };

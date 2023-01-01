@@ -1,10 +1,23 @@
 ﻿#pragma once
+#include <iostream>
+
 #include "NextAPI/app.h"
 #include "Tesla/Camera/Camera.h"
 #include "Tesla/Mesh/Mesh.h"
 #include "Tesla/Scenes/Scene.h"
 #include "Tesla/Scenes/SceneManager.h"
 #include "Tesla/Mesh/ObjLoader.h"
+#include "Tesla/ECS/Entity.h"
+
+struct MyComponent : TESLA::ComponentBase
+{
+    TESLA::ComponentEnum GetEnum() override{return TESLA::ComponentEnum::Test;}
+
+    void PrintHelloWorld()
+    {
+        std::cout << "Hello world \n";
+    }
+};
 
 class MeshTest : public TESLA::Scene
 {
@@ -21,6 +34,10 @@ public:
         m_mesh1 = new TESLA::Mesh(TESLA::ObjLoader::LoadFromOBJFile("Sphere"), TESLA::Vector(1.0f, 0.0f, 0.0f));
         m_mesh1->Scale(m_meshSize, TESLA::Vector(1,1,1));
         m_mesh1->Translate(TESLA::Vector(0, 1, 7));
+
+        TESLA::Entity myEntity;
+        myEntity.AddComponent<MyComponent>();
+        std::cout << myEntity.GetComponent(TESLA::Test)->GetEnum();
     }
 
     void Render() override
