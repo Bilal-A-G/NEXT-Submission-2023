@@ -17,33 +17,27 @@ void TESLA::Scene::CreateComponent(Component* component, int entityId)
     {
         m_components.resize(componentIndex + 1);
     }
-    
-    for (int i = 0; i < m_components[componentIndex].size(); i++)
+
+    if(m_components[componentIndex].size() <= entityId + 1)
     {
-        if(m_components[componentIndex][i]->m_entityId == entityId)
-        {
-            delete(component);
-            return;
-        }
+        m_components[componentIndex].resize(entityId + 1);
     }
     
-    m_components[componentIndex].push_back(component);
+    if(m_components[componentIndex][entityId])
+    {
+        delete(component);
+        return;
+    }
+    
+    m_components[componentIndex][entityId] = component;
 }
 
 TESLA::Component* TESLA::Scene::GetComponent(TESLA_ENUMS::ComponentEnum index, int entityId)
 {
-    if(index >= m_components.size())
+    if(index >= m_components.size() || entityId >= m_components[index].size() || !m_components[index][entityId])
         return m_nullComponent;    
-
-    for (Component* component : m_components[index])
-    {
-        if(component->m_entityId == entityId)
-        {
-            return component;
-        }
-    }
     
-    return m_nullComponent;
+    return m_components[index][entityId];
 }
 
 

@@ -1,32 +1,7 @@
-﻿#include "TSpch.h"
-#include "Camera.h"
-#include "NextAPI/AppSettings.h"
+﻿#include "TSPch.h"
+#include "Transform.h"
 
-TESLA::Matrix4x4 TESLA::Camera::GetProjection()
-{
-    float aspectRatio = (float)APP_VIRTUAL_HEIGHT/(float)APP_VIRTUAL_WIDTH;
-    float fovRad = 1.0f / tanf(m_fov * 0.5f / 180.0f * 3.14159f);
-    
-    return TESLA::Matrix4x4
-    {
-        {aspectRatio * fovRad, 0.0f, 0.f, 0.0f},
-        {0.0f, fovRad, 0.0f, 0.0f},
-        {0.0f, 0.0f, m_farPlane/(m_farPlane - m_nearPlane), 1.0f},
-        {0.0f, 0.0f, (-m_farPlane * m_nearPlane)/(m_farPlane - m_nearPlane), 0.0f}
-    };
-}
-
-TESLA::Matrix4x4 TESLA::Camera::GetView()
-{
-    Vector rotatedTarget =  TESLA::Vector(0, 0, 1) * m_rotationMatrix;
-    forward = rotatedTarget.Normalize();
-    right = TESLA::Vector::Cross(forward, up);
-    
-    TESLA::Matrix4x4 pointAtMatrix = TESLA::Matrix4x4::PointAt(position, position + rotatedTarget, up);
-    return Matrix4x4::LookAt(pointAtMatrix);
-}
-
-void TESLA::Camera::Rotate(float angle, TESLA::Vector axis)
+void TESLA::Transform::Rotate(Vector axis, float angle)
 {
     float cosTheta = cos(angle);
     float sinTheta = sin(angle);
@@ -80,13 +55,41 @@ void TESLA::Camera::Rotate(float angle, TESLA::Vector axis)
         };
     }
 
-    m_rotationMatrix = m_rotationMatrix * (rotationY * rotationX * rotationZ);
-    rotation = rotation + axis * angle;
+    Vector rotatedTarget =  TESLA::Vector(0, 0, 1) * rotationMatrix;
+    forward = rotatedTarget.Normalize();
+    right = TESLA::Vector::Cross(forward, TESLA::Vector(0, 1, 0)).Normalize();
+    up = TESLA::Vector::Cross(right, forward).Normalize();
+
+    rotationMatrix = rotationMatrix * (rotationY * rotationX * rotationZ);
+    rotation += axis * angle;
 }
 
-void TESLA::Camera::Translate(TESLA::Vector translation)
+void TESLA::Transform::Scale(Vector axis, float size)
 {
+    Vector normalizedAxis = axis.Normalize();
+    scaleMatrix = scaleMatrix * TESLA::Matrix4x4
+    {
+            {normalizedAxis.x * size, 0.0f, 0.0f, 0.0f},
+            {0.0f, normalizedAxis.y * size, 0.0f, 0.0f},
+            {0.0f, 0.0f, normalizedAxis.z * size, 0.0f},
+            {0.0f, 0.0f, 0.0f, 1.0f}
+    };
+    scale += axis * size;
+}
+
+void TESLA::Transform::Translate(Vector translation)
+{
+    positionMatrix = positionMatrix * Matrix4x4
+    {
+        {1.0f, 0.0f, 0.0f, translation.x},
+        {0.0f, 1.0f, 0.0f, translation.y},
+        {0.0f, 0.0f, 1.0f, translation.z},
+        {0.0f, 0.0f, 0.0f, 1.0f}
+    };
+
     position += translation;
 }
+
+
 
 

@@ -66,7 +66,8 @@ namespace TESLA
                 return m_components[0];
             }
         }
-        
+    public:
+        TESLA::Entity* mainCamera;
     private:
         const std::string m_name;
         std::vector<Entity*> m_entities;

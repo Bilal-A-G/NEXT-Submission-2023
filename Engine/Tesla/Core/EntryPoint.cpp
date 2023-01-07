@@ -1,6 +1,5 @@
 ﻿#include "TSpch.h"
 #include "EntryPoint.h"
-
 #include "Input/Input.h"
 #include "Scenes/SceneManager.h"
 
@@ -30,7 +29,6 @@ void Render()
 void Shutdown()
 {
     TESLA::SceneManager::Disable();
-    delete(mainCamera);
 }
 
 

@@ -7,10 +7,10 @@
 
 void SetUp(std::vector<TESLA::Scene*>& scenes)
 {
-    TESLA::Scene* meshTestScene = new MeshTest(mainCamera, "MainScene");
-    meshTestScene->RegisterSystem(new TESLA::Renderer(mainCamera));
+    TESLA::Scene* meshTestScene = new MeshTest("MainScene");
+    meshTestScene->RegisterSystem(new TESLA::Renderer());
     
-    TESLA::Scene* endScene =  new End("EndScene");
+    TESLA::Scene* endScene = new End("EndScene");
 
     scenes.push_back(meshTestScene);
     scenes.push_back(endScene);

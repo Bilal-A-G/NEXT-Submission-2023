@@ -6,6 +6,8 @@ namespace TESLA_ENUMS
     {
         Null = 0,
         Mesh = 1,
+        Transform = 2,
+        Camera = 3
     };
 }
 

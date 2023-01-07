@@ -2,27 +2,41 @@
 #include <iostream>
 
 #include "NextAPI/app.h"
-#include "Tesla/Camera/Camera.h"
+#include "Tesla/ECS/Components/Camera/Camera.h"
 #include "Tesla/ECS/Components/Mesh/Mesh.h"
+#include "Tesla/ECS/Components/Transform//Transform.h"
 #include "Tesla/IO/ObjLoader.h"
 #include "Tesla/Scenes/SceneManager.h"
 
 class MeshTest : public TESLA::Scene
 {
 public:
-    MeshTest(TESLA::Camera* camera, std::string name):
-    Scene(name), m_mainCamera(camera), m_entity(nullptr){}
+    MeshTest(std::string name):
+    Scene(name), m_entity(nullptr){}
 
     void Awake() override
     {
+        mainCamera = new TESLA::Entity();
+        mainCamera->AddComponent<TESLA::Transform>();
+        mainCamera->AddComponent<TESLA::Camera>();
+        TESLA::Camera* camera =  mainCamera->GetComponent<TESLA::Camera>(TESLA_ENUMS::Camera);
+        camera->fov = 70.0f;
+        camera->farPlane = 1000.0f;
+        camera->nearPlane = 0.1f;
+        
         m_entity = new TESLA::Entity();
         m_entity->AddComponent<TESLA::Mesh>();
+        m_entity->AddComponent<TESLA::Transform>();
+        
         m_mesh = m_entity->GetComponent<TESLA::Mesh>(TESLA_ENUMS::Mesh);
+        m_transform = m_entity->GetComponent<TESLA::Transform>(TESLA_ENUMS::Transform);
         
         m_mesh->faces = TESLA::ObjLoader::LoadFromOBJFile("Sphere");
         m_mesh->colour = TESLA::Colour::Green();
-        m_mesh->Scale(m_meshSize, TESLA::Vector(1,1,1));
-        m_mesh->Translate(TESLA::Vector(0, 0, 2));
+        m_transform->Scale(TESLA::Vector(1,1,1), m_meshSize);
+        m_transform->Translate(TESLA::Vector(0, 0, 2));
+
+        m_cameraTransform = mainCamera->GetComponent<TESLA::Transform>(TESLA_ENUMS::Transform);
 
         Scene::Awake();
     }
@@ -38,31 +52,31 @@ public:
     {
         Scene::Update(deltaTime);
         
-        m_mesh->Rotate(0.01, TESLA::Vector(0, 1, 0));
+        m_transform->Rotate(TESLA::Vector(0, 1, 0), 0.01);
 	
         if(App::IsKeyPressed('A'))
         {
-            m_mainCamera->position += m_mainCamera->right * m_camSpeed;
+            m_cameraTransform->Translate(m_cameraTransform->right * m_camSpeed);
         }
         if(App::IsKeyPressed('D'))
         {
-            m_mainCamera->position += m_mainCamera->right * -m_camSpeed;
+            m_cameraTransform->Translate(m_cameraTransform->right * -m_camSpeed);
         }
         if(App::IsKeyPressed('W'))
         {
-            m_mainCamera->Translate(m_mainCamera->forward * m_camSpeed);
+            m_cameraTransform->Translate(m_cameraTransform->forward * m_camSpeed);
         }
         if(App::IsKeyPressed('S'))
         {
-            m_mainCamera->Translate(m_mainCamera->forward * -m_camSpeed);
+            m_cameraTransform->Translate(m_cameraTransform->forward * -m_camSpeed);
         }
         if(App::IsKeyPressed('Q'))
         {
-            m_mainCamera->Rotate(-m_camSpeed, m_mainCamera->up);
+            m_cameraTransform->Rotate(m_cameraTransform->up, -m_camSpeed);
         }
         if(App::IsKeyPressed('E'))
         {
-            m_mainCamera->Rotate(m_camSpeed, m_mainCamera->up);	
+            m_cameraTransform->Rotate(m_cameraTransform->up, m_camSpeed);	
         }
         if(App::IsKeyPressed('L'))
         {
@@ -70,11 +84,11 @@ public:
         }
         if(App::IsKeyPressed(VK_CONTROL))
         {
-            m_mainCamera->Translate(m_mainCamera->up * -m_camSpeed);
+            m_cameraTransform->Translate(m_cameraTransform->up * -m_camSpeed);
         }
         if(App::IsKeyPressed(VK_SPACE))
         {
-            m_mainCamera->Translate(m_mainCamera->up * m_camSpeed);
+            m_cameraTransform->Translate(m_cameraTransform->up * m_camSpeed);
         }
     }
 
@@ -87,9 +101,10 @@ public:
     }
     
 private:
-    TESLA::Camera* m_mainCamera;
     TESLA::Entity* m_entity;
     TESLA::Mesh* m_mesh;
+    TESLA::Transform* m_transform;
+    TESLA::Transform* m_cameraTransform;
     
     float m_meshSize = 1.0f;
     float m_camSpeed = 0.02f;

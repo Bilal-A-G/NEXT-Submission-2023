@@ -232,4 +232,10 @@ namespace TESLA
 
         return screenFaces;
     }
+
+    inline Matrix4x4 CalculateView(Vector position, Vector forward, Vector up)
+    {
+        TESLA::Matrix4x4 pointAtMatrix = TESLA::Matrix4x4::PointAt(position, position + forward, up);
+        return Matrix4x4::LookAt(pointAtMatrix);
+    }
 }

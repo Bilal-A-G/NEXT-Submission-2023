@@ -59,6 +59,11 @@ namespace TESLA
             return {(a.y * b.z - a.z * b.y), (a.z * b.x - b.z * a.x), (a.x * b.y - b.x * a.y)};
         }
 
+        static Vector Zero()
+        {
+            return {0, 0, 0, 0};
+        }
+
         Vector operator *(const float& other) const
         {
             return  {x * other, y * other, z * other, w * other};

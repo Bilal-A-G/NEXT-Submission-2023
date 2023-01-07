@@ -11,8 +11,8 @@ void TESLA::SceneManager::SwitchScene(std::string name)
         if(scene->GetName() == name)
         {
             m_activeScene->Disable();
-            scene->Awake();
             m_activeScene = scene;
+            scene->Awake();
             break;
         }
     }

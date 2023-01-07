@@ -1,34 +1,51 @@
 ﻿#include "TSPch.h"
 #include "Renderer.h"
 #include "ECS/Components/Mesh/Mesh.h"
+#include "ECS/Components/Transform/Transform.h"
 #include "NextAPI/app.h"
 #include "Scenes/SceneManager.h"
 
 void TESLA::Renderer::Awake()
 {
-    m_components = TESLA::SceneManager::m_activeScene->GetComponents(TESLA_ENUMS::Mesh);
+    m_meshComponents = TESLA::SceneManager::m_activeScene->GetComponents(TESLA_ENUMS::Mesh);
+    m_transformComponents = TESLA::SceneManager::m_activeScene->GetComponents(TESLA_ENUMS::Transform);
+
+    if(TESLA::SceneManager::m_activeScene->mainCamera)
+    {
+        m_camera = TESLA::SceneManager::m_activeScene->mainCamera->GetComponent<TESLA::Camera>(TESLA_ENUMS::Camera);
+        m_cameraTransform = TESLA::SceneManager::m_activeScene->mainCamera->GetComponent<TESLA::Transform>(TESLA_ENUMS::Transform);
+    }
 }
 
 void TESLA::Renderer::Disable()
 {
-    m_components.clear();
+    m_meshComponents.clear();
+    m_transformComponents.clear();
 }
 
 void TESLA::Renderer::Render()
 {
-    for (TESLA::Component* component : m_components)
+    if(!m_camera)
+        return;
+    
+    for (TESLA::Component* component : m_meshComponents)
     {
         if(component == nullptr || component->GetEnum() == TESLA_ENUMS::Null)
             continue;
         
         Mesh* mesh = static_cast<Mesh*>(component);
+        Transform* transform = static_cast<Transform*>(m_transformComponents[mesh->m_entityId]);
         
-        Matrix4x4 model = mesh->m_translationMatrix * mesh->m_rotationMatrix * mesh->m_scaleMatrix;
+        if(transform == nullptr)
+            continue;
+        
+        Matrix4x4 model = transform->positionMatrix * transform->rotationMatrix * transform->scaleMatrix;
         std::vector<Face> faces = TESLA::ProjectToWorld(model, mesh->faces);
         
         TESLA::CalculateLighting(faces, TESLA::Vector(50, -50, 0), 0.8, mesh->colour);
 
-        faces = TESLA::ProjectToView(faces, m_camera->position, m_camera->GetView());
+        faces = TESLA::ProjectToView(faces, m_cameraTransform->position,
+            CalculateView(m_cameraTransform->position, m_cameraTransform->forward, m_cameraTransform->up));
         faces = TESLA::ProjectToScreen(faces, m_camera->GetProjection());
 
         std::vector<Face> nonClippedFaces;
