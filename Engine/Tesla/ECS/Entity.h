@@ -7,18 +7,29 @@ namespace TESLA
     {
     public:
         Entity();
-        ComponentBase* GetComponent(ComponentEnum enumType);
+        template<typename T>
+        T* GetComponent(TESLA_ENUMS::ComponentEnum enumType)
+        {
+            TESLA::Component* component = GetComponentFromScene(enumType);
+            if(component->GetEnum() != TESLA_ENUMS::Null)
+            {
+                return static_cast<T*>(component);
+            }
+
+            return nullptr;
+        }
         template<typename T>
         void AddComponent()
         {
-            ComponentBase* instantiatedComponent = reinterpret_cast<ComponentBase*>(new T());
+            Component* instantiatedComponent = new T();
             instantiatedComponent->m_entityId = m_id;
 
             AddComponentToScene(instantiatedComponent);
         }
     private:
-        void AddComponentToScene(TESLA::ComponentBase* component);
+        void AddComponentToScene(TESLA::Component* component);
+        TESLA::Component* GetComponentFromScene(TESLA_ENUMS::ComponentEnum enumType);
     public:
-        int m_id;
+        uint32_t m_id;
     };
 }

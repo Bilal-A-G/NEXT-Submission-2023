@@ -2,11 +2,12 @@
 #include "EntryPoint.h"
 
 #include "Input/Input.h"
-#include "Renderer/Renderer.h"
 #include "Scenes/SceneManager.h"
 
 void Init()
 {
+    SetUp(scenes);
+    
     for(TESLA::Scene* scene : scenes)
     {
         TESLA::SceneManager::AddScene(scene);
@@ -23,7 +24,6 @@ void Update(float deltaTime)
 
 void Render()
 {
-    TESLA::Renderer::Update(mainCamera);
     TESLA::SceneManager::Render();
 }
 

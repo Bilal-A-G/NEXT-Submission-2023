@@ -4,7 +4,8 @@
 
 inline TESLA::Camera* mainCamera = new TESLA::Camera(70.0f, 0.1f, 1000.0f);
 
-extern std::vector<TESLA::Scene*> scenes;
+inline std::vector<TESLA::Scene*> scenes;
+extern void SetUp(std::vector<TESLA::Scene*>& scenes);
 
 void Init();
 void Update(float deltaTime);

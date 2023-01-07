@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Mesh.h"
+#include "../Math/Geometry.h"
 
 namespace TESLA
 {
@@ -7,6 +7,6 @@ namespace TESLA
     {
     public:
         ObjLoader() = delete;
-        static std::vector<TESLA::Triangle> LoadFromOBJFile(std::string fileName);
+        static std::vector<TESLA::Face> LoadFromOBJFile(std::string fileName);
     };
 }

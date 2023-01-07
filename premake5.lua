@@ -16,6 +16,7 @@ project "NextAPI"
     cppdialect "C++17"
     staticruntime "off"
     warnings "off"
+    rtti("off")
     
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("int/" .. outputdir .. "/%{prj.name}")
@@ -77,7 +78,8 @@ project "Engine"
     language "C++"
     cppdialect "C++17"
     staticruntime "off"
-    
+    rtti("off")
+
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("int/" .. outputdir .. "/%{prj.name}")
     
@@ -138,6 +140,7 @@ project "Software 3D Renderer"
     language "C++"
     cppdialect "C++17"
     staticruntime "off"
+    rtti("off")
 
     targetdir ("bin/" .. outputdir .. "/Executables")
     objdir ("int/" .. outputdir .. "/%{prj.name}")

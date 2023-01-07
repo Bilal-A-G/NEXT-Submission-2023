@@ -9,7 +9,7 @@ void TESLA::Scene::CreateEntity(TESLA::Entity* entity)
     m_entities.push_back(entity);
 }
 
-void TESLA::Scene::CreateComponent(ComponentBase* component, int entityId)
+void TESLA::Scene::CreateComponent(Component* component, int entityId)
 {
     const int componentIndex = component->GetEnum();
             
@@ -17,7 +17,7 @@ void TESLA::Scene::CreateComponent(ComponentBase* component, int entityId)
     {
         m_components.resize(componentIndex + 1);
     }
-
+    
     for (int i = 0; i < m_components[componentIndex].size(); i++)
     {
         if(m_components[componentIndex][i]->m_entityId == entityId)
@@ -26,26 +26,23 @@ void TESLA::Scene::CreateComponent(ComponentBase* component, int entityId)
             return;
         }
     }
-            
+    
     m_components[componentIndex].push_back(component);
 }
 
-TESLA::ComponentBase* TESLA::Scene::GetComponent(ComponentEnum index, int entityId)
+TESLA::Component* TESLA::Scene::GetComponent(TESLA_ENUMS::ComponentEnum index, int entityId)
 {
-    
     if(index >= m_components.size())
-    {
         return m_nullComponent;    
-    }
-            
-    for (int i = 0; i < m_components[index].size(); i++)
+
+    for (Component* component : m_components[index])
     {
-        if(m_components[index][i]->m_entityId == entityId)
+        if(component->m_entityId == entityId)
         {
-            return m_components[index][i];
+            return component;
         }
     }
-
+    
     return m_nullComponent;
 }
 

@@ -276,5 +276,4 @@ namespace TESLA
         
         return lineStart + lineIntersection;
     }
-
 }

@@ -1,24 +1,28 @@
 ﻿#pragma once
 
-namespace TESLA
+namespace TESLA_ENUMS
 {
-    enum ComponentEnum
+    enum ComponentEnum : uint8_t
     {
         Null = 0,
-        Test = 1
+        Mesh = 1,
     };
+}
 
-    struct ComponentBase
+
+namespace TESLA
+{
+    struct Component
     {
     public:
-        virtual ~ComponentBase() = default;
-        virtual ComponentEnum GetEnum() = 0;
+        virtual ~Component() = default;
+        virtual TESLA_ENUMS::ComponentEnum GetEnum() = 0;
     public:
-        int m_entityId;
+        uint32_t m_entityId;
     };
 
-    struct NullComponent : ComponentBase
+    struct NullComponent : Component
     {
-        ComponentEnum GetEnum() override {return ComponentEnum::Null;}
+        TESLA_ENUMS::ComponentEnum GetEnum() override {return TESLA_ENUMS::ComponentEnum::Null;}
     };
 }

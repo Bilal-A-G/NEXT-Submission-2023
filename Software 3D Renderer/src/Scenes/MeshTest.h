@@ -3,52 +3,42 @@
 
 #include "NextAPI/app.h"
 #include "Tesla/Camera/Camera.h"
-#include "Tesla/Mesh/Mesh.h"
-#include "Tesla/Scenes/Scene.h"
+#include "Tesla/ECS/Components/Mesh/Mesh.h"
+#include "Tesla/IO/ObjLoader.h"
 #include "Tesla/Scenes/SceneManager.h"
-#include "Tesla/Mesh/ObjLoader.h"
-#include "Tesla/ECS/Entity.h"
-
-struct MyComponent : TESLA::ComponentBase
-{
-    TESLA::ComponentEnum GetEnum() override{return TESLA::ComponentEnum::Test;}
-
-    void PrintHelloWorld()
-    {
-        std::cout << "Hello world \n";
-    }
-};
 
 class MeshTest : public TESLA::Scene
 {
 public:
     MeshTest(TESLA::Camera* camera, std::string name):
-    Scene(name), m_mainCamera(camera), m_mesh(nullptr), m_mesh1(nullptr){}
+    Scene(name), m_mainCamera(camera), m_entity(nullptr){}
 
     void Awake() override
     {
-        m_mesh = new TESLA::Mesh(TESLA::ObjLoader::LoadFromOBJFile("Sphere"), TESLA::Vector(1.0f, 0.0f, 0.0f));
+        m_entity = new TESLA::Entity();
+        m_entity->AddComponent<TESLA::Mesh>();
+        m_mesh = m_entity->GetComponent<TESLA::Mesh>(TESLA_ENUMS::Mesh);
+        
+        m_mesh->faces = TESLA::ObjLoader::LoadFromOBJFile("Sphere");
+        m_mesh->colour = TESLA::Colour::Green();
         m_mesh->Scale(m_meshSize, TESLA::Vector(1,1,1));
         m_mesh->Translate(TESLA::Vector(0, 0, 2));
 
-        m_mesh1 = new TESLA::Mesh(TESLA::ObjLoader::LoadFromOBJFile("Sphere"), TESLA::Vector(1.0f, 0.0f, 0.0f));
-        m_mesh1->Scale(m_meshSize, TESLA::Vector(1,1,1));
-        m_mesh1->Translate(TESLA::Vector(0, 1, 7));
-
-        TESLA::Entity myEntity;
-        myEntity.AddComponent<MyComponent>();
-        std::cout << myEntity.GetComponent(TESLA::Test)->GetEnum();
+        Scene::Awake();
     }
 
     void Render() override
     {
+        Scene::Render();
+        
         App::Print(APP_VIRTUAL_WIDTH/2, APP_VIRTUAL_HEIGHT - 20, "Mesh Test, press L To Lose", 1, 1, 1, GLUT_BITMAP_HELVETICA_10);
     }
     
     void Update(float deltaTime) override
     {
+        Scene::Update(deltaTime);
+        
         m_mesh->Rotate(0.01, TESLA::Vector(0, 1, 0));
-        m_mesh1->Rotate(0.01, TESLA::Vector(0, 1, 0));
 	
         if(App::IsKeyPressed('A'))
         {
@@ -87,16 +77,19 @@ public:
             m_mainCamera->Translate(m_mainCamera->up * m_camSpeed);
         }
     }
-    
+
     void Disable() override
     {
+        Scene::Disable();
+        
+        delete(m_entity);
         delete(m_mesh);
-        delete(m_mesh1);
     }
+    
 private:
     TESLA::Camera* m_mainCamera;
+    TESLA::Entity* m_entity;
     TESLA::Mesh* m_mesh;
-    TESLA::Mesh* m_mesh1;
     
     float m_meshSize = 1.0f;
     float m_camSpeed = 0.02f;

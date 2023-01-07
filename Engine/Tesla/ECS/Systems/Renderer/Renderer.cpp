@@ -1,16 +1,35 @@
 ﻿#include "TSPch.h"
-#include "Renderer/Renderer.h"
-
-#include "RenderQueue.h"
-#include "Mesh/Mesh.h"
+#include "Renderer.h"
+#include "ECS/Components/Mesh/Mesh.h"
 #include "NextAPI/app.h"
+#include "Scenes/SceneManager.h"
 
-void TESLA::Renderer::Update(TESLA::Camera* camera)
+void TESLA::Renderer::Awake()
 {
-    for (TESLA::Mesh* mesh : RenderQueue::GetQueue())
+    m_components = TESLA::SceneManager::m_activeScene->GetComponents(TESLA_ENUMS::Mesh);
+}
+
+void TESLA::Renderer::Disable()
+{
+    m_components.clear();
+}
+
+void TESLA::Renderer::Render()
+{
+    for (TESLA::Component* component : m_components)
     {
-        std::vector<Face> faces = mesh->GetProjectedFaces(camera->GetView(), camera->GetProjection());
-        mesh->CalculateLighting(faces, TESLA::Vector(0, 9, 0), 0.8);
+        if(component == nullptr || component->GetEnum() == TESLA_ENUMS::Null)
+            continue;
+        
+        Mesh* mesh = static_cast<Mesh*>(component);
+        
+        Matrix4x4 model = mesh->m_translationMatrix * mesh->m_rotationMatrix * mesh->m_scaleMatrix;
+        std::vector<Face> faces = TESLA::ProjectToWorld(model, mesh->faces);
+        
+        TESLA::CalculateLighting(faces, TESLA::Vector(50, -50, 0), 0.8, mesh->colour);
+
+        faces = TESLA::ProjectToView(faces, m_camera->position, m_camera->GetView());
+        faces = TESLA::ProjectToScreen(faces, m_camera->GetProjection());
 
         std::vector<Face> nonClippedFaces;
 
@@ -42,16 +61,16 @@ void TESLA::Renderer::Update(TESLA::Camera* camera)
         for (Face face : nonClippedFaces)
         {
             std::array<Vector, 3> currentVertices = face.triangle.vertices;
-            Vector currentColour = face.colour;
+            Colour currentColour = face.colour;
                 
             App::DrawLine(currentVertices[0].x, currentVertices[0].y,
-                          currentVertices[1].x, currentVertices[1].y, currentColour.x, currentColour.y, currentColour.z);
+                          currentVertices[1].x, currentVertices[1].y, currentColour.r, currentColour.g, currentColour.b);
 	           
             App::DrawLine(currentVertices[1].x, currentVertices[1].y,
-                          currentVertices[2].x, currentVertices[2].y, currentColour.x, currentColour.y, currentColour.z);
+                          currentVertices[2].x, currentVertices[2].y, currentColour.r, currentColour.g, currentColour.b);
             
             App::DrawLine(currentVertices[2].x, currentVertices[2].y,
-                          currentVertices[0].x, currentVertices[0].y, currentColour.x, currentColour.y, currentColour.z);
+                          currentVertices[0].x, currentVertices[0].y, currentColour.r, currentColour.g, currentColour.b);
         }
     }
 }

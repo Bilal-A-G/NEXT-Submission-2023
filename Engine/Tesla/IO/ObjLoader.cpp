@@ -5,9 +5,10 @@
 
 const std::string resourcesDirectory = "./res";
 
-std::vector<TESLA::Triangle> TESLA::ObjLoader::LoadFromOBJFile(std::string fileName)
+std::vector<TESLA::Face> TESLA::ObjLoader::LoadFromOBJFile(std::string fileName)
 {
     std::vector<Triangle> triangles;
+    std::vector<Face> faces;
     
     std::ifstream fileStream(resourcesDirectory + "/" + fileName + ".obj");
     assert(fileStream.is_open());
@@ -37,6 +38,11 @@ std::vector<TESLA::Triangle> TESLA::ObjLoader::LoadFromOBJFile(std::string fileN
         }
     }
 
-    return triangles;
+    for (TESLA::Triangle triangle : triangles)
+    {
+        faces.push_back(Face(triangle, Colour::Black()));
+    }
+
+    return faces;
 }
 
