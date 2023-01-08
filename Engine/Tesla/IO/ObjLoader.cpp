@@ -3,14 +3,14 @@
 
 #include <assert.h>
 
-const std::string resourcesDirectory = "./res";
+std::string resourcesPath = RES_PATH;
 
 std::vector<TESLA::Face> TESLA::ObjLoader::LoadFromOBJFile(std::string fileName)
 {
     std::vector<Triangle> triangles;
     std::vector<Face> faces;
     
-    std::ifstream fileStream(resourcesDirectory + "/" + fileName + ".obj");
+    std::ifstream fileStream(resourcesPath + "/" + fileName + ".obj");
     assert(fileStream.is_open());
 
     std::vector<Vector> vertices;

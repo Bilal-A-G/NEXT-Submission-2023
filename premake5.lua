@@ -101,7 +101,8 @@ project "Engine"
 
     defines
     {
-        "TS_ENGINE"
+        "TS_ENGINE",
+        'RES_PATH="'.._MAIN_SCRIPT_DIR..'/Software 3D Renderer/res"'
     }
 
     pchheader "TSPch.h"
