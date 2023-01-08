@@ -2,6 +2,7 @@
 *.user
 bin/
 int/
+VTune/
 .idea/
 *.sln
 *.vcxproj
