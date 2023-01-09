@@ -12,7 +12,6 @@ namespace TESLA
         virtual ~Scene() = default;
         Scene(std::string name) : m_name(name)
         {
-            m_nullComponent = new NullComponent();
             m_lastEntityId = 0;
         }
         
@@ -30,7 +29,7 @@ namespace TESLA
         {
             for (TESLA::System* system : m_systems)
             {
-                system->Update();
+                system->Update(deltaTime);
             }
         }
         virtual void Awake()
@@ -52,8 +51,8 @@ namespace TESLA
     
         std::string GetName(){return m_name;}
         void CreateEntity(TESLA::Entity* entity);
-        void CreateComponent(Component* component, int entityId);
-        Component* GetComponent(TESLA_ENUMS::ComponentEnum index, int entityId);
+        TESLA::Component* CreateComponent(Component* component, int entityId);
+        Component* GetComponent(std::vector<TESLA_ENUMS::ComponentEnum> indices, int entityId);
         
         std::vector<Component*>& GetComponents(TESLA_ENUMS::ComponentEnum index)
         {
@@ -73,7 +72,6 @@ namespace TESLA
         std::vector<Entity*> m_entities;
         std::vector<std::vector<Component*>> m_components;
         std::vector<TESLA::System*> m_systems;
-        NullComponent* m_nullComponent;
         int m_lastEntityId;
     };
 }

@@ -11,7 +11,6 @@ namespace TESLA
     {
     public:
         void Awake() override;
-        void Disable() override;
         void Render() override;
     private:
         std::vector<TESLA::Component*> m_meshComponents;

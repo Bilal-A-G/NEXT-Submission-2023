@@ -9,9 +9,9 @@ namespace TESLA
     public:
         Camera();
 
-        TESLA_ENUMS::ComponentEnum GetEnum() override
+        std::vector<TESLA_ENUMS::ComponentEnum>  GetEnum() override
         {
-            return TESLA_ENUMS::Camera;
+            return {TESLA_ENUMS::Camera};
         };
         
         TESLA::Matrix4x4 GetProjection();

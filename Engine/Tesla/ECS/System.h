@@ -6,10 +6,10 @@ namespace TESLA
     {
     public:
         virtual ~System(){}
-        virtual void Awake() = 0;
-        virtual void Update(){return;}
+        virtual void Awake(){return;}
+        virtual void Update(float deltaTime){return;}
         virtual void Render(){return;}
-        virtual void Disable() = 0;
+        virtual void Disable(){return;}
     };
    
 }

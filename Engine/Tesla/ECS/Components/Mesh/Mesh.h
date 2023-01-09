@@ -11,9 +11,9 @@ namespace TESLA
             colour = Colour::White();
         }
         
-        TESLA_ENUMS::ComponentEnum GetEnum() override
+        std::vector<TESLA_ENUMS::ComponentEnum>  GetEnum() override
         {
-            return TESLA_ENUMS::ComponentEnum::Mesh;
+            return {TESLA_ENUMS::ComponentEnum::Mesh};
         }
     public:
         std::vector<Face> faces;

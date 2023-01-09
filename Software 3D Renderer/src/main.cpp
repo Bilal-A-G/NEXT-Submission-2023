@@ -9,6 +9,7 @@ void SetUp(std::vector<TESLA::Scene*>& scenes)
 {
     TESLA::Scene* meshTestScene = new MeshTest("MainScene");
     meshTestScene->RegisterSystem(new TESLA::Renderer());
+    meshTestScene->RegisterSystem(new TESLA::Physics());
     
     TESLA::Scene* endScene = new End("EndScene");
 

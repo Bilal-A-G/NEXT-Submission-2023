@@ -17,12 +17,6 @@ void TESLA::Renderer::Awake()
     }
 }
 
-void TESLA::Renderer::Disable()
-{
-    m_meshComponents.clear();
-    m_transformComponents.clear();
-}
-
 void TESLA::Renderer::Render()
 {
     if(!m_camera)
@@ -30,7 +24,7 @@ void TESLA::Renderer::Render()
     
     for (TESLA::Component* component : m_meshComponents)
     {
-        if(component == nullptr || component->GetEnum() == TESLA_ENUMS::Null)
+        if(component == nullptr)
             continue;
         
         Mesh* mesh = static_cast<Mesh*>(component);

@@ -18,7 +18,7 @@ void Init()
 void Update(float deltaTime)
 {
     TESLA::Input::Update();
-    TESLA::SceneManager::Update(deltaTime);
+    TESLA::SceneManager::Update(1/deltaTime);
 }
 
 void Render()

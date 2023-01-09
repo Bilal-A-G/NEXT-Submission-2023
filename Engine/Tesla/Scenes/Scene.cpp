@@ -9,35 +9,54 @@ void TESLA::Scene::CreateEntity(TESLA::Entity* entity)
     m_entities.push_back(entity);
 }
 
-void TESLA::Scene::CreateComponent(Component* component, int entityId)
+TESLA::Component* TESLA::Scene::CreateComponent(Component* component, int entityId)
 {
-    const int componentIndex = component->GetEnum();
-            
-    if(m_components.size() <= componentIndex + 1)
+    const std::vector<TESLA_ENUMS::ComponentEnum> indices = component->GetEnum();
+    bool success = false;
+    
+    for (const TESLA_ENUMS::ComponentEnum index : indices)
     {
-        m_components.resize(componentIndex + 1);
+        success = false;
+        
+        if(m_components.size() <= index + 1)
+        {
+            m_components.resize(index + 1);
+        }
+
+        if(m_components[index].size() <= entityId + 1)
+        {
+            m_components[index].resize(entityId + 1);
+        }
+    
+        if(m_components[index][entityId])
+        {
+            continue;
+        }
+
+        m_components[index][entityId] = component;
+        success = true;
     }
 
-    if(m_components[componentIndex].size() <= entityId + 1)
-    {
-        m_components[componentIndex].resize(entityId + 1);
-    }
-    
-    if(m_components[componentIndex][entityId])
+    if(!success)
     {
         delete(component);
-        return;
+        return nullptr;
     }
     
-    m_components[componentIndex][entityId] = component;
+    return component;
 }
 
-TESLA::Component* TESLA::Scene::GetComponent(TESLA_ENUMS::ComponentEnum index, int entityId)
+TESLA::Component* TESLA::Scene::GetComponent(std::vector<TESLA_ENUMS::ComponentEnum> indices, int entityId)
 {
-    if(index >= m_components.size() || entityId >= m_components[index].size() || !m_components[index][entityId])
-        return m_nullComponent;    
+    for(const TESLA_ENUMS::ComponentEnum index : indices)
+    {
+        if(index >= m_components.size() || entityId >= m_components[index].size() || !m_components[index][entityId])
+            continue;
     
-    return m_components[index][entityId];
+        return m_components[index][entityId];   
+    }
+
+    return nullptr;
 }
 
 

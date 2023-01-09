@@ -10,9 +10,9 @@ namespace TESLA
         positionMatrix(Matrix4x4::Identity()), rotationMatrix(Matrix4x4::Identity()),
         position(TESLA::Vector::Zero()), rotation(TESLA::Vector::Zero()), scale(TESLA::Vector::Zero())
         {};
-        TESLA_ENUMS::ComponentEnum GetEnum() override
+        std::vector<TESLA_ENUMS::ComponentEnum>  GetEnum() override
         {
-            return TESLA_ENUMS::Transform;
+            return {TESLA_ENUMS::Transform};
         }
         void Translate(Vector translation);
         void Rotate(Vector axis, float angle);
@@ -26,7 +26,7 @@ namespace TESLA
         Vector rotation;
         Vector scale;
         
-        Vector right = {-1.0f, 0.0f, 0.0f};
+        Vector right = {1.0f, 0.0f, 0.0f};
         Vector up = {0.0f, 1.0f, 0.0f};
         Vector forward = {0.0f, 0.0f, 1.0f};
     };   
