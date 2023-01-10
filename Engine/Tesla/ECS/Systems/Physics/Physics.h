@@ -11,6 +11,8 @@ namespace TESLA
         void Awake() override;
     private:
         bool CheckValidCollider(int colliderIndex);
+        bool PerformSAT(std::vector<TESLA::Vector>& verticesA, std::vector<TESLA::Vector>& verticesB, std::vector<TESLA::Vector>& axes,
+    TESLA::Vector& resolutionA, TESLA::Vector& resolutionB);
     private:
         std::vector<TESLA::Component*> m_colliders;
         std::vector<TESLA::Component*> m_rigidBodies;

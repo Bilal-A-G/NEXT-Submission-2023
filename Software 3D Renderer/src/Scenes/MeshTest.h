@@ -42,21 +42,23 @@ public:
         m_rb->mass = 20;
         m_rb->hasGravity = false;
         m_rb->friction = 1;
-        collider->radius = m_meshSize;
+        collider->radius = 0.6f;
 
         //Init second sphere
         TESLA::Entity* entity2 = new TESLA::Entity();
         TESLA::Mesh* entity2Mesh = entity2->AddComponent<TESLA::Mesh>();
         TESLA::Transform* entity2Transform = entity2->AddComponent<TESLA::Transform>();
-        //TESLA::Rigidbody* entity2Rb = entity2->AddComponent<TESLA::Rigidbody>();
-        //TESLA::SphereCollider* entity2Collider = entity2->AddComponent<TESLA::SphereCollider>();
+        TESLA::Rigidbody* entity2Rb = entity2->AddComponent<TESLA::Rigidbody>();
+        TESLA::SphereCollider* entity2Collider = entity2->AddComponent<TESLA::SphereCollider>();
 
         entity2Mesh->faces = TESLA::ObjLoader::LoadFromOBJFile("Sphere");
         entity2Mesh->colour = TESLA::Colour::Blue();
         entity2Transform->Scale(TESLA::Vector(1, 1, 1), m_meshSize);
         entity2Transform->Translate(TESLA::Vector(0, 0, 4));
-        //entity2Rb->mass = 20;
-        //entity2Collider->radius = m_meshSize;
+        entity2Rb->mass = 20;
+        entity2Rb->hasGravity = false;
+        entity2Rb->friction = 1;
+        entity2Collider->radius = 0.6f;
         
         Scene::Awake();
     }
@@ -133,12 +135,6 @@ public:
         if(App::IsKeyPressed('L'))
         {
             TESLA::SceneManager::SwitchScene("EndScene");
-        }
-
-        //Panic
-        if(App::IsKeyPressed('P'))
-        {
-            std::cout << "Hi there";
         }
     }
 
