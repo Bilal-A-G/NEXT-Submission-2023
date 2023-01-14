@@ -12,8 +12,8 @@ namespace TESLA
         {
             return {TESLA_ENUMS::SphereCollider, TESLA_ENUMS::Collider};
         }
-        std::vector<TESLA::Vector> GetAxes(TESLA::Vector position, TESLA::Vector rotation, TESLA::Vector otherPosition) override;
-        std::vector<TESLA::Vector> GetVertices(TESLA::Vector position, TESLA::Vector rotation, TESLA::Vector otherPosition) override;
+        std::vector<TESLA::Vector> GetAxes(TESLA::Vector position, TESLA::Matrix4x4 rotation, TESLA::Vector otherPosition) override;
+        std::vector<TESLA::Vector> GetVertices(TESLA::Vector position, TESLA::Matrix4x4 rotation, TESLA::Vector otherPosition) override;
     public:
         float radius;
     };   

@@ -37,7 +37,7 @@ void TESLA::Renderer::Render()
         std::vector<Face> faces = TESLA::ProjectToWorld(model, mesh->faces);
         
         TESLA::CalculateLighting(faces, TESLA::Vector(50, -50, 0), 0.8, mesh->colour);
-
+        
         faces = TESLA::ProjectToView(faces, m_cameraTransform->position,
             CalculateView(m_cameraTransform->position, m_cameraTransform->forward, m_cameraTransform->up));
         faces = TESLA::ProjectToScreen(faces, m_camera->GetProjection());

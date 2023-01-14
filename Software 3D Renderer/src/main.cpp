@@ -3,6 +3,7 @@
 #include "Scenes/MeshTest.h"
 #include "Scenes/End.h"
 #include "Tesla/Core/EntryPoint.h"
+#include "Tesla/ECS/Systems/Physics/Physics.h"
 #include "Tesla/ECS/Systems/Renderer/Renderer.h"
 
 void SetUp(std::vector<TESLA::Scene*>& scenes)

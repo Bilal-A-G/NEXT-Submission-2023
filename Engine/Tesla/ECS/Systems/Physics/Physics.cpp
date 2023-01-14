@@ -43,11 +43,11 @@ void TESLA::Physics::Update(float deltaTime)
             TESLA::Collider* collider2 = static_cast<TESLA::Collider*>(m_colliders[j]);
 
             //Perform SAT and update velocities
-            std::vector<TESLA::Vector> body1Axes = collider1->GetAxes(transform1->position, transform1->rotation, transform2->position);
-            std::vector<TESLA::Vector> body2Axes = collider2->GetAxes(transform2->position, transform2->rotation, transform1->position);
+            std::vector<TESLA::Vector> body1Axes = collider1->GetAxes(transform1->position, transform1->rotationMatrix, transform2->position);
+            std::vector<TESLA::Vector> body2Axes = collider2->GetAxes(transform2->position, transform2->rotationMatrix, transform1->position);
             
-            std::vector<TESLA::Vector> body1Vertices = collider1->GetVertices(transform1->position, transform1->rotation, transform2->position);
-            std::vector<TESLA::Vector> body2Vertices = collider2->GetVertices(transform2->position, transform2->rotation, transform1->position);
+            std::vector<TESLA::Vector> body1Vertices = collider1->GetVertices(transform1->position, transform1->rotationMatrix, transform2->position);
+            std::vector<TESLA::Vector> body2Vertices = collider2->GetVertices(transform2->position, transform2->rotationMatrix, transform1->position);
 
             TESLA::Vector body1Resolution = TESLA::Vector::Zero();
             TESLA::Vector body2Resolution = TESLA::Vector::Zero();
@@ -149,20 +149,24 @@ bool TESLA::Physics::PerformSAT(std::vector<Vector>& verticesA, std::vector<Vect
             }
         }
         
-        if(bodyBMin <= bodyAMax && bodyBMax >= bodyAMax || bodyAMin <= bodyBMax && bodyAMax >= bodyBMax)
+        if(bodyBMin < bodyAMax && bodyBMax > bodyAMax)
+        {
+            resolutionA += axis * (bodyBMin - bodyAMax)/2.0f;
+            resolutionB += axis * -(bodyBMin - bodyAMax)/2.0f;
+        }
+        else if(bodyAMin < bodyBMax && bodyAMax > bodyBMax)
         {
             resolutionA += axis * (bodyAMax - bodyBMin)/2.0f;
             resolutionB += axis * -(bodyAMax - bodyBMin)/2.0f;
+        }
+        else if(bodyAMax == bodyBMax || bodyBMin == bodyAMin)
+        {
+            continue;
         }
         else
         {
             return false;
         }
-        // else if(bodyAMin < bodyBMax && bodyAMax > bodyBMax)
-        // {
-        //     resolutionA += axis * (bodyBMax - bodyAMin)/2.0f;
-        //     resolutionB += axis * -(bodyBMax - bodyAMin)/2.0f;
-        // }
     }
 
     return true;

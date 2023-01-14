@@ -3,11 +3,11 @@
 
 #include "NextAPI/app.h"
 #include "Tesla/ECS/Components/Camera/Camera.h"
+#include "Tesla/ECS/Components/Colliders/BoxCollider.h"
 #include "Tesla/ECS/Components/Colliders/SphereCollider.h"
 #include "Tesla/ECS/Components/Mesh/Mesh.h"
 #include "Tesla/ECS/Components/Rigidbody/Rigidbody.h"
 #include "Tesla/ECS/Components/Transform//Transform.h"
-#include "Tesla/ECS/Systems/Physics/Physics.h"
 #include "Tesla/IO/ObjLoader.h"
 #include "Tesla/Scenes/SceneManager.h"
 
@@ -33,16 +33,19 @@ public:
         m_mesh = m_entity->AddComponent<TESLA::Mesh>();
         m_transform = m_entity->AddComponent<TESLA::Transform>();
         m_rb = m_entity->AddComponent<TESLA::Rigidbody>();
-        auto collider = m_entity->AddComponent<TESLA::SphereCollider>();
+        auto collider = m_entity->AddComponent<TESLA::BoxCollider>();
         
-        m_mesh->faces = TESLA::ObjLoader::LoadFromOBJFile("Sphere");
+        m_mesh->faces = TESLA::ObjLoader::LoadFromOBJFile("Cube");
         m_mesh->colour = TESLA::Colour::Green();
-        m_transform->Scale(TESLA::Vector(1,1,1), m_meshSize);
+        m_transform->Scale(TESLA::Vector(1,1,1), m_meshSize/2);
         m_transform->Translate(TESLA::Vector(0, 0, 2));
         m_rb->mass = 20;
         m_rb->hasGravity = false;
         m_rb->friction = 1;
-        collider->radius = 0.6f;
+        
+        collider->width = 0.6f;
+        collider->height = 0.6f;
+        collider->depth = 0.6f;
 
         //Init second sphere
         TESLA::Entity* entity2 = new TESLA::Entity();
@@ -58,6 +61,7 @@ public:
         entity2Rb->mass = 20;
         entity2Rb->hasGravity = false;
         entity2Rb->friction = 1;
+        
         entity2Collider->radius = 0.6f;
         
         Scene::Awake();
