@@ -19,7 +19,6 @@ void TESLA::Physics::Awake()
 
 void TESLA::Physics::Update(float deltaTime)
 {
-    
     //Collision detection + resolution
     for(int i = 0; i < m_colliders.size() - 1; i++)
     {
@@ -58,8 +57,9 @@ void TESLA::Physics::Update(float deltaTime)
                 if(PerformSAT(body1Vertices, body2Vertices,body2Axes, body1Resolution,
                     body2Resolution, collider1->GetStiffness() + collider2->GetStiffness()))
                 {
+                    std::cout << "Colliding \n";
                     rb1->velocity += body1Resolution * deltaTime;
-                    rb2->velocity += body2Resolution * deltaTime;
+                    rb2->velocity += body2Resolution * deltaTime;   
                 }
             }
         }

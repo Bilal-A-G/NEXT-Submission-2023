@@ -14,7 +14,7 @@ namespace TESLA
         std::vector<TESLA::Vector> GetVertices(TESLA::Vector position, TESLA::Matrix4x4 rotation,  TESLA::Vector otherPosition) override;
         float GetStiffness() override
         {
-            return 45.0f;
+            return 10.0f;
         }
     public:
         float width;
