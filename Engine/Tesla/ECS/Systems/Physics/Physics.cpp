@@ -57,11 +57,18 @@ void TESLA::Physics::Update(float deltaTime)
                 if(PerformSAT(body1Vertices, body2Vertices,body2Axes, body1Resolution,
                     body2Resolution, collider1->GetStiffness() + collider2->GetStiffness()))
                 {
-                    std::cout << "Colliding \n";
+                    collider1->InvokeCollision(TESLA::SceneManager::m_activeScene->GetEntity(rb2->m_entityId));
+                    collider2->InvokeCollision(TESLA::SceneManager::m_activeScene->GetEntity(rb1->m_entityId));
+                    
                     rb1->velocity += body1Resolution * deltaTime;
-                    rb2->velocity += body2Resolution * deltaTime;   
+                    rb2->velocity += body2Resolution * deltaTime;
+
+                    continue;
                 }
             }
+
+            collider1->InvokeResolved();
+            collider2->InvokeResolved();
         }
     }
 
@@ -167,10 +174,10 @@ bool TESLA::Physics::PerformSAT(std::vector<Vector>& verticesA, std::vector<Vect
         {
             float depth = abs(bodyAMin - bodyBMax);
 
-            if(depth < minDepth || minAxis == TESLA::Vector::Zero() || abs(depth - minDepth) < 0.02f)
+            if(depth < minDepth || minAxis == TESLA::Vector::Zero())
             {
-                minDepth += depth;
-                minAxis += axis;
+                minDepth = depth;
+                minAxis = axis;
             }
         }
         else if(bodyAMax == bodyBMax || bodyBMin == bodyAMin)
@@ -183,8 +190,8 @@ bool TESLA::Physics::PerformSAT(std::vector<Vector>& verticesA, std::vector<Vect
         }
     }
 
-    resolutionA = minAxis.Normalize() * stiffness * minDepth/2.0f;
-    resolutionB = minAxis.Normalize() * stiffness * -minDepth/2.0f;
+    resolutionA = minAxis * stiffness * minDepth/2.0f;
+    resolutionB = minAxis * stiffness * -minDepth/2.0f;
     
     return true;
 }

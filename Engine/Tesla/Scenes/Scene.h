@@ -53,6 +53,17 @@ namespace TESLA
         void CreateEntity(TESLA::Entity* entity);
         TESLA::Component* CreateComponent(Component* component, int entityId);
         Component* GetComponent(std::vector<TESLA_ENUMS::ComponentEnum> indices, int entityId);
+        TESLA::Entity* GetEntity(int id)
+        {
+            if(id - 1 <= m_entities.size())
+            {
+                return m_entities[id - 1];
+            }
+            else
+            {
+                return nullptr;
+            }
+        }
         
         std::vector<Component*>& GetComponents(TESLA_ENUMS::ComponentEnum index)
         {

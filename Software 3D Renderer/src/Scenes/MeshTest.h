@@ -11,6 +11,8 @@
 #include "Tesla/IO/ObjLoader.h"
 #include "Tesla/Scenes/SceneManager.h"
 
+bool firstTime = true;
+
 class MeshTest : public TESLA::Scene
 {
 public:
@@ -47,24 +49,39 @@ public:
         collider->height = 0.6f;
         collider->depth = 0.6f;
 
+        collider->OnCollisionStay([](TESLA::Entity* other)
+        {
+            if(!firstTime)
+                return;
+
+            firstTime = false;
+            std::cout << "Entered collision! \n";
+        });
+
+        collider->OnCollisionResolved([]()
+        {
+            firstTime = true;
+            std::cout << "Exited collision! \n";
+        });
+
         //Init second sphere
         TESLA::Entity* entity2 = new TESLA::Entity();
         TESLA::Mesh* entity2Mesh = entity2->AddComponent<TESLA::Mesh>();
         TESLA::Transform* entity2Transform = entity2->AddComponent<TESLA::Transform>();
         TESLA::Rigidbody* entity2Rb = entity2->AddComponent<TESLA::Rigidbody>();
-        auto entity2Collider = entity2->AddComponent<TESLA::BoxCollider>();
+        auto entity2Collider = entity2->AddComponent<TESLA::SphereCollider>();
 
-        entity2Mesh->faces = TESLA::ObjLoader::LoadFromOBJFile("Cube");
+        entity2Mesh->faces = TESLA::ObjLoader::LoadFromOBJFile("Sphere");
         entity2Mesh->colour = TESLA::Colour::Blue();
-        entity2Transform->Scale(TESLA::Vector(1, 1, 1), m_meshSize/2);
+        entity2Transform->Scale(TESLA::Vector(1, 1, 1), m_meshSize);
         entity2Transform->Translate(TESLA::Vector(0, 0, 4));
         entity2Rb->mass = 20;
         entity2Rb->hasGravity = false;
         entity2Rb->friction = 1;
         
-        entity2Collider->width = 0.6f;
-        entity2Collider->height = 0.6f;
-        entity2Collider->depth = 0.6f;
+        entity2Collider->radius = 0.6f;
+        // entity2Collider->height = 0.6f;
+        // entity2Collider->depth = 0.6f;
         
         Scene::Awake();
     }
