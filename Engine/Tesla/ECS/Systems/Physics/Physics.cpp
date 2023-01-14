@@ -8,6 +8,7 @@
 #include "Scenes/SceneManager.h"
 
 std::vector<TESLA::Component*> meshes;
+std::vector<TESLA::Ray*> TESLA::Physics::m_rays;
 
 void TESLA::Physics::Awake()
 {
@@ -31,9 +32,6 @@ void TESLA::Physics::Update(float deltaTime)
 
         for (int j = i + 1; j < m_colliders.size(); j++)
         {
-            static_cast<TESLA::Mesh*>(meshes[i])->colour = TESLA::Colour::Green();
-            static_cast<TESLA::Mesh*>(meshes[j])->colour = TESLA::Colour::Blue();
-            
             if(!CheckValidCollider(j))
                 continue;
 
@@ -48,28 +46,65 @@ void TESLA::Physics::Update(float deltaTime)
             std::vector<TESLA::Vector> body1Vertices = collider1->GetVertices(transform1->position, transform1->rotationMatrix, transform2->position);
             std::vector<TESLA::Vector> body2Vertices = collider2->GetVertices(transform2->position, transform2->rotationMatrix, transform1->position);
 
-            TESLA::Vector body1Resolution = TESLA::Vector::Zero();
-            TESLA::Vector body2Resolution = TESLA::Vector::Zero();
+            TESLA::Vector resolution = TESLA::Vector::Zero();
 
-            if(PerformSAT(body1Vertices, body2Vertices,body1Axes, body1Resolution,
-                body2Resolution, collider1->GetStiffness() + collider2->GetStiffness()))
+            resolution = PerformSAT(body1Vertices, body2Vertices,body1Axes);
+            resolution = PerformSAT(body1Vertices, body2Vertices,body2Axes);
+            
+            if(resolution != TESLA::Vector::Zero())
             {
-                if(PerformSAT(body1Vertices, body2Vertices,body2Axes, body1Resolution,
-                    body2Resolution, collider1->GetStiffness() + collider2->GetStiffness()))
-                {
-                    collider1->InvokeCollision(TESLA::SceneManager::m_activeScene->GetEntity(rb2->m_entityId));
-                    collider2->InvokeCollision(TESLA::SceneManager::m_activeScene->GetEntity(rb1->m_entityId));
+                collider1->InvokeCollision(TESLA::SceneManager::m_activeScene->GetEntity(rb2->m_entityId));
+                collider2->InvokeCollision(TESLA::SceneManager::m_activeScene->GetEntity(rb1->m_entityId));
                     
-                    rb1->velocity += body1Resolution * deltaTime;
-                    rb2->velocity += body2Resolution * deltaTime;
+                rb1->velocity += resolution * (collider1->GetStiffness() + collider2->GetStiffness()) * deltaTime;
+                rb2->velocity += resolution * -1.0f * (collider1->GetStiffness() + collider2->GetStiffness()) * deltaTime;
 
-                    continue;
-                }
+                continue;
             }
 
             collider1->InvokeResolved();
             collider2->InvokeResolved();
         }
+    }
+
+    int eraseIndex = m_rays.size() + 1;
+
+    //Raycasting
+    for (int i = 0; i < m_rays.size(); i++)
+    {
+        std::vector<TESLA::Vector> rayPosition{m_rays[i]->position};
+        
+        for (int v = 0; v < m_colliders.size(); v++)
+        {
+            if(!CheckValidCollider(v))
+                continue;
+    
+            TESLA::Transform* transform = static_cast<TESLA::Transform*>(m_transforms[v]);
+            TESLA::Collider* collider = static_cast<TESLA::Collider*>(m_colliders[v]);
+    
+            std::vector<TESLA::Vector> bodyAxes = collider->GetAxes(transform->position, transform->rotationMatrix, m_rays[i]->position);
+            std::vector<TESLA::Vector> bodyVertices = collider->GetVertices(transform->position, transform->rotationMatrix, m_rays[i]->position);
+
+            if(PerformSAT(bodyVertices, rayPosition, bodyAxes) != TESLA::Vector::Zero())
+            {
+                m_rays[i]->callback(TESLA::SceneManager::m_activeScene->GetEntity(collider->m_entityId));
+                eraseIndex = i;
+            }
+        }
+
+        if(m_rays[i]->distance <= 0)
+        {
+            eraseIndex = i;
+            continue;
+        }
+        
+        m_rays[i]->position += m_rays[i]->direction.Normalize() * m_rays[i]->step * deltaTime;
+        m_rays[i]->distance -= m_rays[i]->step * deltaTime;
+    }
+
+    if(eraseIndex < m_rays.size())
+    {
+        m_rays.erase(m_rays.begin() + eraseIndex);
     }
 
     //Integration
@@ -103,13 +138,17 @@ void TESLA::Physics::Update(float deltaTime)
     }
 }
 
+void TESLA::Physics::Disable()
+{
+    m_rays.clear();
+}
+
 bool TESLA::Physics::CheckValidCollider(int colliderIndex)
 {
     return m_transforms[colliderIndex] && m_rigidBodies[colliderIndex];
 }
 
-bool TESLA::Physics::PerformSAT(std::vector<Vector>& verticesA, std::vector<Vector>& verticesB,
-    std::vector<Vector>& axes, Vector& resolutionA, Vector& resolutionB, float stiffness)
+TESLA::Vector TESLA::Physics::PerformSAT(std::vector<Vector>& verticesA, std::vector<Vector>& verticesB, std::vector<Vector>& axes)
 {
     float minDepth = 0;
     TESLA::Vector minAxis = TESLA::Vector::Zero();
@@ -186,12 +225,9 @@ bool TESLA::Physics::PerformSAT(std::vector<Vector>& verticesA, std::vector<Vect
         }
         else
         {
-            return false;
+            return TESLA::Vector::Zero();
         }
     }
-
-    resolutionA = minAxis * stiffness * minDepth/2.0f;
-    resolutionB = minAxis * stiffness * -minDepth/2.0f;
     
-    return true;
+    return minAxis * minDepth/2.0f;
 }

@@ -38,5 +38,6 @@ namespace TESLA
         TESLA::Component* GetComponentFromScene(TESLA_ENUMS::ComponentEnum enumType);
     public:
         uint32_t m_id;
+        std::string m_name;
     };
 }

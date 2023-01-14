@@ -10,6 +10,7 @@
 #include "Tesla/ECS/Components/Transform//Transform.h"
 #include "Tesla/IO/ObjLoader.h"
 #include "Tesla/Scenes/SceneManager.h"
+#include "Tesla/ECS/Systems/Physics/Physics.h"
 
 bool firstTime = true;
 
@@ -32,22 +33,29 @@ public:
 
         //Init first sphere
         m_entity = new TESLA::Entity();
+        m_entity->m_name = "Sphere";
         m_mesh = m_entity->AddComponent<TESLA::Mesh>();
         m_transform = m_entity->AddComponent<TESLA::Transform>();
         m_rb = m_entity->AddComponent<TESLA::Rigidbody>();
-        auto collider = m_entity->AddComponent<TESLA::BoxCollider>();
+        auto collider = m_entity->AddComponent<TESLA::SphereCollider>();
         
-        m_mesh->faces = TESLA::ObjLoader::LoadFromOBJFile("Cube");
+        m_mesh->faces = TESLA::ObjLoader::LoadFromOBJFile("Sphere");
         m_mesh->colour = TESLA::Colour::Green();
-        m_transform->Scale(TESLA::Vector(1,1,1), m_meshSize/2);
+        m_transform->Scale(TESLA::Vector(1,1,1), m_meshSize);
         m_transform->Translate(TESLA::Vector(0, 0, 2));
         m_rb->mass = 20;
         m_rb->hasGravity = false;
         m_rb->friction = 1;
         
-        collider->width = 0.6f;
-        collider->height = 0.6f;
-        collider->depth = 0.6f;
+        collider->radius = 0.6f;
+        // collider->height = 0.6f;
+        // collider->depth = 0.6f;
+
+        TESLA::Physics::Raycast(TESLA::Vector::Zero(), TESLA::Vector(0, 0, 1, 0), 10, 4.0f,
+            [](TESLA::Entity* other)
+        {
+            std::cout << "Hit: " << other->m_name << "\n";
+        });
 
         collider->OnCollisionStay([](TESLA::Entity* other)
         {
@@ -66,6 +74,7 @@ public:
 
         //Init second sphere
         TESLA::Entity* entity2 = new TESLA::Entity();
+        entity2->m_name = "Sphere";
         TESLA::Mesh* entity2Mesh = entity2->AddComponent<TESLA::Mesh>();
         TESLA::Transform* entity2Transform = entity2->AddComponent<TESLA::Transform>();
         TESLA::Rigidbody* entity2Rb = entity2->AddComponent<TESLA::Rigidbody>();

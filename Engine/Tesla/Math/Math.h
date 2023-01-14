@@ -74,6 +74,11 @@ namespace TESLA
             return x == other.x && y == other.y && z == other.z;
         }
 
+        bool operator !=(const Vector& other) const
+        {
+            return x != other.x || y != other.y || z != other.z;
+        }
+
         void operator *= (const float& other)
         {
             x = x * other;
