@@ -161,7 +161,7 @@ namespace TESLA
             TESLA::Colour diffuse = TESLA::Colour(1,1,1) * incidentAngle * lightIntensity;
 
             TESLA::Colour totalColour = ambient + diffuse;
-            face.colour = baseColour;
+            face.colour = totalColour * baseColour;
         }
     }
 
