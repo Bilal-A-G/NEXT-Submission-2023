@@ -52,17 +52,19 @@ public:
         TESLA::Mesh* entity2Mesh = entity2->AddComponent<TESLA::Mesh>();
         TESLA::Transform* entity2Transform = entity2->AddComponent<TESLA::Transform>();
         TESLA::Rigidbody* entity2Rb = entity2->AddComponent<TESLA::Rigidbody>();
-        TESLA::SphereCollider* entity2Collider = entity2->AddComponent<TESLA::SphereCollider>();
+        auto entity2Collider = entity2->AddComponent<TESLA::BoxCollider>();
 
-        entity2Mesh->faces = TESLA::ObjLoader::LoadFromOBJFile("Sphere");
+        entity2Mesh->faces = TESLA::ObjLoader::LoadFromOBJFile("Cube");
         entity2Mesh->colour = TESLA::Colour::Blue();
-        entity2Transform->Scale(TESLA::Vector(1, 1, 1), m_meshSize);
+        entity2Transform->Scale(TESLA::Vector(1, 1, 1), m_meshSize/2);
         entity2Transform->Translate(TESLA::Vector(0, 0, 4));
         entity2Rb->mass = 20;
         entity2Rb->hasGravity = false;
         entity2Rb->friction = 1;
         
-        entity2Collider->radius = 0.6f;
+        entity2Collider->width = 0.6f;
+        entity2Collider->height = 0.6f;
+        entity2Collider->depth = 0.6f;
         
         Scene::Awake();
     }
@@ -96,6 +98,14 @@ public:
         if(App::IsKeyPressed(VK_RIGHT))
         {
             moveVector += m_transform->right;
+        }
+        if(App::IsKeyPressed(VK_OEM_PERIOD))
+        {
+            moveVector += m_transform->up;
+        }
+        if(App::IsKeyPressed(VK_OEM_COMMA))
+        {
+            moveVector -= m_transform->up;
         }
 
         m_rb->acceleration += moveVector.Normalize() * 0.3f;

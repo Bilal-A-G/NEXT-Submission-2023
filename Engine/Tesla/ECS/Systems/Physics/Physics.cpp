@@ -52,12 +52,14 @@ void TESLA::Physics::Update(float deltaTime)
             TESLA::Vector body1Resolution = TESLA::Vector::Zero();
             TESLA::Vector body2Resolution = TESLA::Vector::Zero();
 
-            if(PerformSAT(body1Vertices, body2Vertices,body1Axes, body1Resolution, body2Resolution))
+            if(PerformSAT(body1Vertices, body2Vertices,body1Axes, body1Resolution,
+                body2Resolution, collider1->GetStiffness() + collider2->GetStiffness()))
             {
-                if(PerformSAT(body1Vertices, body2Vertices,body2Axes, body1Resolution, body2Resolution))
+                if(PerformSAT(body1Vertices, body2Vertices,body2Axes, body1Resolution,
+                    body2Resolution, collider1->GetStiffness() + collider2->GetStiffness()))
                 {
-                    rb1->velocity += body1Resolution * deltaTime * 1.5f;
-                    rb2->velocity += body2Resolution * deltaTime * 1.5f;
+                    rb1->velocity += body1Resolution * deltaTime;
+                    rb2->velocity += body2Resolution * deltaTime;
                 }
             }
         }
@@ -100,8 +102,10 @@ bool TESLA::Physics::CheckValidCollider(int colliderIndex)
 }
 
 bool TESLA::Physics::PerformSAT(std::vector<Vector>& verticesA, std::vector<Vector>& verticesB,
-    std::vector<Vector>& axes, Vector& resolutionA, Vector& resolutionB)
+    std::vector<Vector>& axes, Vector& resolutionA, Vector& resolutionB, float stiffness)
 {
+    float minDepth = 0;
+    TESLA::Vector minAxis = TESLA::Vector::Zero();
     
     for (TESLA::Vector axis : axes)
     {
@@ -151,13 +155,23 @@ bool TESLA::Physics::PerformSAT(std::vector<Vector>& verticesA, std::vector<Vect
         
         if(bodyBMin < bodyAMax && bodyBMax > bodyAMax)
         {
-            resolutionA += axis * (bodyBMin - bodyAMax)/2.0f;
-            resolutionB += axis * -(bodyBMin - bodyAMax)/2.0f;
+            float depth = abs(bodyBMin - bodyAMax);
+
+            if(depth < minDepth || minAxis == TESLA::Vector::Zero())
+            {
+                minDepth = depth;
+                minAxis = axis * -1.0f;
+            }
         }
         else if(bodyAMin < bodyBMax && bodyAMax > bodyBMax)
         {
-            resolutionA += axis * (bodyAMax - bodyBMin)/2.0f;
-            resolutionB += axis * -(bodyAMax - bodyBMin)/2.0f;
+            float depth = abs(bodyAMin - bodyBMax);
+
+            if(depth < minDepth || minAxis == TESLA::Vector::Zero() || abs(depth - minDepth) < 0.02f)
+            {
+                minDepth += depth;
+                minAxis += axis;
+            }
         }
         else if(bodyAMax == bodyBMax || bodyBMin == bodyAMin)
         {
@@ -169,5 +183,8 @@ bool TESLA::Physics::PerformSAT(std::vector<Vector>& verticesA, std::vector<Vect
         }
     }
 
+    resolutionA = minAxis.Normalize() * stiffness * minDepth/2.0f;
+    resolutionB = minAxis.Normalize() * stiffness * -minDepth/2.0f;
+    
     return true;
 }

@@ -12,7 +12,7 @@ namespace TESLA
     private:
         bool CheckValidCollider(int colliderIndex);
         bool PerformSAT(std::vector<TESLA::Vector>& verticesA, std::vector<TESLA::Vector>& verticesB, std::vector<TESLA::Vector>& axes,
-    TESLA::Vector& resolutionA, TESLA::Vector& resolutionB);
+    TESLA::Vector& resolutionA, TESLA::Vector& resolutionB, float stiffness);
     private:
         std::vector<TESLA::Component*> m_colliders;
         std::vector<TESLA::Component*> m_rigidBodies;

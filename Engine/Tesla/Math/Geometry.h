@@ -150,7 +150,7 @@ namespace TESLA
     {
         for (Face& face : projectedFaces)
         {
-            TESLA::Colour ambient = TESLA::Colour(1,1,1) * 0.2;
+            TESLA::Colour ambient = TESLA::Colour(1,1,1) * 0.5;
             TESLA::Vector lightDirection = (lightPosition - (face.triangle.vertices[0] + face.triangle.vertices[1] + face.triangle.vertices[2])/3).Normalize();
             float incidentAngle = TESLA::Vector::Dot(face.normal, lightDirection);
             if(incidentAngle < 0)
