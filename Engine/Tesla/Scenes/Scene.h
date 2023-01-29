@@ -15,31 +15,43 @@ namespace TESLA
             m_lastEntityId = 0;
         }
         
-        virtual void Disable()
+        virtual void Disable(){}
+
+        void DisableSystems()
         {
             m_entities.clear();
             m_components.clear();
+            m_lastEntityId = 0;
             
             for(TESLA::System* system : m_systems)
             {
                 system->Disable();
             }
         }
-        virtual void Update(float deltaTime)
+        
+        virtual void Update(float deltaTime){}
+
+        void UpdateSystems(float deltaTime)
         {
             for (TESLA::System* system : m_systems)
             {
                 system->Update(deltaTime);
             }
         }
-        virtual void Awake()
+        
+        virtual void Awake(){}
+
+        void AwakeSystems()
         {
             for (TESLA::System* system : m_systems)
             {
                 system->Awake();
             }
         }
-        virtual void Render()
+        
+        virtual void Render(){}
+
+        void RenderSystems()
         {
             for (TESLA::System* system : m_systems)
             {
@@ -76,8 +88,6 @@ namespace TESLA
                 return m_components[0];
             }
         }
-    public:
-        TESLA::Entity* mainCamera;
     private:
         const std::string m_name;
         std::vector<Entity*> m_entities;

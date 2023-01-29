@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include "../../../ECS/Component.h"
 #include "../../../ECS/System.h"
-#include "../../../ECS/Entity.h"
 #include "../../../ECS/Components/Camera/Camera.h"
 #include "../../../ECS/Components/Transform/Transform.h"
+#include "../../../ECS/Components/Light/Light.h"
 
 namespace TESLA
 {
@@ -15,6 +15,8 @@ namespace TESLA
     private:
         std::vector<TESLA::Component*> m_meshComponents;
         std::vector<TESLA::Component*> m_transformComponents;
+        TESLA::Light* m_light;
+        TESLA::Transform* m_lightTransform;
         TESLA::Camera* m_camera;
         TESLA::Transform* m_cameraTransform;
     };   

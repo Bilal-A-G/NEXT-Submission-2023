@@ -11,6 +11,7 @@ namespace TESLA_ENUMS
         Collider = 5,
         SphereCollider = 6,
         BoxCollider = 7,
+        Light = 8,
     };
 }
 

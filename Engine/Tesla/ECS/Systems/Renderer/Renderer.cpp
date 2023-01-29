@@ -1,5 +1,8 @@
 ﻿#include "TSPch.h"
 #include "Renderer.h"
+
+#include <cassert>
+
 #include "ECS/Components/Mesh/Mesh.h"
 #include "ECS/Components/Transform/Transform.h"
 #include "NextAPI/app.h"
@@ -9,12 +12,37 @@ void TESLA::Renderer::Awake()
 {
     m_meshComponents = TESLA::SceneManager::m_activeScene->GetComponents(TESLA_ENUMS::Mesh);
     m_transformComponents = TESLA::SceneManager::m_activeScene->GetComponents(TESLA_ENUMS::Transform);
+    std::vector<TESLA::Component*> lights = TESLA::SceneManager::m_activeScene->GetComponents(TESLA_ENUMS::Light);
 
-    if(TESLA::SceneManager::m_activeScene->mainCamera)
+    for (int i = 0; i < lights.size(); i++)
     {
-        m_camera = TESLA::SceneManager::m_activeScene->mainCamera->GetComponent<TESLA::Camera>(TESLA_ENUMS::Camera);
-        m_cameraTransform = TESLA::SceneManager::m_activeScene->mainCamera->GetComponent<TESLA::Transform>(TESLA_ENUMS::Transform);
+        if(lights[i] != nullptr)
+        {
+            m_light = static_cast<TESLA::Light*>(lights[i]);
+            break;
+        }
     }
+
+    if(m_light == nullptr)
+        assert(false);
+
+    m_lightTransform = TESLA::SceneManager::m_activeScene->GetEntity(m_light->m_entityId)->GetComponent<TESLA::Transform>(TESLA_ENUMS::Transform);
+    
+    std::vector<TESLA::Component*> cameras = TESLA::SceneManager::m_activeScene->GetComponents(TESLA_ENUMS::Camera);
+
+    for (int i = 0; i < cameras.size(); i++)
+    {
+        if(cameras[i] != nullptr)
+        {
+            m_camera = static_cast<TESLA::Camera*>(cameras[i]);
+            break;
+        }
+    }
+
+    if(m_camera == nullptr)
+        assert(false);
+
+    m_cameraTransform = TESLA::SceneManager::m_activeScene->GetEntity(m_camera->m_entityId)->GetComponent<TESLA::Transform>(TESLA_ENUMS::Transform);
 }
 
 void TESLA::Renderer::Render()
@@ -36,7 +64,7 @@ void TESLA::Renderer::Render()
         Matrix4x4 model = transform->positionMatrix * transform->rotationMatrix * transform->scaleMatrix;
         std::vector<Face> faces = TESLA::ProjectToWorld(model, mesh->faces);
         
-        TESLA::CalculateLighting(faces, TESLA::Vector(50, -50, 0), 0.8, mesh->colour);
+        TESLA::CalculateLighting(faces, m_lightTransform->position * -1.0f, m_light->intensity, mesh->colour);
         
         faces = TESLA::ProjectToView(faces, m_cameraTransform->position,
             CalculateView(m_cameraTransform->position, m_cameraTransform->forward, m_cameraTransform->up));

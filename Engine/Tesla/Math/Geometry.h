@@ -42,6 +42,13 @@ namespace TESLA
             return  {r * other, g * other, b * other};
         }
 
+        static bool RoughlyEquals(Colour a, Colour b, float tolerance)
+        {
+            return (a.r == b.r || a.r >= b.r - tolerance && a.r <= b.r + tolerance) &&
+                (a.g == b.g || a.g >= b.g - tolerance && a.g <= b.g + tolerance) &&
+                    (a.b == b.b || a.b >= b.b - tolerance && a.b <= b.b + tolerance);
+        }
+
         Colour operator *(const Colour& other) const
         {
             return {r * other.r, g * other.g, b * other.b};

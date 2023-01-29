@@ -1,9 +1,7 @@
 #pragma once
 #include "../../../ECS/System.h"
-#include "../../../ECS/Components/Rigidbody/Rigidbody.h"
-#include "../../../ECS/Components/Transform/Transform.h"
 #include "../../../Math/Geometry.h"
-#include "../../../ECS/Components/Mesh/Mesh.h"
+#include "../../../ECS/Entity.h"
 
 namespace TESLA
 {
@@ -18,6 +16,7 @@ namespace TESLA
         TESLA::Colour initialColour = TESLA::Colour::Black();
         TESLA::Colour endColour = TESLA::Colour::White();
         float alphaFadeSpeed = 0.0f;
+        float colourChangeSpeed = 0.0f;
         float averageSpeed = 0.0f;
         float minSpeed = 0.0f;
         float averageRotationSpeed = 0.0f;
@@ -25,24 +24,19 @@ namespace TESLA
         float averageLifetime = 0.0f;
         float colourVariation = 0.0f;
         int amount = 0;
+        bool fadeOut = false;
         std::vector<TESLA::Face> faces;
     };
     
     struct Particle
     {
     public:
-        Particle(TESLA::Rigidbody* rb, TESLA::Transform* transform, TESLA::Mesh* mesh, float lifetime, TESLA::Vector rotationAxis, float rotationSpeed, float fadeSpeed, TESLA::Colour endColour):
-        rb(rb), transform(transform),lifetime(lifetime), rotationAxis(rotationAxis), rotationSpeed(rotationSpeed), mesh(mesh), fadeSpeed(fadeSpeed), endColour(endColour)
+        Particle(TESLA::Entity* entity, ParticleProperties* properties):
+        entity(entity), properties(properties)
         {}
     public:
-        TESLA::Rigidbody* rb;
-        TESLA::Transform* transform;
-        TESLA::Mesh* mesh;
-        float lifetime;
-        TESLA::Vector rotationAxis;
-        float rotationSpeed;
-        float fadeSpeed;
-        TESLA::Colour endColour;
+        TESLA::Entity* entity;
+        ParticleProperties* properties;
     };
     
     class Particles : public TESLA::System

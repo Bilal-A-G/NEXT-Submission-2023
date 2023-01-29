@@ -1,6 +1,5 @@
 ﻿#include "TSpch.h"
 #include "EntryPoint.h"
-#include "Input/Input.h"
 #include "Scenes/SceneManager.h"
 
 void Init()
@@ -13,21 +12,24 @@ void Init()
     }
 
     TESLA::SceneManager::Init();
+    TESLA::SceneManager::InitSystems();
 }
 
 void Update(float deltaTime)
 {
-    TESLA::Input::Update();
+    TESLA::SceneManager::UpdateSystems(1/deltaTime);
     TESLA::SceneManager::Update(1/deltaTime);
 }
 
 void Render()
 {
+    TESLA::SceneManager::RenderSystems();
     TESLA::SceneManager::Render();
 }
 
 void Shutdown()
 {
+    TESLA::SceneManager::DisableSystems();
     TESLA::SceneManager::Disable();
 }
 
