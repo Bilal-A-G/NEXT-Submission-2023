@@ -145,7 +145,7 @@ void TESLA::Physics::Disable()
 
 bool TESLA::Physics::CheckValidCollider(int colliderIndex)
 {
-    return m_transforms[colliderIndex] && m_rigidBodies[colliderIndex];
+    return m_transforms[colliderIndex] && m_rigidBodies[colliderIndex] && m_colliders[colliderIndex];
 }
 
 TESLA::Vector TESLA::Physics::PerformSAT(std::vector<Vector>& verticesA, std::vector<Vector>& verticesB, std::vector<Vector>& axes)
@@ -218,10 +218,6 @@ TESLA::Vector TESLA::Physics::PerformSAT(std::vector<Vector>& verticesA, std::ve
                 minDepth = depth;
                 minAxis = axis;
             }
-        }
-        else if(bodyAMax == bodyBMax || bodyBMin == bodyAMin)
-        {
-            continue;
         }
         else
         {

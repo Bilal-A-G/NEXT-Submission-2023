@@ -29,6 +29,11 @@ namespace TESLA
         static Colour Blue(){return {0, 0, 1};}
         static Colour White(){return {1, 1, 1};}
         static Colour Black(){return {0, 0, 0};}
+
+        static Colour Lerp(Colour from, Colour to, float interpolation)
+        {
+            return from * (1 - interpolation) + to * interpolation;
+        }
         
         Colour(){}
 

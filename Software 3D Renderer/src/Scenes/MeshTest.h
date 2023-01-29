@@ -11,6 +11,7 @@
 #include "Tesla/IO/ObjLoader.h"
 #include "Tesla/Scenes/SceneManager.h"
 #include "Tesla/ECS/Systems/Physics/Physics.h"
+#include "Tesla/ECS/Systems/Particles/Particles.h"
 
 bool firstTime = true;
 
@@ -22,6 +23,21 @@ public:
 
     void Awake() override
     {
+        TESLA::ParticleProperties cubeParticles = TESLA::ParticleProperties(TESLA::ObjLoader::LoadFromOBJFile("Cube"));
+        cubeParticles.amount = 40;
+        cubeParticles.averageLifetime = 1000.0f;
+        cubeParticles.rotationAxis = TESLA::Vector(1, 1, 1);
+        cubeParticles.averageRotationSpeed = 0.01f;
+        cubeParticles.averageSpeed = 1.0f;
+        cubeParticles.averageSize = 0.1f;
+        cubeParticles.colourVariation = 0.5f;
+        cubeParticles.alphaFadeSpeed = 0.1f;
+        cubeParticles.minSpeed = 2.0f;
+        cubeParticles.initialColour = TESLA::Colour::White();
+        cubeParticles.endColour = TESLA::Colour::Red();
+        
+        TESLA::Particles::Play(cubeParticles);
+        
         //Init camera
         mainCamera = new TESLA::Entity();
         m_cameraTransform = mainCamera->AddComponent<TESLA::Transform>();
@@ -31,25 +47,25 @@ public:
         camera->nearPlane = 0.1f;
         m_cameraTransform->right = TESLA::Vector(-1, 0, 0, 1);
 
-        //Init first sphere
+        //Init first entity
         m_entity = new TESLA::Entity();
-        m_entity->m_name = "Sphere";
+        m_entity->m_name = "Box";
         m_mesh = m_entity->AddComponent<TESLA::Mesh>();
         m_transform = m_entity->AddComponent<TESLA::Transform>();
         m_rb = m_entity->AddComponent<TESLA::Rigidbody>();
-        auto collider = m_entity->AddComponent<TESLA::SphereCollider>();
+        auto collider = m_entity->AddComponent<TESLA::BoxCollider>();
         
-        m_mesh->faces = TESLA::ObjLoader::LoadFromOBJFile("Sphere");
+        m_mesh->faces = TESLA::ObjLoader::LoadFromOBJFile("Cube");
         m_mesh->colour = TESLA::Colour::Green();
-        m_transform->Scale(TESLA::Vector(1,1,1), m_meshSize);
+        m_transform->Scale(TESLA::Vector(1,1,1), m_meshSize/2);
         m_transform->Translate(TESLA::Vector(0, 0, 2));
         m_rb->mass = 20;
         m_rb->hasGravity = false;
         m_rb->friction = 1;
         
-        collider->radius = 0.6f;
-        // collider->height = 0.6f;
-        // collider->depth = 0.6f;
+        collider->width = 0.6f;
+        collider->height = 0.6f;
+        collider->depth = 0.6f;
 
         TESLA::Physics::Raycast(TESLA::Vector::Zero(), TESLA::Vector(0, 0, 1, 0), 10, 4.0f,
             [](TESLA::Entity* other)
@@ -72,7 +88,7 @@ public:
             std::cout << "Exited collision! \n";
         });
 
-        //Init second sphere
+        //Init second entity
         TESLA::Entity* entity2 = new TESLA::Entity();
         entity2->m_name = "Sphere";
         TESLA::Mesh* entity2Mesh = entity2->AddComponent<TESLA::Mesh>();
