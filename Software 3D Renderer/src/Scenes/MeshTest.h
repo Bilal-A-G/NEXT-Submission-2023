@@ -27,17 +27,21 @@ public:
         //Particles
         TESLA::ParticleProperties cubeParticles = TESLA::ParticleProperties(TESLA::ObjLoader::LoadFromOBJFile("Cube"));
         cubeParticles.amount = 10;
-        cubeParticles.averageLifetime = 1000.0f;
+        cubeParticles.averageLifetime = 20.0f;
+        cubeParticles.lifetimeVariation = 5.0f;
         cubeParticles.rotationAxis = TESLA::Vector(1, 1, 1);
         cubeParticles.averageRotationSpeed = 0.01f;
-        cubeParticles.averageSpeed = 3.0f;
-        cubeParticles.averageSize = 0.1f;
+        cubeParticles.rotationSpeedVariation = 0.01f;
+        cubeParticles.averageSpeed = 2.0f;
+        cubeParticles.speedVariation = 0.5f;
+        cubeParticles.averageSize = 0.2f;
+        cubeParticles.sizeVariation = 0.01f;
         cubeParticles.colourVariation = 0.5f;
         cubeParticles.alphaFadeSpeed = 0.3f;
         cubeParticles.colourChangeSpeed = 0.2f;
-        cubeParticles.minSpeed = 2.0f;
         cubeParticles.initialColour = TESLA::Colour::White();
         cubeParticles.endColour = TESLA::Colour::Red();
+        cubeParticles.position = TESLA::Vector(0, 0, 2);
         
         TESLA::Particles::Play(cubeParticles);
         
