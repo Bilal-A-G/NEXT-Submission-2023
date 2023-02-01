@@ -36,7 +36,7 @@ void TESLA::ScreenShake::Update(float deltaTime)
     
     float amount = rand() / static_cast<float>(RAND_MAX) * m_trauma * m_trauma;
     
-    m_cameraTransform->SetRotation((m_cameraTransform->up + m_cameraTransform->right).Normalize(), amount);
+    m_cameraTransform->SetRotation(TESLA::Vector(rand() / static_cast<float>(RAND_MAX), rand() / static_cast<float>(RAND_MAX), 0), amount);
 }
 
 void TESLA::ScreenShake::Disable()

@@ -112,7 +112,6 @@ public:
 
         //Screenshake
         TESLA::ScreenShake::traumaDecreaseRate = 1.0f;
-        TESLA::ScreenShake::ShakeScreen(1.0f);
 
         //Init second entity
         TESLA::Entity* entity2 = new TESLA::Entity();
@@ -166,6 +165,10 @@ public:
         if(App::IsKeyPressed(VK_OEM_COMMA))
         {
             moveVector -= m_transform->up;
+        }
+        if(App::IsKeyPressed(VK_SHIFT))
+        {
+            TESLA::ScreenShake::ShakeScreen(1.0f);
         }
 
         m_rb->acceleration += moveVector.Normalize() * 0.3f;
