@@ -47,13 +47,18 @@ public:
         
         //Init camera
         m_mainCamera = new TESLA::Entity();
-        m_cameraTransform = m_mainCamera->AddComponent<TESLA::Transform>();
         auto camera = m_mainCamera->AddComponent<TESLA::Camera>();
+        m_cameraTransform = m_mainCamera->AddComponent<TESLA::Transform>();
         camera->fov = 50.0f;
         camera->farPlane = 1000.0f;
         camera->nearPlane = 0.1f;
-        m_cameraTransform->right = TESLA::Vector(-1, 0, 0, 1);
 
+        //Init camera parent
+        TESLA::Entity* cameraParent = new TESLA::Entity();
+        m_cameraParentTransform = cameraParent->AddComponent<TESLA::Transform>();
+        m_cameraParentTransform->SetChild(m_cameraTransform);
+        m_cameraTransform->right = TESLA::Vector(-1, 0, 0, 1);
+        
         //Init light
         TESLA::Entity* light = new TESLA::Entity();
         TESLA::Light* lightComponent = light->AddComponent<TESLA::Light>();
@@ -66,7 +71,6 @@ public:
         m_entity->m_name = "Box";
         m_mesh = m_entity->AddComponent<TESLA::Mesh>();
         m_transform = m_entity->AddComponent<TESLA::Transform>();
-        m_cameraTransform->SetChild(m_transform);
         m_rb = m_entity->AddComponent<TESLA::Rigidbody>();
         auto collider = m_entity->AddComponent<TESLA::BoxCollider>();
         
@@ -158,46 +162,42 @@ public:
         {
             moveVector -= m_transform->up;
         }
-        if(App::IsKeyPressed(VK_SPACE))
-        {
-            m_cameraTransform->RemoveChild(m_transform);
-        }
 
         m_rb->acceleration += moveVector.Normalize() * 0.3f;
 
         //Camera controls
         if(App::IsKeyPressed('A'))
         {
-            m_cameraTransform->Translate(m_cameraTransform->right * m_camSpeed);
+            m_cameraParentTransform->Translate(m_cameraTransform->right * m_camSpeed);
         }
         if(App::IsKeyPressed('D'))
         {
-            m_cameraTransform->Translate(m_cameraTransform->right * -m_camSpeed);
+            m_cameraParentTransform->Translate(m_cameraTransform->right * -m_camSpeed);
         }
         if(App::IsKeyPressed('W'))
         {
-            m_cameraTransform->Translate(m_cameraTransform->forward * m_camSpeed);
+            m_cameraParentTransform->Translate(m_cameraTransform->forward * m_camSpeed);
         }
         if(App::IsKeyPressed('S'))
         {
-            m_cameraTransform->Translate(m_cameraTransform->forward * -m_camSpeed);
+            m_cameraParentTransform->Translate(m_cameraTransform->forward * -m_camSpeed);
         }
         if(App::IsKeyPressed('Q'))
         {
-            m_cameraTransform->Rotate(m_cameraTransform->up, -m_camSpeed);
+            m_cameraParentTransform->Rotate(m_cameraParentTransform->up, m_camSpeed);
             
         }
         if(App::IsKeyPressed('E'))
         {
-            m_cameraTransform->Rotate(m_cameraTransform->up, m_camSpeed);
+            m_cameraParentTransform->Rotate(m_cameraParentTransform->up, -m_camSpeed);
         }
         if(App::IsKeyPressed(VK_CONTROL))
         {
-            m_cameraTransform->Translate(m_cameraTransform->up * -m_camSpeed);
+            m_cameraParentTransform->Translate(m_cameraTransform->up * -m_camSpeed);
         }
         if(App::IsKeyPressed(VK_SPACE))
         {
-            m_cameraTransform->Translate(m_cameraTransform->up * m_camSpeed);
+            m_cameraParentTransform->Translate(m_cameraTransform->up * m_camSpeed);
         }
 
         //Scene switching
@@ -214,6 +214,7 @@ private:
     TESLA::Transform* m_transform;
     TESLA::Rigidbody* m_rb;
     TESLA::Transform* m_cameraTransform;
+    TESLA::Transform* m_cameraParentTransform;
     
     float m_meshSize = 1.0f;
     float m_camSpeed = 0.02f;

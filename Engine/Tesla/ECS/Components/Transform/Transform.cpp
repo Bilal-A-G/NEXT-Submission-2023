@@ -83,11 +83,6 @@ void TESLA::Transform::Scale(Vector axis, float size)
     };
     
     scale += axis * size;
-
-    for (int i = 0; i < m_children.size(); i++)
-    {
-        m_children[i]->Scale(axis, size);
-    }
 }
 
 void TESLA::Transform::Translate(Vector translation)
