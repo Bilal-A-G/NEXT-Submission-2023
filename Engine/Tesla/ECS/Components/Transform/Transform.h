@@ -15,12 +15,20 @@ namespace TESLA
             return {TESLA_ENUMS::Transform};
         }
         void Translate(Vector translation);
+        void SetTranslation(Vector translation);
+        
         void Rotate(Vector axis, float angle);
-        void Scale(Vector axis, float scale);
+        void SetRotation(Vector axis, float angle);
+        
+        void Scale(Vector axis, float size);
+        void SetScale(Vector axis, float size);
+        
         void SetChild(TESLA::Transform* child)
         {
             m_children.push_back(child);
+            child->parent = this;
         }
+        
         void RemoveChild(TESLA::Transform* child)
         {
             for (int i = 0; i < m_children.size(); i++)
@@ -31,6 +39,8 @@ namespace TESLA
                     return;
                 }
             }
+
+            child->parent = nullptr;
         }
     public:
         Matrix4x4 scaleMatrix;
@@ -45,6 +55,8 @@ namespace TESLA
         Vector up = {0.0f, 1.0f, 0.0f};
         Vector forward = {0.0f, 0.0f, 1.0f};
 
+        Transform* parent = nullptr;
+    private:
         std::vector<Transform*> m_children;
     };   
 }

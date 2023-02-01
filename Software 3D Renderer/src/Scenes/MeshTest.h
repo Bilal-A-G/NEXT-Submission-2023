@@ -13,6 +13,7 @@
 #include "Tesla/Scenes/SceneManager.h"
 #include "Tesla/ECS/Systems/Physics/Physics.h"
 #include "Tesla/ECS/Systems/Particles/Particles.h"
+#include "Tesla/ECS/Systems/ScreenShake/ScreenShake.h"
 
 bool firstTime = true;
 
@@ -109,6 +110,10 @@ public:
             std::cout << "Exited collision! \n";
         });
 
+        //Screenshake
+        TESLA::ScreenShake::traumaDecreaseRate = 1.0f;
+        TESLA::ScreenShake::ShakeScreen(1.0f);
+
         //Init second entity
         TESLA::Entity* entity2 = new TESLA::Entity();
         entity2->m_name = "Sphere";
@@ -184,12 +189,12 @@ public:
         }
         if(App::IsKeyPressed('Q'))
         {
-            m_cameraParentTransform->Rotate(m_cameraParentTransform->up, m_camSpeed);
+            m_cameraParentTransform->Rotate(m_cameraParentTransform->up, -m_camSpeed);
             
         }
         if(App::IsKeyPressed('E'))
         {
-            m_cameraParentTransform->Rotate(m_cameraParentTransform->up, -m_camSpeed);
+            m_cameraParentTransform->Rotate(m_cameraParentTransform->up, m_camSpeed);
         }
         if(App::IsKeyPressed(VK_CONTROL))
         {

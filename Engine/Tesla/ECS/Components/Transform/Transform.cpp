@@ -1,7 +1,7 @@
 ﻿#include "TSPch.h"
 #include "Transform.h"
 
-void TESLA::Transform::Rotate(Vector axis, float angle)
+TESLA::Matrix4x4 GetRotationMatrix(TESLA::Vector axis, float angle)
 {
     float cosTheta = cos(angle);
     float sinTheta = sin(angle);
@@ -33,10 +33,10 @@ void TESLA::Transform::Rotate(Vector axis, float angle)
     {
         rotationX = TESLA::Matrix4x4
         {
-                {1.0f, 0.0f, 0.0f, 0.0f},
-                {0.0f, cosTheta, sinTheta, 0.0f},
-                {0.0f, -sinTheta, cosTheta, 0.0f},
-                {0.0f, 0.0f, 0.0f, 1.0f}
+                    {1.0f, 0.0f, 0.0f, 0.0f},
+                    {0.0f, cosTheta, sinTheta, 0.0f},
+                    {0.0f, -sinTheta, cosTheta, 0.0f},
+                    {0.0f, 0.0f, 0.0f, 1.0f}
         };
     }
             
@@ -55,21 +55,57 @@ void TESLA::Transform::Rotate(Vector axis, float angle)
         };
     }
 
+    return (rotationY * rotationX * rotationZ);
+}
+
+void TESLA::Transform::Rotate(Vector axis, float angle)
+{
     Vector rotatedTarget =  TESLA::Vector(0, 0, 1) * rotationMatrix;
     forward = rotatedTarget.Normalize();
     right = TESLA::Vector::Cross(forward, TESLA::Vector(0, 1, 0)).Normalize();
     up = TESLA::Vector::Cross(right, forward).Normalize();
 
-    rotationMatrix = rotationMatrix * (rotationY * rotationX * rotationZ);
+    Matrix4x4 finalMatrix = GetRotationMatrix(axis, angle);
+    if(parent != nullptr)
+    {
+        finalMatrix = parent->rotationMatrix * finalMatrix;
+    }
+    
+    rotationMatrix = rotationMatrix * finalMatrix;
     rotation += axis * angle;
 
     for (int i = 0; i < m_children.size(); i++)
     {
         TESLA::Vector vectorToChild = m_children[i]->position - position;
-        m_children[i]->Translate(vectorToChild * (rotationY * rotationX * rotationZ) - vectorToChild);
-        m_children[i]->Rotate(axis, -angle);
+        m_children[i]->Translate(vectorToChild * finalMatrix - vectorToChild);
+        m_children[i]->SetRotation(axis, 0);
     }
 }
+
+void TESLA::Transform::SetRotation(Vector axis, float angle)
+{
+    Vector rotatedTarget =  TESLA::Vector(0, 0, 1) * rotationMatrix;
+    forward = rotatedTarget.Normalize();
+    right = TESLA::Vector::Cross(forward, TESLA::Vector(0, 1, 0)).Normalize();
+    up = TESLA::Vector::Cross(right, forward).Normalize();
+
+    Matrix4x4 finalMatrix = GetRotationMatrix(axis, angle);
+    if(parent != nullptr)
+    {
+        finalMatrix = parent->rotationMatrix * finalMatrix;
+    }
+    
+    rotationMatrix = finalMatrix;
+    rotation = axis * angle;
+
+    for (int i = 0; i < m_children.size(); i++)
+    {
+        TESLA::Vector vectorToChild = m_children[i]->position - position;
+        m_children[i]->Translate(vectorToChild * finalMatrix - vectorToChild);
+        m_children[i]->SetRotation(axis, -angle);
+    }
+}
+
 
 void TESLA::Transform::Scale(Vector axis, float size)
 {
@@ -85,6 +121,21 @@ void TESLA::Transform::Scale(Vector axis, float size)
     scale += axis * size;
 }
 
+void TESLA::Transform::SetScale(Vector axis, float size)
+{
+    Vector normalizedAxis = axis.Normalize();
+    scaleMatrix = TESLA::Matrix4x4
+    {
+                {normalizedAxis.x * size, 0.0f, 0.0f, 0.0f},
+                {0.0f, normalizedAxis.y * size, 0.0f, 0.0f},
+                {0.0f, 0.0f, normalizedAxis.z * size, 0.0f},
+                {0.0f, 0.0f, 0.0f, 1.0f}
+    };
+    
+    scale = axis * size;
+}
+
+
 void TESLA::Transform::Translate(Vector translation)
 {
     positionMatrix = positionMatrix * Matrix4x4
@@ -96,12 +147,39 @@ void TESLA::Transform::Translate(Vector translation)
     };
 
     position += translation;
+    if(parent != nullptr)
+    {
+        positionMatrix = parent->positionMatrix * positionMatrix;
+    }
     
     for (int i = 0; i < m_children.size(); i++)
     {
         m_children[i]->Translate(translation);
     }
 }
+
+void TESLA::Transform::SetTranslation(Vector translation)
+{
+    positionMatrix = Matrix4x4
+    {
+        {1.0f, 0.0f, 0.0f, translation.x},
+        {0.0f, 1.0f, 0.0f, translation.y},
+        {0.0f, 0.0f, 1.0f, translation.z},
+        {0.0f, 0.0f, 0.0f, 1.0f}
+    };
+
+    position = translation;
+    if(parent != nullptr)
+    {
+        positionMatrix = parent->positionMatrix * positionMatrix;
+    }
+    
+    for (int i = 0; i < m_children.size(); i++)
+    {
+        m_children[i]->SetTranslation(translation);
+    }
+}
+
 
 
 
