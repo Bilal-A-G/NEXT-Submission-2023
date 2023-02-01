@@ -62,6 +62,13 @@ void TESLA::Transform::Rotate(Vector axis, float angle)
 
     rotationMatrix = rotationMatrix * (rotationY * rotationX * rotationZ);
     rotation += axis * angle;
+
+    for (int i = 0; i < m_children.size(); i++)
+    {
+        TESLA::Vector vectorToChild = m_children[i]->position - position;
+        m_children[i]->Translate(vectorToChild * (rotationY * rotationX * rotationZ) - vectorToChild);
+        m_children[i]->Rotate(axis, -angle);
+    }
 }
 
 void TESLA::Transform::Scale(Vector axis, float size)
@@ -74,7 +81,13 @@ void TESLA::Transform::Scale(Vector axis, float size)
             {0.0f, 0.0f, normalizedAxis.z * size, 0.0f},
             {0.0f, 0.0f, 0.0f, 1.0f}
     };
+    
     scale += axis * size;
+
+    for (int i = 0; i < m_children.size(); i++)
+    {
+        m_children[i]->Scale(axis, size);
+    }
 }
 
 void TESLA::Transform::Translate(Vector translation)
@@ -88,6 +101,11 @@ void TESLA::Transform::Translate(Vector translation)
     };
 
     position += translation;
+    
+    for (int i = 0; i < m_children.size(); i++)
+    {
+        m_children[i]->Translate(translation);
+    }
 }
 
 

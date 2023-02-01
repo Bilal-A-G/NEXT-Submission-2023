@@ -66,6 +66,7 @@ public:
         m_entity->m_name = "Box";
         m_mesh = m_entity->AddComponent<TESLA::Mesh>();
         m_transform = m_entity->AddComponent<TESLA::Transform>();
+        m_cameraTransform->SetChild(m_transform);
         m_rb = m_entity->AddComponent<TESLA::Rigidbody>();
         auto collider = m_entity->AddComponent<TESLA::BoxCollider>();
         
@@ -156,6 +157,10 @@ public:
         if(App::IsKeyPressed(VK_OEM_COMMA))
         {
             moveVector -= m_transform->up;
+        }
+        if(App::IsKeyPressed(VK_SPACE))
+        {
+            m_cameraTransform->RemoveChild(m_transform);
         }
 
         m_rb->acceleration += moveVector.Normalize() * 0.3f;

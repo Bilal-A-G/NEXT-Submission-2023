@@ -17,6 +17,21 @@ namespace TESLA
         void Translate(Vector translation);
         void Rotate(Vector axis, float angle);
         void Scale(Vector axis, float scale);
+        void SetChild(TESLA::Transform* child)
+        {
+            m_children.push_back(child);
+        }
+        void RemoveChild(TESLA::Transform* child)
+        {
+            for (int i = 0; i < m_children.size(); i++)
+            {
+                if(m_children[i]->m_entityId == child->m_entityId)
+                {
+                    m_children.erase(m_children.begin() + i);
+                    return;
+                }
+            }
+        }
     public:
         Matrix4x4 scaleMatrix;
         Matrix4x4 positionMatrix;
@@ -29,5 +44,7 @@ namespace TESLA
         Vector right = {1.0f, 0.0f, 0.0f};
         Vector up = {0.0f, 1.0f, 0.0f};
         Vector forward = {0.0f, 0.0f, 1.0f};
+
+        std::vector<Transform*> m_children;
     };   
 }
