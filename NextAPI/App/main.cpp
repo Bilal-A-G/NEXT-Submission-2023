@@ -11,6 +11,7 @@
 #include <list>
 //---------------------------------------------------------------------------------
 #include "app.h"
+#include "SimpleSound.h"
 #include "SimpleController.h"
 
 //---------------------------------------------------------------------------------
@@ -166,10 +167,10 @@ void CheckMemCallback()
 
 
 //---------------------------------------------------------------------------------
-int main(_In_ HINSTANCE hInstance, 	_In_opt_ HINSTANCE hPrevInstance,	_In_ LPWSTR    lpCmdLine, _In_ int       nCmdShow)
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance, 	_In_opt_ HINSTANCE hPrevInstance,	_In_ LPWSTR    lpCmdLine, _In_ int       nCmdShow)
 {	
 	int argc = 0;	char* argv = "";
-
+	
 	// Exit handler to check memory on exit.
 	const int result_1 = std::atexit(CheckMemCallback);
 
@@ -185,7 +186,10 @@ int main(_In_ HINSTANCE hInstance, 	_In_opt_ HINSTANCE hPrevInstance,	_In_ LPWST
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 	InitGL();                       // Our own OpenGL initialization
 
-	
+
+
+	// Init sounds system.
+	CSimpleSound::GetInstance().Initialize(MAIN_WINDOW_HANDLE);
 	
 	// Call user defined init.
 	Init();
@@ -195,6 +199,9 @@ int main(_In_ HINSTANCE hInstance, 	_In_opt_ HINSTANCE hPrevInstance,	_In_ LPWST
 	
 	// Call user shutdown.
 	Shutdown();	
+
+	// Shutdown sound system.
+	CSimpleSound::GetInstance().Shutdown();
 
 	// And we are done.
 	return 0;

@@ -5,7 +5,7 @@
 
 #include "ECS/Components/Mesh/Mesh.h"
 #include "ECS/Components/Transform/Transform.h"
-#include "NextAPI/app.h"
+#include "App/app.h"
 #include "Scenes/SceneManager.h"
 
 void TESLA::Renderer::Awake()

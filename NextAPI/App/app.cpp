@@ -7,6 +7,7 @@
 #include <string>
 #include "main.h"
 #include "app.h"
+#include "SimpleSound.h"
 #include "SimpleController.h"
 #include "SimpleSprite.h"
 
@@ -51,6 +52,19 @@ namespace App
 #if APP_USE_VIRTUAL_RES		
 		APP_NATIVE_TO_VIRTUAL_COORDS(x, y);
 #endif
+	}
+	void PlaySound(const char *fileName, bool looping)
+	{
+		DWORD flags = (looping) ? DSBPLAY_LOOPING : 0;
+		CSimpleSound::GetInstance().PlaySound(fileName, flags);
+	}
+	void StopSound(const char *fileName)
+	{
+		CSimpleSound::GetInstance().StopSound(fileName);
+	}
+	bool IsSoundPlaying(const char *fileName)
+	{
+		return CSimpleSound::GetInstance().IsPlaying(fileName);
 	}
 	// This prints a string to the screen
 	void Print(float x, float y, const char *st, float r, float g, float b, void *font)

@@ -1,22 +1,53 @@
 workspace "Software 3D Renderer"
     architecture "x64"
 
+    language "C++"
+    cppdialect "C++17"
+    staticruntime "off"
+
     configurations
     {
         "Debug",
         "Release"
     }
 
+    rtti("off")
+
+    defines 
+    {
+        'RES_PATH="'.._MAIN_SCRIPT_DIR..'/Software 3D Renderer/res"',
+    }
+
+    filter "system:windows"
+        systemversion "latest"
+        defines
+        {
+            "WINDOWS"
+        }
+    filter "configurations:Debug"
+        defines { "NEXT_DEBUG" }
+        runtime "debug"
+        optimize "off"
+        symbols "on"
+
+    filter "configurations:Development"
+        defines { "NEXT_DEVELOPMENT" }
+        runtime "release"
+        optimize "debug"
+        symbols "on"
+
+    filter "configurations:Release"
+        defines { "NEXT_RELEASE" }
+        runtime "release"
+        optimize "speed"
+        symbols "off"
+
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 project "NextAPI"
     location "NextAPI"
     kind "StaticLib"
-    language "C++"
-    cppdialect "C++17"
-    staticruntime "off"
     warnings "off"
-    rtti("off")
     
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("int/" .. outputdir .. "/%{prj.name}")
@@ -33,40 +64,20 @@ project "NextAPI"
     {
         "%{prj.name}/**.h",
         "%{prj.name}/**.cpp",
-        "%{prj.name}/**.c",
-        "%{prj.name}/**.glsl"
+        "%{prj.name}/**.c"
     }
 
     postbuildcommands
     {
-        ("{COPY} ../NextAPI/glut/binary/x64" .. " ../bin/" .. outputdir .. "/Executables")
+        ("{COPY} ../NextAPI/glut/bin/x64" .. " ../bin/" .. outputdir .. "/Executables")
     }
     
     links
     {
+        "dsound",
+        "dxguid",
         "freeglut"
     }
-    
-    filter "system:windows"
-        systemversion "latest"
-    
-    filter "configurations:Debug"
-        defines { "NEXT_DEBUG" }
-        runtime "debug"
-        optimize "off"
-        symbols "on"
-    
-    filter "configurations:Development"
-        defines { "NEXT_DEVELOPMENT" }
-        runtime "release"
-        optimize "debug"
-        symbols "on"
-    
-    filter "configurations:Release"
-        defines { "NEXT_RELEASE" }
-        runtime "release"
-        optimize "speed"
-        symbols "off"
     
     filter "files:**.c"
         flags {"NoPCH"}
@@ -75,10 +86,6 @@ project "NextAPI"
 project "Engine"
     location "Engine"
     kind "StaticLib"
-    language "C++"
-    cppdialect "C++17"
-    staticruntime "off"
-    rtti("off")
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("int/" .. outputdir .. "/%{prj.name}")
@@ -101,47 +108,16 @@ project "Engine"
 
     defines
     {
-        "TS_ENGINE",
-        'RES_PATH="'.._MAIN_SCRIPT_DIR..'/Software 3D Renderer/res"'
+        "TS_ENGINE"
     }
 
     pchheader "TSPch.h"
     pchsource "Engine/TSPch.cpp"
-    
-    filter "system:windows"
-        systemversion "latest"
-    
-        defines
-        {
-            "WINDOWS"
-        }
-    
-    filter "configurations:Debug"
-        defines { "NEXT_DEBUG" }
-        runtime "debug"
-        optimize "off"
-        symbols "on"
-        
-    filter "configurations:Development"
-        defines { "NEXT_DEVELOPMENT" }
-        runtime "release"
-        optimize "debug"
-        symbols "on"
-        
-    filter "configurations:Release"
-        defines { "NEXT_RELEASE" }
-        runtime "release"
-        optimize "speed"
-        symbols "off"
 
 
 project "Software 3D Renderer"
     location "Software 3D Renderer"
-    kind "ConsoleApp"
-    language "C++"
-    cppdialect "C++17"
-    staticruntime "off"
-    rtti("off")
+    kind "WindowedApp"
 
     targetdir ("bin/" .. outputdir .. "/Executables")
     objdir ("int/" .. outputdir .. "/%{prj.name}")
@@ -161,29 +137,3 @@ project "Software 3D Renderer"
         "Engine",
         "freeglut"
     }
-
-    filter "system:windows"
-        systemversion "latest"
-
-        defines
-        {
-            "WINDOWS"
-        }
-
-    filter "configurations:Debug"
-        defines { "NEXT_DEBUG" }
-        runtime "debug"
-        optimize "off"
-        symbols "on"
-    
-    filter "configurations:Development"
-        defines { "NEXT_DEVELOPMENT" }
-        runtime "release"
-        optimize "debug"
-        symbols "on"
-    
-    filter "configurations:Release"
-        defines { "NEXT_RELEASE" }
-        runtime "release"
-        optimize "speed"
-        symbols "off"

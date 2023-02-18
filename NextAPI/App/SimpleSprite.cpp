@@ -63,7 +63,7 @@ void CSimpleSprite::CalculateUVs()
     int column = m_frame % m_nColumns;
 
     m_width = m_texWidth * u;
-    m_height = m_texWidth * v;
+    m_height = m_texHeight * v;
     m_uvcoords[0] = u * column;
     m_uvcoords[1] = v * (float)(row+1);
 
@@ -80,8 +80,8 @@ void CSimpleSprite::CalculateUVs()
 void CSimpleSprite::Draw()
 {            
 #if APP_USE_VIRTUAL_RES
-    float scalex = m_scale / APP_VIRTUAL_WIDTH;
-    float scaley = m_scale / APP_VIRTUAL_HEIGHT;
+    float scalex = (m_scale / APP_VIRTUAL_WIDTH) * 2.0f;
+    float scaley = (m_scale / APP_VIRTUAL_HEIGHT) * 2.0f;
 #else
     float scalex = m_scale;
     float scaley = m_scale;
@@ -94,7 +94,7 @@ void CSimpleSprite::Draw()
     
     glPushMatrix();
     glTranslatef(x, y, 0.0f);   
-    glScalef(scalex, scaley, 0.1f);    
+    glScalef(scalex, scaley, 1.0f);    
     glRotatef(m_angle * 180 / PI, 0.0f, 0.0f, 1.0f);     
 	glColor3f(m_red, m_green, m_blue);
     glEnable(GL_BLEND);    

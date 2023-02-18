@@ -6,6 +6,7 @@
 #include "Tesla/ECS/Systems/Physics/Physics.h"
 #include "Tesla/ECS/Systems/Renderer/Renderer.h"
 #include "Tesla/ECS/Systems/ScreenShake/ScreenShake.h"
+#include "App/main.cpp"
 
 void SetUp(std::vector<TESLA::Scene*>& scenes)
 {

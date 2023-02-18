@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <iostream>
 
-#include "NextAPI/app.h"
+#include "App/app.h"
 #include "Tesla/ECS/Components/Camera/Camera.h"
 #include "Tesla/ECS/Components/Colliders/BoxCollider.h"
 #include "Tesla/ECS/Components/Colliders/SphereCollider.h"
@@ -9,11 +9,12 @@
 #include "Tesla/ECS/Components/Mesh/Mesh.h"
 #include "Tesla/ECS/Components/Rigidbody/Rigidbody.h"
 #include "Tesla/ECS/Components/Transform//Transform.h"
-#include "Tesla/IO/ObjLoader.h"
+#include "Tesla/IO/ResourceLoader.h"
 #include "Tesla/Scenes/SceneManager.h"
 #include "Tesla/ECS/Systems/Physics/Physics.h"
 #include "Tesla/ECS/Systems/Particles/Particles.h"
 #include "Tesla/ECS/Systems/ScreenShake/ScreenShake.h"
+#include "Tesla/IO/ResourceLoader.h"
 
 bool firstTime = true;
 
@@ -26,7 +27,7 @@ public:
     void Awake() override
     {
         //Particles
-        TESLA::ParticleProperties cubeParticles = TESLA::ParticleProperties(TESLA::ObjLoader::LoadFromOBJFile("Cube"));
+        TESLA::ParticleProperties cubeParticles = TESLA::ParticleProperties(TESLA::ResourceLoader::LoadObjFile("Cube"));
         cubeParticles.amount = 10;
         cubeParticles.averageLifetime = 20.0f;
         cubeParticles.lifetimeVariation = 5.0f;
@@ -75,7 +76,7 @@ public:
         m_rb = m_entity->AddComponent<TESLA::Rigidbody>();
         auto collider = m_entity->AddComponent<TESLA::BoxCollider>();
         
-        m_mesh->faces = TESLA::ObjLoader::LoadFromOBJFile("Cube");
+        m_mesh->faces = TESLA::ResourceLoader::LoadObjFile("Cube");
         m_mesh->colour = TESLA::Colour::Green();
         m_transform->Scale(TESLA::Vector(1,1,1), m_meshSize/2);
         m_transform->Translate(TESLA::Vector(0, 0, 2));
@@ -121,7 +122,7 @@ public:
         TESLA::Rigidbody* entity2Rb = entity2->AddComponent<TESLA::Rigidbody>();
         auto entity2Collider = entity2->AddComponent<TESLA::SphereCollider>();
 
-        entity2Mesh->faces = TESLA::ObjLoader::LoadFromOBJFile("Sphere");
+        entity2Mesh->faces = TESLA::ResourceLoader::LoadObjFile("Sphere");
         entity2Mesh->colour = TESLA::Colour::Blue();
         entity2Transform->Scale(TESLA::Vector(1, 1, 1), m_meshSize);
         entity2Transform->Translate(TESLA::Vector(0, 0, 4));
@@ -168,7 +169,8 @@ public:
         }
         if(App::IsKeyPressed(VK_SHIFT))
         {
-            TESLA::ScreenShake::ShakeScreen(1.0f);
+            TESLA::ScreenShake::ShakeScreen(0.1f);
+            App::PlaySoundW(TESLA::ResourceLoader::GetWavLocation("Smash").c_str());
         }
 
         m_rb->acceleration += moveVector.Normalize() * 0.3f;

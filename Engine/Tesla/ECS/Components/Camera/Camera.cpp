@@ -1,6 +1,6 @@
 ﻿#include "TSpch.h"
 #include "Camera.h"
-#include "NextAPI/AppSettings.h"
+#include "App/AppSettings.h"
 
 TESLA::Camera::Camera()
 {

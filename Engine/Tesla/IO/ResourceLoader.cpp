@@ -1,11 +1,11 @@
 ﻿#include "TSPch.h"
-#include "ObjLoader.h"
+#include "ResourceLoader.h"
 
 #include <assert.h>
 
 std::string resourcesPath = RES_PATH;
 
-std::vector<TESLA::Face> TESLA::ObjLoader::LoadFromOBJFile(std::string fileName)
+std::vector<TESLA::Face> TESLA::ResourceLoader::LoadObjFile(std::string fileName)
 {
     std::vector<Triangle> triangles;
     std::vector<Face> faces;
@@ -45,4 +45,10 @@ std::vector<TESLA::Face> TESLA::ObjLoader::LoadFromOBJFile(std::string fileName)
 
     return faces;
 }
+
+std::string TESLA::ResourceLoader::GetWavLocation(std::string fileName)
+{
+    return resourcesPath + "/" + fileName + ".wav";
+}
+
 

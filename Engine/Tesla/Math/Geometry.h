@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../Math/Math.h"
 #include "array"
-#include "NextAPI/AppSettings.h"
+#include "App/AppSettings.h"
 
 namespace TESLA
 {
