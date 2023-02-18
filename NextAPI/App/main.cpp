@@ -170,7 +170,7 @@ void CheckMemCallback()
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, 	_In_opt_ HINSTANCE hPrevInstance,	_In_ LPWSTR    lpCmdLine, _In_ int       nCmdShow)
 {	
 	int argc = 0;	char* argv = "";
-	
+
 	// Exit handler to check memory on exit.
 	const int result_1 = std::atexit(CheckMemCallback);
 
