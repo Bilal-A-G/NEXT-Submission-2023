@@ -1,16 +1,12 @@
 ﻿#pragma once
-#include "../../../ECS/Component.h"
+#include "ECS/Component.h"
 
 namespace TESLA
 {
     class Transform : public TESLA::Component
     {
     public:
-        Transform() : scaleMatrix(Matrix4x4::Identity()),
-        positionMatrix(Matrix4x4::Identity()), rotationMatrix(Matrix4x4::Identity()),
-        position(TESLA::Vector::Zero()), rotation(TESLA::Vector::Zero()), scale(TESLA::Vector::Zero())
-        {};
-        std::vector<TESLA_ENUMS::ComponentEnum>  GetEnum() override
+        std::vector<TESLA_ENUMS::ComponentEnum> GetEnum() override
         {
             return {TESLA_ENUMS::Transform};
         }
@@ -43,9 +39,9 @@ namespace TESLA
             child->parent = nullptr;
         }
     public:
-        Matrix4x4 scaleMatrix;
-        Matrix4x4 positionMatrix;
-        Matrix4x4 rotationMatrix;
+        Matrix4x4 scaleMatrix = TESLA::Matrix4x4::Identity();
+        Matrix4x4 positionMatrix = TESLA::Matrix4x4::Identity();
+        Matrix4x4 rotationMatrix = TESLA::Matrix4x4::Identity();
         
         Vector position;
         Vector rotation;

@@ -1,62 +1,36 @@
 ﻿#include "tsPch.h"
 #include "Scene.h"
 
-void TESLA::Scene::CreateEntity(TESLA::Entity* entity)
+void TESLA::Scene::DisableSystems()
 {
-    m_lastEntityId++;
+    m_lookup->CleanUp();
     
-    entity->m_id = m_lastEntityId;
-    m_entities.push_back(entity);
+    for(TESLA::System* system : m_systems)
+    {
+        system->Disable();
+    }
 }
 
-TESLA::Component* TESLA::Scene::CreateComponent(Component* component, int entityId)
+void TESLA::Scene::UpdateSystems(float deltaTime)
 {
-    const std::vector<TESLA_ENUMS::ComponentEnum> indices = component->GetEnum();
-    bool success = false;
-    
-    for (const TESLA_ENUMS::ComponentEnum index : indices)
+    for (TESLA::System* system : m_systems)
     {
-        success = false;
-        
-        if(m_components.size() <= index + 1)
-        {
-            m_components.resize(index + 1);
-        }
-
-        if(m_components[index].size() <= entityId + 1)
-        {
-            m_components[index].resize(entityId + 1);
-        }
-    
-        if(m_components[index][entityId])
-        {
-            continue;
-        }
-
-        m_components[index][entityId] = component;
-        success = true;
+        system->Update(deltaTime, *m_lookup);
     }
-
-    if(!success)
-    {
-        delete(component);
-        return nullptr;
-    }
-    
-    return component;
 }
 
-TESLA::Component* TESLA::Scene::GetComponent(std::vector<TESLA_ENUMS::ComponentEnum> indices, int entityId)
+void TESLA::Scene::AwakeSystems()
 {
-    for(const TESLA_ENUMS::ComponentEnum index : indices)
+    for (TESLA::System* system : m_systems)
     {
-        if(index >= m_components.size() || entityId >= m_components[index].size() || !m_components[index][entityId])
-            continue;
-    
-        return m_components[index][entityId];   
+        system->Awake();
     }
-
-    return nullptr;
 }
 
-
+void TESLA::Scene::RenderSystems()
+{
+    for (TESLA::System* system : m_systems)
+    {
+        system->Render(*m_lookup);
+    }
+}

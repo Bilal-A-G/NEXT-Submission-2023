@@ -1,43 +1,30 @@
 ﻿#pragma once
-#include "Component.h"
+#include "EntityComponentLookup.h"
 
 namespace TESLA
 {
-    class Entity
+    class EntityComponentLookup;
+    
+    struct Entity final
     {
-    public:
-        Entity();
-        template<typename T>
-        T* GetComponent(TESLA_ENUMS::ComponentEnum enumType)
-        {
-            TESLA::Component* component = GetComponentFromScene(enumType);
-            if(component)
-            {
-                return static_cast<T*>(component);
-            }
-
-            return nullptr;
-        }
-        template<typename T>
-        T* AddComponent()
-        {
-            Component* instantiatedComponent = new T();
-            instantiatedComponent->m_entityId = m_id;
-            TESLA::Component* createdComponent = AddComponentToScene(instantiatedComponent);
-            if(createdComponent)
-            {
-                return static_cast<T*>(createdComponent);
-            }
-            else
-            {
-                return nullptr;
-            }
-        }
+        friend class EntityComponentLookup;
     private:
-        TESLA::Component* AddComponentToScene(TESLA::Component* component);
-        TESLA::Component* GetComponentFromScene(TESLA_ENUMS::ComponentEnum enumType);
+        Entity(int id, EntityComponentLookup& lookup) : id(id), m_lookup(lookup)
+        {}
+        ~Entity() = default;
+
+        void operator delete(void* ptr){ ::operator delete(ptr);}
+        void* operator new (size_t size){ return ::operator new(size);}
     public:
-        uint32_t m_id;
-        std::string m_name;
+        template <typename T>
+        T* AddComponent() {return m_lookup.CreateComponent<T>(id);}
+
+        template <typename T>
+        T* GetComponent(TESLA_ENUMS::ComponentEnum index) {return m_lookup.GetComponent<T>(index, id);}
+    public:
+        const int id;
+        std::string name;
+    private:
+        EntityComponentLookup& m_lookup;
     };
 }

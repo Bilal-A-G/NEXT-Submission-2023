@@ -1,14 +1,12 @@
 ﻿#pragma once
-#include "../../../Math/Math.h"
-#include "../../../ECS/Component.h"
+#include "Math/Math.h"
+#include "ECS/Component.h"
 
 namespace TESLA
 {
     struct Camera : public TESLA::Component
     {
     public:
-        Camera();
-
         std::vector<TESLA_ENUMS::ComponentEnum>  GetEnum() override
         {
             return {TESLA_ENUMS::Camera};

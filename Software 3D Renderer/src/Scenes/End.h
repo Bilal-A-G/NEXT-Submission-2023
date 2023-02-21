@@ -2,8 +2,8 @@
 #include <iostream>
 
 #include "App/app.h"
-#include "Tesla/Scenes/Scene.h"
-#include "Tesla/Scenes/SceneManager.h"
+#include "Scenes/Scene.h"
+#include "Scenes/SceneManager.h"
 
 class End : public TESLA::Scene
 {

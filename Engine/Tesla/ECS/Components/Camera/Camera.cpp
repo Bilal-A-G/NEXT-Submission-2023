@@ -2,13 +2,6 @@
 #include "Camera.h"
 #include "App/AppSettings.h"
 
-TESLA::Camera::Camera()
-{
-    fov = 0;
-    nearPlane = 0;
-    farPlane = 0;
-}
-
 TESLA::Matrix4x4 TESLA::Camera::GetProjection()
 {
     float aspectRatio = (float)APP_VIRTUAL_HEIGHT/(float)APP_VIRTUAL_WIDTH;

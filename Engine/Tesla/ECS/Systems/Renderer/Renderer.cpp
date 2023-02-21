@@ -3,60 +3,36 @@
 
 #include <cassert>
 
-#include "ECS/Components/Mesh/Mesh.h"
-#include "ECS/Components/Transform/Transform.h"
 #include "App/app.h"
-#include "Scenes/SceneManager.h"
+#include "ECS/Components/Mesh/Mesh.h"
+#include "ECS/Components/Camera/Camera.h"
+#include "ECS/Components/Transform/Transform.h"
+#include "ECS/Components/Light/Light.h"
 
-void TESLA::Renderer::Awake()
+void TESLA::Renderer::Render(TESLA::EntityComponentLookup& lookup)
 {
-    m_meshComponents = TESLA::SceneManager::m_activeScene->GetComponents(TESLA_ENUMS::Mesh);
-    m_transformComponents = TESLA::SceneManager::m_activeScene->GetComponents(TESLA_ENUMS::Transform);
-    std::vector<TESLA::Component*> lights = TESLA::SceneManager::m_activeScene->GetComponents(TESLA_ENUMS::Light);
-
-    for (int i = 0; i < lights.size(); i++)
-    {
-        if(lights[i] != nullptr)
-        {
-            m_light = static_cast<TESLA::Light*>(lights[i]);
-            break;
-        }
-    }
-
-    if(m_light == nullptr)
-        assert(false);
-
-    m_lightTransform = TESLA::SceneManager::m_activeScene->GetEntity(m_light->m_entityId)->GetComponent<TESLA::Transform>(TESLA_ENUMS::Transform);
+    std::vector<TESLA::Component*>& meshComponents = lookup.GetComponents(TESLA_ENUMS::Mesh);
+    std::vector<TESLA::Component*>& transformComponents = lookup.GetComponents(TESLA_ENUMS::Transform);
     
-    std::vector<TESLA::Component*> cameras = TESLA::SceneManager::m_activeScene->GetComponents(TESLA_ENUMS::Camera);
+    TESLA::Light* light = lookup.GetFirstValidComponent<TESLA::Light>(TESLA_ENUMS::Light);
+    TESLA::Transform* lightTransform = lookup.GetComponent<TESLA::Transform>(TESLA_ENUMS::Transform, light->m_entityId);
 
-    for (int i = 0; i < cameras.size(); i++)
-    {
-        if(cameras[i] != nullptr)
-        {
-            m_camera = static_cast<TESLA::Camera*>(cameras[i]);
-            break;
-        }
-    }
-
-    if(m_camera == nullptr)
+    if(!lightTransform)
         assert(false);
-
-    m_cameraTransform = TESLA::SceneManager::m_activeScene->GetEntity(m_camera->m_entityId)->GetComponent<TESLA::Transform>(TESLA_ENUMS::Transform);
-}
-
-void TESLA::Renderer::Render()
-{
-    if(!m_camera)
-        return;
     
-    for (TESLA::Component* component : m_meshComponents)
+    TESLA::Camera* camera = lookup.GetFirstValidComponent<TESLA::Camera>(TESLA_ENUMS::Camera);
+    TESLA::Transform* cameraTransform = lookup.GetComponent<Transform>(TESLA_ENUMS::Transform, camera->m_entityId);
+
+    if(!cameraTransform)
+        assert(false);
+    
+    for (TESLA::Component* component : meshComponents)
     {
         if(component == nullptr)
             continue;
         
         Mesh* mesh = static_cast<Mesh*>(component);
-        Transform* transform = static_cast<Transform*>(m_transformComponents[mesh->m_entityId]);
+        Transform* transform = static_cast<Transform*>(transformComponents[mesh->m_entityId]);
         
         if(transform == nullptr)
             continue;
@@ -64,11 +40,11 @@ void TESLA::Renderer::Render()
         Matrix4x4 model = transform->positionMatrix * transform->rotationMatrix * transform->scaleMatrix;
         std::vector<Face> faces = TESLA::ProjectToWorld(model, mesh->faces);
         
-        TESLA::CalculateLighting(faces, m_lightTransform->position * -1.0f, m_light->intensity, mesh->colour);
+        TESLA::CalculateLighting(faces, lightTransform->position * -1.0f, light->intensity, mesh->colour);
         
-        faces = TESLA::ProjectToView(faces, m_cameraTransform->position,
-            CalculateView(m_cameraTransform->position, m_cameraTransform->forward, m_cameraTransform->up));
-        faces = TESLA::ProjectToScreen(faces, m_camera->GetProjection());
+        faces = TESLA::ProjectToView(faces, cameraTransform->position,
+            CalculateView(cameraTransform->position, cameraTransform->forward, cameraTransform->up));
+        faces = TESLA::ProjectToScreen(faces, camera->GetProjection());
 
         std::vector<Face> nonClippedFaces;
 
@@ -113,4 +89,5 @@ void TESLA::Renderer::Render()
         }
     }
 }
+
 

@@ -2,24 +2,24 @@
 #include "ParticlePool.h"
 
 #include "ECS/Components/Mesh/Mesh.h"
+#include "ECS/Components/Particles/ParticleProperties.h"
 #include "ECS/Components/Rigidbody/Rigidbody.h"
 #include "ECS/Components/Transform/Transform.h"
 
-std::vector<TESLA::Particle*> TESLA::ParticlePool::m_pool;
+std::vector<TESLA::Entity*> TESLA::ParticlePool::m_pool;
 
-void TESLA::ParticlePool::Return(TESLA::Particle* particle)
+void TESLA::ParticlePool::Return(TESLA::Entity* particle)
 {
-    particle->entity->GetComponent<Mesh>(TESLA_ENUMS::Mesh)->colour = TESLA::Colour::Black();
-    particle->entity->GetComponent<Transform>(TESLA_ENUMS::Transform)->position = TESLA::Vector::Zero();
-    particle->properties->fadeOut = false;
+    particle->GetComponent<Mesh>(TESLA_ENUMS::Mesh)->colour = TESLA::Colour::Black();
+    particle->GetComponent<Transform>(TESLA_ENUMS::Transform)->position = TESLA::Vector::Zero();
+    particle->GetComponent<ParticleProperties>(TESLA_ENUMS::Particle)->fadeOut = false;
 
     m_pool.push_back(particle);
 }
 
-
-TESLA::Particle* TESLA::ParticlePool::Query()
+TESLA::Entity* TESLA::ParticlePool::Query(TESLA::EntityComponentLookup& entityComponentLookup)
 {
-    TESLA::Particle* returnParticle;
+    TESLA::Entity* returnParticle;
     
     if(m_pool.size() > 0)
     {
@@ -28,13 +28,11 @@ TESLA::Particle* TESLA::ParticlePool::Query()
         return returnParticle;
     }
     
-    TESLA::Entity* entity = new Entity();
-    entity->AddComponent<Rigidbody>();
-    entity->AddComponent<Mesh>();
-    entity->AddComponent<Transform>();
-    TESLA::ParticleProperties* properties = new ParticleProperties();
-    
-    returnParticle = new TESLA::Particle(entity, properties);
+    returnParticle = entityComponentLookup.CreateEntity();
+    returnParticle->AddComponent<Rigidbody>();
+    returnParticle->AddComponent<Mesh>();
+    returnParticle->AddComponent<Transform>();
+    returnParticle->AddComponent<ParticleProperties>();
 
     return returnParticle;
 }

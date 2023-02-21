@@ -1,6 +1,5 @@
 ﻿#include "TSpch.h"
 #include "EntryPoint.h"
-#include "Scenes/SceneManager.h"
 
 void Init()
 {
@@ -11,26 +10,26 @@ void Init()
         TESLA::SceneManager::AddScene(scene);
     }
 
-    TESLA::SceneManager::Init();
-    TESLA::SceneManager::InitSystems();
+    TESLA::SceneManager::m_activeScene->Awake();
+    TESLA::SceneManager::m_activeScene->AwakeSystems();
 }
 
 void Update(float deltaTime)
 {
-    TESLA::SceneManager::UpdateSystems(1/deltaTime);
-    TESLA::SceneManager::Update(1/deltaTime);
+    TESLA::SceneManager::m_activeScene->Update(1/deltaTime);
+    TESLA::SceneManager::m_activeScene->UpdateSystems(1/deltaTime);
 }
 
 void Render()
 {
-    TESLA::SceneManager::RenderSystems();
-    TESLA::SceneManager::Render();
+    TESLA::SceneManager::m_activeScene->RenderSystems();
+    TESLA::SceneManager::m_activeScene->Render();
 }
 
 void Shutdown()
 {
-    TESLA::SceneManager::DisableSystems();
-    TESLA::SceneManager::Disable();
+    TESLA::SceneManager::m_activeScene->DisableSystems();
+    TESLA::SceneManager::m_activeScene->Disable();
 }
 
 

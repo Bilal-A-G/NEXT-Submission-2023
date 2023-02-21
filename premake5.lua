@@ -91,7 +91,7 @@ project "Engine"
     objdir ("int/" .. outputdir .. "/%{prj.name}")
     
     libdirs{"NextAPI/glut/lib"}
-    includedirs{"NextAPI", "Engine/Tesla"}
+    includedirs{"NextAPI", "%{prj.location}/Tesla"}
     
     files
     {
@@ -123,7 +123,7 @@ project "Software 3D Renderer"
     objdir ("int/" .. outputdir .. "/%{prj.name}")
 
     libdirs{"NextAPI/glut/lib"}
-    includedirs{"Engine", "NextAPI"}
+    includedirs{"Engine/Tesla", "NextAPI"}
 
     files
     {

@@ -2,64 +2,68 @@
 #include "Particles.h"
 
 #include "ParticlePool.h"
-#include "ECS/Entity.h"
 #include "ECS/Components/Transform/Transform.h"
 #include "ECS/Components/Rigidbody/Rigidbody.h"
 #include "ECS/Components/Mesh/Mesh.h"
+#include "ECS/Components/Particles/ParticleProperties.h"
+#include "ECS/Systems/Particles/ParticleSystemProperties.h"
 
 #define NEW_SEED ((rand() / static_cast<double>(RAND_MAX) - 0.5f) * 2.0f)
 
-std::vector<TESLA::Particle*> TESLA::Particles::m_particles;
+std::vector<TESLA::Entity*> TESLA::Particles::m_particles;
 
-void TESLA::Particles::Play(ParticleProperties properties)
+void TESLA::Particles::Play(const TESLA::ParticleSystemProperties& systemProperties, EntityComponentLookup& lookup)
 {
-    for (int i = 0; i < properties.amount; i++)
+    for (int i = 0; i < systemProperties.amount; i++)
     {
-        TESLA::Particle* particle = TESLA::ParticlePool::Query();
-        *particle->properties = properties;
+        TESLA::Entity* particle = TESLA::ParticlePool::Query(lookup);
+        TESLA::ParticleProperties* properties = particle->GetComponent<TESLA::ParticleProperties>(TESLA_ENUMS::Particle);
         
-        TESLA::Entity* entity = particle->entity;
-        TESLA::Transform* transform = entity->GetComponent<Transform>(TESLA_ENUMS::Transform);
-        TESLA::Rigidbody* rb = entity->GetComponent<Rigidbody>(TESLA_ENUMS::RigidBody);
+        TESLA::Transform* transform = particle->GetComponent<Transform>(TESLA_ENUMS::Transform);
+        TESLA::Rigidbody* rb = particle->GetComponent<Rigidbody>(TESLA_ENUMS::RigidBody);
         rb->hasGravity = false;
-        TESLA::Mesh* mesh = entity->GetComponent<Mesh>(TESLA_ENUMS::Mesh);
+        TESLA::Mesh* mesh = particle->GetComponent<Mesh>(TESLA_ENUMS::Mesh);
         
-        mesh->faces = properties.faces;
-        mesh->colour = properties.initialColour + TESLA::Colour(NEW_SEED, NEW_SEED, NEW_SEED) * properties.colourVariation;
+        mesh->faces = systemProperties.faces;
+        mesh->colour = systemProperties.initialColour + TESLA::Colour(NEW_SEED, NEW_SEED, NEW_SEED) * systemProperties.colourVariation;
         
-        transform->Translate(properties.position);
-        transform->Scale(TESLA::Vector(1, 1, 1), properties.averageSize + NEW_SEED * properties.sizeVariation);
+        transform->Translate(systemProperties.position);
+        transform->Scale(TESLA::Vector(1, 1, 1), systemProperties.averageSize + NEW_SEED * systemProperties.sizeVariation);
         
-        rb->acceleration = TESLA::Vector(NEW_SEED, NEW_SEED, NEW_SEED) * (properties.averageSpeed + NEW_SEED * properties.speedVariation);
+        rb->acceleration = TESLA::Vector(NEW_SEED, NEW_SEED, NEW_SEED) * (systemProperties.averageSpeed + NEW_SEED * systemProperties.speedVariation);
 
-        const float randomizedRotationSpeed = properties.averageRotationSpeed + NEW_SEED * properties.rotationSpeedVariation;
-        const float randomizedLifetime = properties.averageLifetime + NEW_SEED * properties.lifetimeVariation;
+        const float randomizedRotationSpeed = systemProperties.averageRotationSpeed + NEW_SEED * systemProperties.rotationSpeedVariation;
+        const float randomizedLifetime = systemProperties.averageLifetime + NEW_SEED * systemProperties.lifetimeVariation;
 
-        particle->properties->averageRotationSpeed = randomizedRotationSpeed;
-        particle->properties->averageLifetime = randomizedLifetime;
+        properties->rotationSpeed = randomizedRotationSpeed;
+        properties->lifeTime = randomizedLifetime;
+        properties->endColour = systemProperties.endColour;
+        properties->rotationAxis = systemProperties.rotationAxis;
+        properties->alphaFadeSpeed = systemProperties.alphaFadeSpeed;
+        properties->colourChangeSpeed = systemProperties.colourChangeSpeed;
         
         m_particles.push_back(particle);
     }
 }
 
-void TESLA::Particles::Update(float deltaTime)
+void TESLA::Particles::Update(float deltaTime, TESLA::EntityComponentLookup& lookup)
 {
     for (int i = 0; i < m_particles.size(); i++)
     {
-        TESLA::Particle* particle = m_particles[i];
-        TESLA::Transform* transform = particle->entity->GetComponent<Transform>(TESLA_ENUMS::Transform);
-        TESLA::Mesh* mesh = particle->entity->GetComponent<Mesh>(TESLA_ENUMS::Mesh);
-        TESLA::ParticleProperties* properties = particle->properties;
+        TESLA::Entity* particle = m_particles[i];
+        TESLA::Transform* transform = particle->GetComponent<Transform>(TESLA_ENUMS::Transform);
+        TESLA::Mesh* mesh = particle->GetComponent<Mesh>(TESLA_ENUMS::Mesh);
+        TESLA::ParticleProperties* properties = particle->GetComponent<TESLA::ParticleProperties>(TESLA_ENUMS::Particle);
         
-        if(properties->averageLifetime <= 0)
+        if(properties->lifeTime <= 0)
         {
             TESLA::ParticlePool::Return(particle);
             m_particles.erase(m_particles.begin() + i);
             continue;
         }
 
-        properties->averageLifetime -= deltaTime;
-        transform->Rotate(properties->rotationAxis, properties->averageRotationSpeed);
+        properties->lifeTime -= deltaTime;
+        transform->Rotate(properties->rotationAxis, properties->rotationSpeed);
         
         if(TESLA::Colour::RoughlyEquals(mesh->colour,properties->endColour, 0.1f))
             properties->fadeOut = true;
@@ -78,7 +82,6 @@ void TESLA::Particles::Awake()
 {
     TESLA::ParticlePool::Init();
 }
-
 
 void TESLA::Particles::Disable()
 {

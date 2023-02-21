@@ -2,19 +2,19 @@
 #include <iostream>
 
 #include "App/app.h"
-#include "Tesla/ECS/Components/Camera/Camera.h"
-#include "Tesla/ECS/Components/Colliders/BoxCollider.h"
-#include "Tesla/ECS/Components/Colliders/SphereCollider.h"
-#include "Tesla/ECS/Components/Light/Light.h"
-#include "Tesla/ECS/Components/Mesh/Mesh.h"
-#include "Tesla/ECS/Components/Rigidbody/Rigidbody.h"
-#include "Tesla/ECS/Components/Transform//Transform.h"
-#include "Tesla/IO/ResourceLoader.h"
-#include "Tesla/Scenes/SceneManager.h"
-#include "Tesla/ECS/Systems/Physics/Physics.h"
-#include "Tesla/ECS/Systems/Particles/Particles.h"
-#include "Tesla/ECS/Systems/ScreenShake/ScreenShake.h"
-#include "Tesla/IO/ResourceLoader.h"
+#include "ECS/Components/Camera/Camera.h"
+#include "ECS/Components/Colliders/BoxCollider.h"
+#include "ECS/Components/Colliders/SphereCollider.h"
+#include "ECS/Components/Light/Light.h"
+#include "ECS/Components/Mesh/Mesh.h"
+#include "ECS/Components/Particles/ParticleProperties.h"
+#include "ECS/Components/Rigidbody/Rigidbody.h"
+#include "ECS/Components/Transform//Transform.h"
+#include "IO/ResourceLoader.h"
+#include "Scenes/SceneManager.h"
+#include "ECS/Systems/Physics/Physics.h"
+#include "ECS/Systems/Particles/Particles.h"
+#include "ECS/Systems/ScreenShake/ScreenShake.h"
 
 bool firstTime = true;
 
@@ -22,33 +22,35 @@ class MeshTest : public TESLA::Scene
 {
 public:
     MeshTest(std::string name):
-    Scene(name), m_entity(nullptr){}
+    Scene(name){}
 
     void Awake() override
     {
         //Particles
-        TESLA::ParticleProperties cubeParticles = TESLA::ParticleProperties(TESLA::ResourceLoader::LoadObjFile("Cube"));
-        cubeParticles.amount = 10;
-        cubeParticles.averageLifetime = 20.0f;
-        cubeParticles.lifetimeVariation = 5.0f;
-        cubeParticles.rotationAxis = TESLA::Vector(1, 1, 1);
-        cubeParticles.averageRotationSpeed = 0.01f;
-        cubeParticles.rotationSpeedVariation = 0.01f;
-        cubeParticles.averageSpeed = 2.0f;
-        cubeParticles.speedVariation = 0.5f;
-        cubeParticles.averageSize = 0.2f;
-        cubeParticles.sizeVariation = 0.01f;
-        cubeParticles.colourVariation = 0.5f;
-        cubeParticles.alphaFadeSpeed = 0.3f;
-        cubeParticles.colourChangeSpeed = 0.2f;
-        cubeParticles.initialColour = TESLA::Colour::White();
-        cubeParticles.endColour = TESLA::Colour::Red();
-        cubeParticles.position = TESLA::Vector(0, 0, 2);
+        TESLA::ParticleSystemProperties system;
         
-        TESLA::Particles::Play(cubeParticles);
+        system.faces = TESLA::ResourceLoader::LoadObjFile("Cube");
+        system.amount = 10;
+        system.averageLifetime = 20.0f;
+        system.lifetimeVariation = 5.0f;
+        system.rotationAxis = TESLA::Vector(1, 1, 1);
+        system.averageRotationSpeed = 0.01f;
+        system.rotationSpeedVariation = 0.01f;
+        system.averageSpeed = 2.0f;
+        system.speedVariation = 0.5f;
+        system.averageSize = 0.2f;
+        system.sizeVariation = 0.01f;
+        system.colourVariation = 0.5f;
+        system.alphaFadeSpeed = 0.3f;
+        system.colourChangeSpeed = 0.2f;
+        system.initialColour = TESLA::Colour::White();
+        system.endColour = TESLA::Colour::Red();
+        system.position = TESLA::Vector(0, 0, 2);
+        
+        TESLA::Particles::Play(system, *m_lookup);
         
         //Init camera
-        m_mainCamera = new TESLA::Entity();
+        m_mainCamera = m_lookup->CreateEntity();
         auto camera = m_mainCamera->AddComponent<TESLA::Camera>();
         m_cameraTransform = m_mainCamera->AddComponent<TESLA::Transform>();
         camera->fov = 50.0f;
@@ -56,21 +58,22 @@ public:
         camera->nearPlane = 0.1f;
 
         //Init camera parent
-        TESLA::Entity* cameraParent = new TESLA::Entity();
+        TESLA::Entity* cameraParent = m_lookup->CreateEntity();
         m_cameraParentTransform = cameraParent->AddComponent<TESLA::Transform>();
         m_cameraParentTransform->SetChild(m_cameraTransform);
         m_cameraTransform->right = TESLA::Vector(-1, 0, 0, 1);
         
         //Init light
-        TESLA::Entity* light = new TESLA::Entity();
+        TESLA::Entity* light = m_lookup->CreateEntity();
+        light->name = "Light";
         TESLA::Light* lightComponent = light->AddComponent<TESLA::Light>();
         TESLA::Transform* lightTransform = light->AddComponent<TESLA::Transform>();
         lightComponent->intensity = 0.6f;
-        lightTransform->position = TESLA::Vector(-40, 50, 0);
+        lightTransform->Translate(TESLA::Vector(-40, 50, 0));
 
         //Init first entity
-        m_entity = new TESLA::Entity();
-        m_entity->m_name = "Box";
+        m_entity = m_lookup->CreateEntity();
+        m_entity->name = "Box";
         m_mesh = m_entity->AddComponent<TESLA::Mesh>();
         m_transform = m_entity->AddComponent<TESLA::Transform>();
         m_rb = m_entity->AddComponent<TESLA::Rigidbody>();
@@ -90,13 +93,13 @@ public:
 
         //Raycasting
         TESLA::Physics::Raycast(TESLA::Vector::Zero(), TESLA::Vector(0, 0, 1, 0), 10, 4.0f,
-            [](TESLA::Entity* other)
+            [](TESLA::Entity& other)
         {
-            std::cout << "Hit: " << other->m_name << "\n";
+            std::cout << "Hit: " << other.name << "\n";
         });
 
         //Collision callbacks
-        collider->OnCollisionStay([](TESLA::Entity* other)
+        collider->OnCollisionStay([](TESLA::Entity& other)
         {
             if(!firstTime)
                 return;
@@ -115,8 +118,8 @@ public:
         TESLA::ScreenShake::traumaDecreaseRate = 1.0f;
 
         //Init second entity
-        TESLA::Entity* entity2 = new TESLA::Entity();
-        entity2->m_name = "Sphere";
+        TESLA::Entity* entity2 = m_lookup->CreateEntity();
+        entity2->name = "Sphere";
         TESLA::Mesh* entity2Mesh = entity2->AddComponent<TESLA::Mesh>();
         TESLA::Transform* entity2Transform = entity2->AddComponent<TESLA::Transform>();
         TESLA::Rigidbody* entity2Rb = entity2->AddComponent<TESLA::Rigidbody>();

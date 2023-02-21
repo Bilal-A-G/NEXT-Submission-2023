@@ -1,10 +1,11 @@
 #pragma once
-#include "../../../ECS/Component.h"
-#include "../../../ECS/Entity.h"
+#include "ECS/Component.h"
+#include "ECS/Entity.h"
+#include "Math/Math.h"
 
 namespace TESLA
 {
-    using CollisionFunction = void(*)(TESLA::Entity* other);
+    using CollisionFunction = void(*)(TESLA::Entity& other);
     using CollisionResolvedFunction = void(*)();
     
     struct Collider : public TESLA::Component
@@ -22,7 +23,7 @@ namespace TESLA
         {
             _resolvedListeners.push_back(listener);
         }
-        void InvokeCollision(TESLA::Entity* other)
+        void InvokeCollision(TESLA::Entity& other)
         {
             _resolvedCollision = false;
             

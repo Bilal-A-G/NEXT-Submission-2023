@@ -1,98 +1,41 @@
 ﻿#pragma once
 #include "string"
-#include "../ECS/Component.h"
-#include "../ECS/Entity.h"
-#include "../ECS/System.h"
+#include "ECS/EntityComponentLookup.h"
+#include "ECS/System.h"
 
 namespace TESLA
 {
     class Scene 
     {
     public:
+        Scene(std::string name) : m_name(name), m_systems(std::vector<TESLA::System*>()),
+        m_lookup(new TESLA::EntityComponentLookup())
+        {}
         virtual ~Scene() = default;
-        Scene(std::string name) : m_name(name)
-        {
-            m_lastEntityId = 0;
-        }
         
-        virtual void Disable(){}
-
-        void DisableSystems()
-        {
-            m_entities.clear();
-            m_components.clear();
-            m_lastEntityId = 0;
-            
-            for(TESLA::System* system : m_systems)
-            {
-                system->Disable();
-            }
-        }
+        virtual void Disable(){return;}
+        void DisableSystems();
         
-        virtual void Update(float deltaTime){}
-
-        void UpdateSystems(float deltaTime)
-        {
-            for (TESLA::System* system : m_systems)
-            {
-                system->Update(deltaTime);
-            }
-        }
+        virtual void Update(float deltaTime){return;}
+        void UpdateSystems(float deltaTime);
         
-        virtual void Awake(){}
-
-        void AwakeSystems()
-        {
-            for (TESLA::System* system : m_systems)
-            {
-                system->Awake();
-            }
-        }
+        virtual void Awake(){return;}
+        void AwakeSystems();
         
-        virtual void Render(){}
+        virtual void Render(){return;}
+        void RenderSystems();
 
-        void RenderSystems()
+        template <typename T>
+        void RegisterSystem()
         {
-            for (TESLA::System* system : m_systems)
-            {
-                system->Render();
-            }
+            T* instantiatedSystem = new T();
+            m_systems.push_back(instantiatedSystem);
         }
-
-        void RegisterSystem(TESLA::System* system){m_systems.push_back(system);}
     
         std::string GetName(){return m_name;}
-        void CreateEntity(TESLA::Entity* entity);
-        TESLA::Component* CreateComponent(Component* component, int entityId);
-        Component* GetComponent(std::vector<TESLA_ENUMS::ComponentEnum> indices, int entityId);
-        TESLA::Entity* GetEntity(int id)
-        {
-            if(id - 1 <= m_entities.size())
-            {
-                return m_entities[id - 1];
-            }
-            else
-            {
-                return nullptr;
-            }
-        }
-        
-        std::vector<Component*>& GetComponents(TESLA_ENUMS::ComponentEnum index)
-        {
-            if(index < m_components.size())
-            {
-                return m_components[index];
-            }
-            else
-            {
-                return m_components[0];
-            }
-        }
-    private:
+    protected:
         const std::string m_name;
-        std::vector<Entity*> m_entities;
-        std::vector<std::vector<Component*>> m_components;
         std::vector<TESLA::System*> m_systems;
-        int m_lastEntityId;
+        TESLA::EntityComponentLookup* m_lookup;
     };
 }
