@@ -1,4 +1,4 @@
-workspace "Software 3D Renderer"
+workspace "Project NEXT"
     architecture "x64"
 
     language "C++"
@@ -15,7 +15,7 @@ workspace "Software 3D Renderer"
 
     defines 
     {
-        'RES_PATH="'.._MAIN_SCRIPT_DIR..'/Software 3D Renderer/res"',
+        'RES_PATH="'.._MAIN_SCRIPT_DIR..'/GaussClient/res"',
     }
 
     filter "system:windows"
@@ -59,7 +59,7 @@ project "NextAPI"
     
     pchheader "stdafx.h"
     pchsource "%{prj.name}/stdafx.cpp"
-    
+
     files
     {
         "%{prj.name}/**.h",
@@ -83,16 +83,16 @@ project "NextAPI"
         flags {"NoPCH"}
 
 
-project "Engine"
-    location "Engine"
+project "GaussEngine"
+    location "GaussEngine"
     kind "StaticLib"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("int/" .. outputdir .. "/%{prj.name}")
     
     libdirs{"NextAPI/glut/lib"}
-    includedirs{"NextAPI", "%{prj.location}/Tesla"}
-    
+    includedirs{"GaussEngine/src", "NextAPI"}
+
     files
     {
         "%{prj.name}/**.h",
@@ -106,24 +106,19 @@ project "Engine"
         "freeglut"
     }
 
-    defines
-    {
-        "TS_ENGINE"
-    }
-
-    pchheader "TSPch.h"
-    pchsource "Engine/TSPch.cpp"
+    pchheader "GSPch.h"
+    pchsource "GaussEngine/GSPch.cpp"
 
 
-project "Software 3D Renderer"
-    location "Software 3D Renderer"
+project "GaussClient"
+    location "GaussClient"
     kind "WindowedApp"
 
     targetdir ("bin/" .. outputdir .. "/Executables")
     objdir ("int/" .. outputdir .. "/%{prj.name}")
 
     libdirs{"NextAPI/glut/lib"}
-    includedirs{"Engine/Tesla", "NextAPI"}
+    includedirs{"GaussEngine/src", "NextAPI"}
 
     files
     {
@@ -134,6 +129,6 @@ project "Software 3D Renderer"
 
     links
     {
-        "Engine",
+        "GaussEngine",
         "freeglut"
     }
