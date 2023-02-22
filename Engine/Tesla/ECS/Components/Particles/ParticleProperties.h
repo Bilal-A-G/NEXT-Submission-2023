@@ -7,7 +7,7 @@ namespace TESLA
     struct ParticleProperties : public TESLA::Component
     {
     public:
-        std::vector<TESLA_ENUMS::ComponentEnum> GetEnum() override {return {TESLA_ENUMS::Particle};}
+        std::vector<int> GetEnum() override {return {TESLA_ENUMS::Particle};}
     public:
         TESLA::Vector rotationAxis = TESLA::Vector::Zero();
         TESLA::Colour endColour = TESLA::Colour::White();

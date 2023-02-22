@@ -6,7 +6,7 @@ namespace TESLA
     struct BoxCollider : public TESLA::Collider
     {
     public:
-        std::vector<TESLA_ENUMS::ComponentEnum> GetEnum() override
+        std::vector<int> GetEnum() override
         {
             return {TESLA_ENUMS::BoxCollider, TESLA_ENUMS::Collider};
         }

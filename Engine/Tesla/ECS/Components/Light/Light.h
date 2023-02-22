@@ -5,7 +5,7 @@ namespace TESLA
 {
     struct Light : public TESLA::Component
     {
-        std::vector<TESLA_ENUMS::ComponentEnum> GetEnum() override
+        std::vector<int> GetEnum() override
         {
             return {TESLA_ENUMS::Light};
         }

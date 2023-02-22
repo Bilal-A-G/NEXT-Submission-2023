@@ -20,7 +20,7 @@ namespace TESLA
         T* AddComponent() {return m_lookup.CreateComponent<T>(id);}
 
         template <typename T>
-        T* GetComponent(TESLA_ENUMS::ComponentEnum index) {return m_lookup.GetComponent<T>(index, id);}
+        T* GetComponent(int index) {return m_lookup.GetComponent<T>(index, id);}
     public:
         const int id;
         std::string name;

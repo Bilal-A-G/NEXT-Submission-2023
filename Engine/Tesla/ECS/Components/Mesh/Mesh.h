@@ -6,7 +6,7 @@ namespace TESLA
 {
     struct Mesh : public TESLA::Component
     {
-        std::vector<TESLA_ENUMS::ComponentEnum>  GetEnum() override
+        std::vector<int> GetEnum() override
         {
             return {TESLA_ENUMS::ComponentEnum::Mesh};
         }

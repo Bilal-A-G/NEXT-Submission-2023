@@ -6,7 +6,7 @@ namespace TESLA
     struct Rigidbody : public TESLA::Component
     {
     public:
-        std::vector<TESLA_ENUMS::ComponentEnum>  GetEnum() override
+        std::vector<int> GetEnum() override
         {
             return {TESLA_ENUMS::RigidBody};
         }

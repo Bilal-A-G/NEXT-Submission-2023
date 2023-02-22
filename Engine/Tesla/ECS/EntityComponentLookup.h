@@ -1,10 +1,5 @@
 ﻿#pragma once
 
-namespace TESLA_ENUMS
-{
-    enum ComponentEnum : uint8_t;
-}
-
 namespace TESLA
 {
     struct Entity;
@@ -28,20 +23,20 @@ namespace TESLA
             return static_cast<T*>(InitializeNewComponent(entityId, component));
         }
         template <typename T>
-        T* GetComponent(TESLA_ENUMS::ComponentEnum index, int entityId)
+        T* GetComponent(int index, int entityId)
         {
             return static_cast<T*>(GetTypelessComponent(index, entityId));
         }
         TESLA::Entity* GetEntity(int id);
-        std::vector<TESLA::Component*>& GetComponents(TESLA_ENUMS::ComponentEnum index);
+        std::vector<TESLA::Component*>& GetComponents(int index);
         template <typename T>
-        T* GetFirstValidComponent(TESLA_ENUMS::ComponentEnum enumType)
+        T* GetFirstValidComponent(int index)
         {
-            return static_cast<T*>(GetFirstValidTypelessComponent(enumType));
+            return static_cast<T*>(GetFirstValidTypelessComponent(index));
         }
     private:
-        TESLA::Component* GetTypelessComponent(TESLA_ENUMS::ComponentEnum index, int entityId);
-        TESLA::Component* GetFirstValidTypelessComponent(TESLA_ENUMS::ComponentEnum enumType);
+        TESLA::Component* GetTypelessComponent(int index, int entityId);
+        TESLA::Component* GetFirstValidTypelessComponent(int index);
         TESLA::Component* InitializeNewComponent(int entityId, TESLA::Component* component);
     private:
         std::vector<TESLA::Entity*> m_entities;

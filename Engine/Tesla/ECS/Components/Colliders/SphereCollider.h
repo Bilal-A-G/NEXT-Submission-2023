@@ -8,7 +8,7 @@ namespace TESLA
     public:
         SphereCollider() : radius(0){}
     
-        std::vector<TESLA_ENUMS::ComponentEnum>  GetEnum() override
+        std::vector<int> GetEnum() override
         {
             return {TESLA_ENUMS::SphereCollider, TESLA_ENUMS::Collider};
         }

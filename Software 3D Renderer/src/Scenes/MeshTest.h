@@ -16,6 +16,8 @@
 #include "ECS/Systems/Particles/Particles.h"
 #include "ECS/Systems/ScreenShake/ScreenShake.h"
 
+#include "../Enums/ClientComponentEnums.h"
+
 bool firstTime = true;
 
 class MeshTest : public TESLA::Scene
@@ -27,27 +29,27 @@ public:
     void Awake() override
     {
         //Particles
-        TESLA::ParticleSystemProperties system;
+        TESLA::ParticleSystemProperties properties;
         
-        system.faces = TESLA::ResourceLoader::LoadObjFile("Cube");
-        system.amount = 10;
-        system.averageLifetime = 20.0f;
-        system.lifetimeVariation = 5.0f;
-        system.rotationAxis = TESLA::Vector(1, 1, 1);
-        system.averageRotationSpeed = 0.01f;
-        system.rotationSpeedVariation = 0.01f;
-        system.averageSpeed = 2.0f;
-        system.speedVariation = 0.5f;
-        system.averageSize = 0.2f;
-        system.sizeVariation = 0.01f;
-        system.colourVariation = 0.5f;
-        system.alphaFadeSpeed = 0.3f;
-        system.colourChangeSpeed = 0.2f;
-        system.initialColour = TESLA::Colour::White();
-        system.endColour = TESLA::Colour::Red();
-        system.position = TESLA::Vector(0, 0, 2);
+        properties.faces = TESLA::ResourceLoader::LoadObjFile("Cube");
+        properties.amount = 10;
+        properties.averageLifetime = 20.0f;
+        properties.lifetimeVariation = 5.0f;
+        properties.rotationAxis = TESLA::Vector(1, 1, 1);
+        properties.averageRotationSpeed = 0.01f;
+        properties.rotationSpeedVariation = 0.01f;
+        properties.averageSpeed = 2.0f;
+        properties.speedVariation = 0.5f;
+        properties.averageSize = 0.2f;
+        properties.sizeVariation = 0.01f;
+        properties.colourVariation = 0.5f;
+        properties.alphaFadeSpeed = 0.3f;
+        properties.colourChangeSpeed = 0.2f;
+        properties.initialColour = TESLA::Colour::White();
+        properties.endColour = TESLA::Colour::Red();
+        properties.position = TESLA::Vector(0, 0, 2);
         
-        TESLA::Particles::Play(system, *m_lookup);
+        TESLA::Particles::Play(properties, *m_lookup);
         
         //Init camera
         m_mainCamera = m_lookup->CreateEntity();
@@ -92,7 +94,7 @@ public:
         collider->depth = 0.6f;
 
         //Raycasting
-        TESLA::Physics::Raycast(TESLA::Vector::Zero(), TESLA::Vector(0, 0, 1, 0), 10, 4.0f,
+        TESLA::Physics::Raycast(TESLA::Vector::Zero(), TESLA::Vector(0, 0, 1, 0), 100, 10.0f,
             [](TESLA::Entity& other)
         {
             std::cout << "Hit: " << other.name << "\n";

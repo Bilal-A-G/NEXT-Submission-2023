@@ -29,10 +29,10 @@ TESLA::Entity* TESLA::EntityComponentLookup::CreateEntity()
 
 TESLA::Component* TESLA::EntityComponentLookup::InitializeNewComponent(int entityId, TESLA::Component* component)
 {
-    std::vector<TESLA_ENUMS::ComponentEnum> indices = component->GetEnum();
+    std::vector<int> indices = component->GetEnum();
     bool success = false;
     
-    for (const TESLA_ENUMS::ComponentEnum index : indices)
+    for (const int index : indices)
     {
         success = false;
         
@@ -65,7 +65,7 @@ TESLA::Component* TESLA::EntityComponentLookup::InitializeNewComponent(int entit
     return component;
 }
 
-TESLA::Component* TESLA::EntityComponentLookup::GetTypelessComponent(TESLA_ENUMS::ComponentEnum index, int entityId)
+TESLA::Component* TESLA::EntityComponentLookup::GetTypelessComponent(int index, int entityId)
 {
     if(index >= m_components.size() || entityId >= m_components[index].size() || !m_components[index][entityId])
         return nullptr;
@@ -83,7 +83,7 @@ TESLA::Entity* TESLA::EntityComponentLookup::GetEntity(int id)
     return nullptr;
 }
 
-std::vector<TESLA::Component*>& TESLA::EntityComponentLookup::GetComponents(TESLA_ENUMS::ComponentEnum index)
+std::vector<TESLA::Component*>& TESLA::EntityComponentLookup::GetComponents(int index)
 {
     if(index < m_components.size())
     {
@@ -93,9 +93,9 @@ std::vector<TESLA::Component*>& TESLA::EntityComponentLookup::GetComponents(TESL
     return m_components[0];
 }
 
-TESLA::Component* TESLA::EntityComponentLookup::GetFirstValidTypelessComponent(TESLA_ENUMS::ComponentEnum enumType)
+TESLA::Component* TESLA::EntityComponentLookup::GetFirstValidTypelessComponent(int index)
 {
-    std::vector<TESLA::Component*>& components = this->GetComponents(enumType);
+    std::vector<TESLA::Component*>& components = this->GetComponents(index);
     TESLA::Component* returnComponent = nullptr;
 
     for (int i = 0; i < components.size(); i++)
