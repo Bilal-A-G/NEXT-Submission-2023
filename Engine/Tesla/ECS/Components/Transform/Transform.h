@@ -10,14 +10,14 @@ namespace TESLA
         {
             return {TESLA_ENUMS::Transform};
         }
-        void Translate(Vector translation);
-        void SetTranslation(Vector translation);
+        void Translate(Vector3 translation);
+        void SetTranslation(Vector3 translation);
         
-        void Rotate(Vector axis, float angle);
-        void SetRotation(Vector axis, float angle);
+        void Rotate(Vector3 axis, float angle);
+        void SetRotation(Vector3 axis, float angle);
         
-        void Scale(Vector axis, float size);
-        void SetScale(Vector axis, float size);
+        void Scale(Vector3 axis, float size);
+        void SetScale(Vector3 axis, float size);
         
         void SetChild(TESLA::Transform* child)
         {
@@ -38,18 +38,21 @@ namespace TESLA
 
             child->parent = nullptr;
         }
+
+    private:
+        Vector3 GetTransformedToChildVector(Vector3 childPosition, Matrix4x4 finalMatrix);
     public:
         Matrix4x4 scaleMatrix = TESLA::Matrix4x4::Identity();
         Matrix4x4 positionMatrix = TESLA::Matrix4x4::Identity();
         Matrix4x4 rotationMatrix = TESLA::Matrix4x4::Identity();
         
-        Vector position;
-        Vector rotation;
-        Vector scale;
+        Vector3 position;
+        Vector3 rotation;
+        Vector3 scale;
         
-        Vector right = {1.0f, 0.0f, 0.0f};
-        Vector up = {0.0f, 1.0f, 0.0f};
-        Vector forward = {0.0f, 0.0f, 1.0f};
+        Vector3 right = {1.0f, 0.0f, 0.0f};
+        Vector3 up = {0.0f, 1.0f, 0.0f};
+        Vector3 forward = {0.0f, 0.0f, 1.0f};
 
         Transform* parent = nullptr;
     private:

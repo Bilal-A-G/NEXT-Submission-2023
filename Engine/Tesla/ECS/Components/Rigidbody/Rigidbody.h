@@ -15,7 +15,7 @@ namespace TESLA
         float friction;
         float restitution;
         bool hasGravity;
-        TESLA::Vector velocity;
-        TESLA::Vector acceleration;
+        TESLA::Vector3 velocity;
+        TESLA::Vector3 acceleration;
     };   
 }

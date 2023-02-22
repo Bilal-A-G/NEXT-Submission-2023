@@ -11,7 +11,7 @@ std::vector<TESLA::Entity*> TESLA::ParticlePool::m_pool;
 void TESLA::ParticlePool::Return(TESLA::Entity* particle)
 {
     particle->GetComponent<Mesh>(TESLA_ENUMS::Mesh)->colour = TESLA::Colour::Black();
-    particle->GetComponent<Transform>(TESLA_ENUMS::Transform)->position = TESLA::Vector::Zero();
+    particle->GetComponent<Transform>(TESLA_ENUMS::Transform)->position = TESLA::Vector3::Zero();
     particle->GetComponent<ParticleProperties>(TESLA_ENUMS::Particle)->fadeOut = false;
 
     m_pool.push_back(particle);

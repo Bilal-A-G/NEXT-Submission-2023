@@ -1,20 +1,24 @@
 #include "TSPch.h"
 #include "SphereCollider.h"
 
-std::vector<TESLA::Vector> TESLA::SphereCollider::GetAxes(TESLA::Vector position, TESLA::Matrix4x4 rotation, TESLA::Vector otherPosition)
+std::vector<TESLA::Vector3> TESLA::SphereCollider::GetAxes(TESLA::Vector3 position, TESLA::Matrix4x4 rotation, TESLA::Vector3 otherPosition)
 {
+    Vector3 normalizedDirToOther = (otherPosition - position).Normalize();
+    
     return {
-        TESLA::Vector(otherPosition - position).Normalize()
+        normalizedDirToOther
     };
 }
 
-std::vector<TESLA::Vector> TESLA::SphereCollider::GetVertices(TESLA::Vector position, TESLA::Matrix4x4 rotation, TESLA::Vector otherPosition)
+std::vector<TESLA::Vector3> TESLA::SphereCollider::GetVertices(TESLA::Vector3 position, TESLA::Matrix4x4 rotation, TESLA::Vector3 otherPosition)
 {
-    TESLA::Vector directionToOther = (otherPosition - position).Normalize();
+    TESLA::Vector3 directionToOther = (otherPosition - position).Normalize();
+    TESLA::Vector3 r0 = position + directionToOther * radius;
+    TESLA::Vector3 r1 = position + directionToOther * -radius;
     
     return {
-        position + directionToOther * radius,
-        position + directionToOther * -radius
+        r0,
+        r1
     };
 }
 

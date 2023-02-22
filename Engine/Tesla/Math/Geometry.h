@@ -8,7 +8,7 @@ namespace TESLA
     struct Triangle
     {
     public:
-        Triangle(std::initializer_list<Vector> vertices):vertices()
+        Triangle(std::initializer_list<Vector3> vertices):vertices()
         {
             this->vertices[0] = data(vertices)[0];
             this->vertices[1] = data(vertices)[1];
@@ -17,7 +17,7 @@ namespace TESLA
 
         Triangle(){}
     public:
-        std::array<Vector, 3> vertices;
+        std::array<Vector3, 3> vertices;
     };
 
     struct Colour
@@ -73,24 +73,29 @@ namespace TESLA
         Face(){}
         void CalculateNormal()
         {
-            normal = TESLA::Vector::Cross(triangle.vertices[2] - triangle.vertices[0],
-            triangle.vertices[1] - triangle.vertices[0]).Normalize();
+            Vector3 edge1 = Vector3(triangle.vertices[2].x, triangle.vertices[2].y, triangle.vertices[2].z) -
+                Vector3(triangle.vertices[0].x, triangle.vertices[0].y, triangle.vertices[0].z);
+
+            Vector3 edge2 = Vector3(triangle.vertices[1].x, triangle.vertices[1].y, triangle.vertices[1].z) -
+                Vector3(triangle.vertices[0].x, triangle.vertices[0].y, triangle.vertices[0].z);
+            
+            normal = TESLA::Vector3::Cross(edge1, edge2).Normalize();
         }
     public:
         Triangle triangle;
-        Vector normal;
+        Vector3 normal;
         Colour colour;
     };
 
-    inline void ClipAgainstPlane(Vector planePos, Vector planeNormal, TESLA::Face in, std::vector<TESLA::Face>& faceQueue)
+    inline void ClipAgainstPlane(Vector3 planePos, Vector3 planeNormal, TESLA::Face in, std::vector<TESLA::Face>& faceQueue)
     {
-        Vector normal = planeNormal.Normalize();
-        auto dist = [&](Vector point)
+        Vector3 normal = planeNormal.Normalize();
+        auto dist = [&](Vector3 point)
         {
-            return(normal.x * point.x + normal.y * point.y + normal.z * point.z - TESLA::Vector::Dot(normal, planePos));
+            return(normal.x * point.x + normal.y * point.y + normal.z * point.z - TESLA::Vector3::Dot(normal, planePos));
         };
         
-        static std::vector<Vector> insidePoints;
+        static std::vector<Vector3> insidePoints;
         insidePoints.clear();
         if(insidePoints.capacity() != 3)
         {
@@ -98,7 +103,7 @@ namespace TESLA
         }
         int insideSize = 0;
         
-        static std::vector<Vector> outsidePoints;
+        static std::vector<Vector3> outsidePoints;
         outsidePoints.clear();
         if(outsidePoints.capacity() != 3)
         {
@@ -107,7 +112,7 @@ namespace TESLA
 
         for (int i = 0; i < 3; i++)
         {
-            Vector currentVertex = in.triangle.vertices[i];
+            Vector3 currentVertex = in.triangle.vertices[i];
             float distance = dist(currentVertex);
             if (distance >= 0)
             {
@@ -121,9 +126,9 @@ namespace TESLA
         }
 
         Face outFace;
-        Vector p0;
-        Vector p1;
-        Vector p2;
+        Vector3 p0;
+        Vector3 p1;
+        Vector3 p2;
         
         switch (insideSize)
         {
@@ -158,13 +163,13 @@ namespace TESLA
         }
     }
 
-    inline void CalculateLighting(std::vector<Face>& projectedFaces, Vector lightPosition, float lightIntensity, Colour baseColour)
+    inline void CalculateLighting(std::vector<Face>& projectedFaces, Vector3 lightPosition, float lightIntensity, Colour baseColour)
     {
         for (Face& face : projectedFaces)
         {
             TESLA::Colour ambient = TESLA::Colour(1,1,1) * 0.5;
-            TESLA::Vector lightDirection = (lightPosition - (face.triangle.vertices[0] + face.triangle.vertices[1] + face.triangle.vertices[2])/3).Normalize();
-            float incidentAngle = TESLA::Vector::Dot(face.normal, lightDirection);
+            TESLA::Vector3 lightDirection = (lightPosition - (face.triangle.vertices[0] + face.triangle.vertices[1] + face.triangle.vertices[2])/3).Normalize();
+            float incidentAngle = TESLA::Vector3::Dot(face.normal, lightDirection);
             if(incidentAngle < 0)
             {
                 incidentAngle = 0;
@@ -187,7 +192,9 @@ namespace TESLA
         
             for(int i = 0; i < 3; i++)
             {
-                projFace.triangle.vertices[i] = model * projFace.triangle.vertices[i];
+                Vector4 vec4Vertex = Vector4(projFace.triangle.vertices[i].x, projFace.triangle.vertices[i].y, projFace.triangle.vertices[i].z, 1);
+                Vector4 modelSpaceVertex = model * vec4Vertex;
+                projFace.triangle.vertices[i] = Vector3(modelSpaceVertex.x, modelSpaceVertex.y, modelSpaceVertex.z);
             }
 
             projFace.CalculateNormal();
@@ -197,19 +204,21 @@ namespace TESLA
         return projectedFaces;
     }
 
-    inline std::vector<TESLA::Face> ProjectToView(std::vector<Face>& worldFaces, Vector cameraPosition, Matrix4x4 view)
+    inline std::vector<TESLA::Face> ProjectToView(std::vector<Face>& worldFaces, Vector3 cameraPosition, Matrix4x4 view)
     {
         std::vector<Face> passedFaces;
         
         for (Face projFace : worldFaces)
         {
             //Backface culling!
-            if(TESLA::Vector::Dot(projFace.normal, (cameraPosition - projFace.triangle.vertices[0]).Normalize()) < 0.0f)
+            if(TESLA::Vector3::Dot(projFace.normal, (cameraPosition - projFace.triangle.vertices[0]).Normalize()) < 0.0f)
             {
                 for (int j = 0; j < 3; j++)
                 {
                     //View
-                    projFace.triangle.vertices[j] = projFace.triangle.vertices[j] * view;
+                    Vector4 vec4Vertex = Vector4(projFace.triangle.vertices[j].x, projFace.triangle.vertices[j].y, projFace.triangle.vertices[j].z, 1);
+                    Vector4 viewSpaceVertex = view * vec4Vertex;
+                    projFace.triangle.vertices[j] = Vector3(viewSpaceVertex.x, viewSpaceVertex.y, viewSpaceVertex.z);
                 }
         
                 //Depth clipping!!
@@ -231,21 +240,22 @@ namespace TESLA
             for (int k = 0; k < 3; k++)
             {
                 //Projection
-                face.triangle.vertices[k] = face.triangle.vertices[k] * projection;
+                Vector4 vec4Vertex = Vector4(face.triangle.vertices[k].x, face.triangle.vertices[k].y, face.triangle.vertices[k].z, 1);
+                Vector4 projectedVertex = projection * vec4Vertex;
                 
                 //Doing the perspective divide
-                face.triangle.vertices[k] = face.triangle.vertices[k].PerspectiveDivide();
+                face.triangle.vertices[k] = projectedVertex.PerspectiveDivide();
         
                 //Translating to normalized device space
-                face.triangle.vertices[k] += Vector(1.0f, 1.0f, 0.0f, 0.0f);
-                face.triangle.vertices[k] = Vector(face.triangle.vertices[k].x * (float)APP_VIRTUAL_WIDTH, face.triangle.vertices[k].y * (float)APP_VIRTUAL_HEIGHT, 0.0f)/2;
+                face.triangle.vertices[k] += Vector3(1.0f, 1.0f, 0.0f);
+                face.triangle.vertices[k] = Vector3(face.triangle.vertices[k].x * (float)APP_VIRTUAL_WIDTH, face.triangle.vertices[k].y * (float)APP_VIRTUAL_HEIGHT, 0.0f)/2;
             }
         }
 
         return screenFaces;
     }
 
-    inline Matrix4x4 CalculateView(Vector position, Vector forward, Vector up)
+    inline Matrix4x4 CalculateView(Vector3 position, Vector3 forward, Vector3 up)
     {
         TESLA::Matrix4x4 pointAtMatrix = TESLA::Matrix4x4::PointAt(position, position + forward, up);
         return Matrix4x4::LookAt(pointAtMatrix);

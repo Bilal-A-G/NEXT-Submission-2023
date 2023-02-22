@@ -13,7 +13,7 @@ std::vector<TESLA::Face> TESLA::ResourceLoader::LoadObjFile(std::string fileName
     std::ifstream fileStream(resourcesPath + "/" + fileName + ".obj");
     assert(fileStream.is_open());
 
-    std::vector<Vector> vertices;
+    std::vector<Vector3> vertices;
     while (!fileStream.eof())
     {
         char line[128];
@@ -25,9 +25,8 @@ std::vector<TESLA::Face> TESLA::ResourceLoader::LoadObjFile(std::string fileName
         char out;
         if(line[0] == 'v')
         {
-            Vector v;
+            Vector3 v;
             fileStringStream >> out >> v.x >> v.y >> v.z;
-            v.w = 1;
             vertices.push_back(v);
         }
         else if(line[0] == 'f')

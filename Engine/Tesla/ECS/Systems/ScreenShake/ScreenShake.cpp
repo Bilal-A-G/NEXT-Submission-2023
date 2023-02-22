@@ -22,7 +22,7 @@ void TESLA::ScreenShake::Update(float deltaTime, TESLA::EntityComponentLookup& l
     TESLA::Component* mainCamera = lookup.GetFirstValidComponent<TESLA::Camera>(TESLA_ENUMS::Camera);
     TESLA::Transform* cameraTransform = lookup.GetComponent<TESLA::Transform>(TESLA_ENUMS::Transform, mainCamera->m_entityId);
     
-    cameraTransform->SetRotation(TESLA::Vector(rand() / static_cast<float>(RAND_MAX), rand() / static_cast<float>(RAND_MAX), 0), amount);
+    cameraTransform->SetRotation(TESLA::Vector3(rand() / static_cast<float>(RAND_MAX), rand() / static_cast<float>(RAND_MAX), 0), amount);
 }
 
 void TESLA::ScreenShake::Disable()

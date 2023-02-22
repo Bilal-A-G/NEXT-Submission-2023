@@ -35,7 +35,7 @@ public:
         properties.amount = 10;
         properties.averageLifetime = 20.0f;
         properties.lifetimeVariation = 5.0f;
-        properties.rotationAxis = TESLA::Vector(1, 1, 1);
+        properties.rotationAxis = TESLA::Vector3(1, 1, 1);
         properties.averageRotationSpeed = 0.01f;
         properties.rotationSpeedVariation = 0.01f;
         properties.averageSpeed = 2.0f;
@@ -47,7 +47,7 @@ public:
         properties.colourChangeSpeed = 0.2f;
         properties.initialColour = TESLA::Colour::White();
         properties.endColour = TESLA::Colour::Red();
-        properties.position = TESLA::Vector(0, 0, 2);
+        properties.position = TESLA::Vector3(0, 0, 2);
         
         TESLA::Particles::Play(properties, *m_lookup);
         
@@ -55,7 +55,7 @@ public:
         m_mainCamera = m_lookup->CreateEntity();
         auto camera = m_mainCamera->AddComponent<TESLA::Camera>();
         m_cameraTransform = m_mainCamera->AddComponent<TESLA::Transform>();
-        camera->fov = 50.0f;
+        camera->fov = 155.0f;
         camera->farPlane = 1000.0f;
         camera->nearPlane = 0.1f;
 
@@ -63,7 +63,7 @@ public:
         TESLA::Entity* cameraParent = m_lookup->CreateEntity();
         m_cameraParentTransform = cameraParent->AddComponent<TESLA::Transform>();
         m_cameraParentTransform->SetChild(m_cameraTransform);
-        m_cameraTransform->right = TESLA::Vector(-1, 0, 0, 1);
+        m_cameraTransform->right = TESLA::Vector3(-1, 0, 0);
         
         //Init light
         TESLA::Entity* light = m_lookup->CreateEntity();
@@ -71,7 +71,7 @@ public:
         TESLA::Light* lightComponent = light->AddComponent<TESLA::Light>();
         TESLA::Transform* lightTransform = light->AddComponent<TESLA::Transform>();
         lightComponent->intensity = 0.6f;
-        lightTransform->Translate(TESLA::Vector(-40, 50, 0));
+        lightTransform->Translate(TESLA::Vector3(-40, 50, 0));
 
         //Init first entity
         m_entity = m_lookup->CreateEntity();
@@ -83,8 +83,8 @@ public:
         
         m_mesh->faces = TESLA::ResourceLoader::LoadObjFile("Cube");
         m_mesh->colour = TESLA::Colour::Green();
-        m_transform->Scale(TESLA::Vector(1,1,1), m_meshSize/2);
-        m_transform->Translate(TESLA::Vector(0, 0, 2));
+        m_transform->Scale(TESLA::Vector3(1,1,1), m_meshSize/2);
+        m_transform->Translate(TESLA::Vector3(0, 0, 2));
         m_rb->mass = 20;
         m_rb->hasGravity = false;
         m_rb->friction = 1;
@@ -94,7 +94,7 @@ public:
         collider->depth = 0.6f;
 
         //Raycasting
-        TESLA::Physics::Raycast(TESLA::Vector::Zero(), TESLA::Vector(0, 0, 1, 0), 100, 10.0f,
+        TESLA::Physics::Raycast(TESLA::Vector3::Zero(), TESLA::Vector3(0, 0, 1), 100, 10.0f,
             [](TESLA::Entity& other)
         {
             std::cout << "Hit: " << other.name << "\n";
@@ -129,8 +129,8 @@ public:
 
         entity2Mesh->faces = TESLA::ResourceLoader::LoadObjFile("Sphere");
         entity2Mesh->colour = TESLA::Colour::Blue();
-        entity2Transform->Scale(TESLA::Vector(1, 1, 1), m_meshSize);
-        entity2Transform->Translate(TESLA::Vector(0, 0, 4));
+        entity2Transform->Scale(TESLA::Vector3(1, 1, 1), m_meshSize);
+        entity2Transform->Translate(TESLA::Vector3(0, 0, 4));
         entity2Rb->mass = 20;
         entity2Rb->hasGravity = false;
         entity2Rb->friction = 1;
@@ -145,7 +145,7 @@ public:
     
     void Update(float deltaTime) override
     {
-        TESLA::Vector moveVector = TESLA::Vector::Zero();
+        TESLA::Vector3 moveVector = TESLA::Vector3::Zero();
         
         //Entity controls
         if(App::IsKeyPressed(VK_UP))

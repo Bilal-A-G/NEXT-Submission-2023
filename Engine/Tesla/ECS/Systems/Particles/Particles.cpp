@@ -8,7 +8,7 @@
 #include "ECS/Components/Particles/ParticleProperties.h"
 #include "ECS/Systems/Particles/ParticleSystemProperties.h"
 
-#define NEW_SEED ((rand() / static_cast<double>(RAND_MAX) - 0.5f) * 2.0f)
+#define NEW_SEED ((rand() / static_cast<float>(RAND_MAX) - 0.5f) * 2.0f)
 
 std::vector<TESLA::Entity*> TESLA::Particles::m_particles;
 
@@ -28,9 +28,9 @@ void TESLA::Particles::Play(const TESLA::ParticleSystemProperties& systemPropert
         mesh->colour = systemProperties.initialColour + TESLA::Colour(NEW_SEED, NEW_SEED, NEW_SEED) * systemProperties.colourVariation;
         
         transform->Translate(systemProperties.position);
-        transform->Scale(TESLA::Vector(1, 1, 1), systemProperties.averageSize + NEW_SEED * systemProperties.sizeVariation);
+        transform->Scale(TESLA::Vector3(1, 1, 1), systemProperties.averageSize + NEW_SEED * systemProperties.sizeVariation);
         
-        rb->acceleration = TESLA::Vector(NEW_SEED, NEW_SEED, NEW_SEED) * (systemProperties.averageSpeed + NEW_SEED * systemProperties.speedVariation);
+        rb->acceleration = TESLA::Vector3(NEW_SEED, NEW_SEED, NEW_SEED) * (systemProperties.averageSpeed + NEW_SEED * systemProperties.speedVariation);
 
         const float randomizedRotationSpeed = systemProperties.averageRotationSpeed + NEW_SEED * systemProperties.rotationSpeedVariation;
         const float randomizedLifetime = systemProperties.averageLifetime + NEW_SEED * systemProperties.lifetimeVariation;

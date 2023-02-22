@@ -1,7 +1,7 @@
 ﻿#include "TSPch.h"
 #include "Transform.h"
 
-TESLA::Matrix4x4 GetRotationMatrix(TESLA::Vector axis, float angle)
+TESLA::Matrix4x4 GetRotationMatrix(TESLA::Vector3 axis, float angle)
 {
     float cosTheta = cos(angle);
     float sinTheta = sin(angle);
@@ -58,12 +58,22 @@ TESLA::Matrix4x4 GetRotationMatrix(TESLA::Vector axis, float angle)
     return (rotationY * rotationX * rotationZ);
 }
 
-void TESLA::Transform::Rotate(Vector axis, float angle)
+TESLA::Vector3 TESLA::Transform::GetTransformedToChildVector(Vector3 childPosition, Matrix4x4 finalMatrix)
 {
-    Vector rotatedTarget =  TESLA::Vector(0, 0, 1) * rotationMatrix;
-    forward = rotatedTarget.Normalize();
-    right = TESLA::Vector::Cross(forward, TESLA::Vector(0, 1, 0)).Normalize();
-    up = TESLA::Vector::Cross(right, forward).Normalize();
+    TESLA::Vector3 vectorToChild = childPosition - position;
+    Vector4 transformedVectorToChild = Vector4(vectorToChild.x, vectorToChild.y, vectorToChild.z, 1) * finalMatrix;
+    return Vector3(transformedVectorToChild.x, transformedVectorToChild.y, transformedVectorToChild.z) - vectorToChild;
+}
+
+
+void TESLA::Transform::Rotate(Vector3 axis, float angle)
+{
+    Vector4 rotatedTarget =  TESLA::Vector4(0, 0, 1, 1) * rotationMatrix;
+    Vector3 vec3Target = Vector3(rotatedTarget.x, rotatedTarget.y, rotatedTarget.z);
+    
+    forward = vec3Target.Normalize();
+    right = TESLA::Vector3::Cross(forward, TESLA::Vector3(0, 1, 0)).Normalize();
+    up = TESLA::Vector3::Cross(right, forward).Normalize();
 
     Matrix4x4 finalMatrix = GetRotationMatrix(axis, angle);
     if(parent != nullptr)
@@ -76,18 +86,19 @@ void TESLA::Transform::Rotate(Vector axis, float angle)
 
     for (int i = 0; i < m_children.size(); i++)
     {
-        TESLA::Vector vectorToChild = m_children[i]->position - position;
-        m_children[i]->Translate(vectorToChild * finalMatrix - vectorToChild);
+        m_children[i]->Translate(GetTransformedToChildVector(m_children[i]->position, finalMatrix));
         m_children[i]->SetRotation(axis, 0);
     }
 }
 
-void TESLA::Transform::SetRotation(Vector axis, float angle)
+void TESLA::Transform::SetRotation(Vector3 axis, float angle)
 {
-    Vector rotatedTarget =  TESLA::Vector(0, 0, 1) * rotationMatrix;
-    forward = rotatedTarget.Normalize();
-    right = TESLA::Vector::Cross(forward, TESLA::Vector(0, 1, 0)).Normalize();
-    up = TESLA::Vector::Cross(right, forward).Normalize();
+    Vector4 rotatedTarget =  TESLA::Vector4(0, 0, 1, 1) * rotationMatrix;
+    Vector3 vec3RotatedTarget = Vector3(rotatedTarget.x, rotatedTarget.y, rotatedTarget.z);
+    
+    forward = vec3RotatedTarget.Normalize();
+    right = TESLA::Vector3::Cross(forward, TESLA::Vector3(0, 1, 0)).Normalize();
+    up = TESLA::Vector3::Cross(right, forward).Normalize();
 
     Matrix4x4 finalMatrix = GetRotationMatrix(axis, angle);
     if(parent != nullptr)
@@ -100,16 +111,14 @@ void TESLA::Transform::SetRotation(Vector axis, float angle)
 
     for (int i = 0; i < m_children.size(); i++)
     {
-        TESLA::Vector vectorToChild = m_children[i]->position - position;
-        m_children[i]->Translate(vectorToChild * finalMatrix - vectorToChild);
+        m_children[i]->Translate(GetTransformedToChildVector(m_children[i]->position, finalMatrix));
         m_children[i]->SetRotation(axis, -angle);
     }
 }
 
-
-void TESLA::Transform::Scale(Vector axis, float size)
+void TESLA::Transform::Scale(Vector3 axis, float size)
 {
-    Vector normalizedAxis = axis.Normalize();
+    Vector3 normalizedAxis = axis.Normalize();
     scaleMatrix = scaleMatrix * TESLA::Matrix4x4
     {
             {normalizedAxis.x * size, 0.0f, 0.0f, 0.0f},
@@ -121,9 +130,9 @@ void TESLA::Transform::Scale(Vector axis, float size)
     scale += axis * size;
 }
 
-void TESLA::Transform::SetScale(Vector axis, float size)
+void TESLA::Transform::SetScale(Vector3 axis, float size)
 {
-    Vector normalizedAxis = axis.Normalize();
+    Vector3 normalizedAxis = axis.Normalize();
     scaleMatrix = TESLA::Matrix4x4
     {
                 {normalizedAxis.x * size, 0.0f, 0.0f, 0.0f},
@@ -136,7 +145,7 @@ void TESLA::Transform::SetScale(Vector axis, float size)
 }
 
 
-void TESLA::Transform::Translate(Vector translation)
+void TESLA::Transform::Translate(Vector3 translation)
 {
     positionMatrix = positionMatrix * Matrix4x4
     {
@@ -158,7 +167,7 @@ void TESLA::Transform::Translate(Vector translation)
     }
 }
 
-void TESLA::Transform::SetTranslation(Vector translation)
+void TESLA::Transform::SetTranslation(Vector3 translation)
 {
     positionMatrix = Matrix4x4
     {

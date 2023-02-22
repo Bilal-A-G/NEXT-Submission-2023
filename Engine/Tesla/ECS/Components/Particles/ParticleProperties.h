@@ -9,7 +9,7 @@ namespace TESLA
     public:
         std::vector<int> GetEnum() override {return {TESLA_ENUMS::Particle};}
     public:
-        TESLA::Vector rotationAxis = TESLA::Vector::Zero();
+        TESLA::Vector3 rotationAxis = TESLA::Vector3::Zero();
         TESLA::Colour endColour = TESLA::Colour::White();
         float alphaFadeSpeed = 0.0f;
         float colourChangeSpeed = 0.0f;

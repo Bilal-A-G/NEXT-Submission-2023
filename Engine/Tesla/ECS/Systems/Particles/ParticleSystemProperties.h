@@ -6,8 +6,8 @@ namespace TESLA
     struct ParticleSystemProperties
     {
     public:
-        TESLA::Vector position = TESLA::Vector::Zero();
-        TESLA::Vector rotationAxis = TESLA::Vector::Zero();
+        TESLA::Vector3 position = TESLA::Vector3::Zero();
+        TESLA::Vector3 rotationAxis = TESLA::Vector3::Zero();
         TESLA::Colour initialColour = TESLA::Colour::Black();
         TESLA::Colour endColour = TESLA::Colour::White();
         float alphaFadeSpeed = 0.0f;

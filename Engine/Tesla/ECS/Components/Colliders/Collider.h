@@ -11,8 +11,8 @@ namespace TESLA
     struct Collider : public TESLA::Component
     {
     public:
-        virtual std::vector<TESLA::Vector> GetAxes(TESLA::Vector position, TESLA::Matrix4x4 rotation, TESLA::Vector otherPosition) = 0;
-        virtual std::vector<TESLA::Vector> GetVertices(TESLA::Vector position, TESLA::Matrix4x4 rotation, TESLA::Vector otherPosition) = 0;
+        virtual std::vector<TESLA::Vector3> GetAxes(TESLA::Vector3 position, TESLA::Matrix4x4 rotation, TESLA::Vector3 otherPosition) = 0;
+        virtual std::vector<TESLA::Vector3> GetVertices(TESLA::Vector3 position, TESLA::Matrix4x4 rotation, TESLA::Vector3 otherPosition) = 0;
         virtual float GetStiffness() = 0;
         
         void OnCollisionStay(CollisionFunction listener)

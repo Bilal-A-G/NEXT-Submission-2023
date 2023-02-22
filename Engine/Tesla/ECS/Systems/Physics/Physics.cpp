@@ -34,18 +34,18 @@ void TESLA::Physics::Update(float deltaTime, TESLA::EntityComponentLookup& looku
             TESLA::Collider* collider2 = static_cast<TESLA::Collider*>(colliders[j]);
 
             //Perform SAT and update velocities
-            std::vector<TESLA::Vector> body1Axes = collider1->GetAxes(transform1->position, transform1->rotationMatrix, transform2->position);
-            std::vector<TESLA::Vector> body2Axes = collider2->GetAxes(transform2->position, transform2->rotationMatrix, transform1->position);
+            std::vector<TESLA::Vector3> body1Axes = collider1->GetAxes(transform1->position, transform1->rotationMatrix, transform2->position);
+            std::vector<TESLA::Vector3> body2Axes = collider2->GetAxes(transform2->position, transform2->rotationMatrix, transform1->position);
             
-            std::vector<TESLA::Vector> body1Vertices = collider1->GetVertices(transform1->position, transform1->rotationMatrix, transform2->position);
-            std::vector<TESLA::Vector> body2Vertices = collider2->GetVertices(transform2->position, transform2->rotationMatrix, transform1->position);
+            std::vector<TESLA::Vector3> body1Vertices = collider1->GetVertices(transform1->position, transform1->rotationMatrix, transform2->position);
+            std::vector<TESLA::Vector3> body2Vertices = collider2->GetVertices(transform2->position, transform2->rotationMatrix, transform1->position);
 
-            TESLA::Vector resolution = TESLA::Vector::Zero();
+            TESLA::Vector3 resolution = TESLA::Vector3::Zero();
 
             resolution = PerformSAT(body1Vertices, body2Vertices,body1Axes);
             resolution = PerformSAT(body1Vertices, body2Vertices,body2Axes);
             
-            if(resolution != TESLA::Vector::Zero())
+            if(resolution != TESLA::Vector3::Zero())
             {
                 collider1->InvokeCollision(*lookup.GetEntity(rb2->m_entityId));
                 collider2->InvokeCollision(*lookup.GetEntity(rb1->m_entityId));
@@ -66,7 +66,7 @@ void TESLA::Physics::Update(float deltaTime, TESLA::EntityComponentLookup& looku
     //Raycasting
     for (int i = 0; i < m_rays.size(); i++)
     {
-        std::vector<TESLA::Vector> rayPosition{m_rays[i]->position};
+        std::vector<TESLA::Vector3> rayPosition{m_rays[i]->position};
         
         for (int v = 0; v < colliders.size(); v++)
         {
@@ -76,10 +76,10 @@ void TESLA::Physics::Update(float deltaTime, TESLA::EntityComponentLookup& looku
             TESLA::Transform* transform = static_cast<TESLA::Transform*>(transforms[v]);
             TESLA::Collider* collider = static_cast<TESLA::Collider*>(colliders[v]);
     
-            std::vector<TESLA::Vector> bodyAxes = collider->GetAxes(transform->position, transform->rotationMatrix, m_rays[i]->position);
-            std::vector<TESLA::Vector> bodyVertices = collider->GetVertices(transform->position, transform->rotationMatrix, m_rays[i]->position);
+            std::vector<TESLA::Vector3> bodyAxes = collider->GetAxes(transform->position, transform->rotationMatrix, m_rays[i]->position);
+            std::vector<TESLA::Vector3> bodyVertices = collider->GetVertices(transform->position, transform->rotationMatrix, m_rays[i]->position);
 
-            if(PerformSAT(bodyVertices, rayPosition, bodyAxes) != TESLA::Vector::Zero())
+            if(PerformSAT(bodyVertices, rayPosition, bodyAxes) != TESLA::Vector3::Zero())
             {
                 m_rays[i]->callback(*lookup.GetEntity(collider->m_entityId));
                 eraseIndex = i;
@@ -118,17 +118,17 @@ void TESLA::Physics::Update(float deltaTime, TESLA::EntityComponentLookup& looku
         }
         else if(currentRigidBody->acceleration.Magnitude() <= 0.1f)
         {
-            currentRigidBody->acceleration = TESLA::Vector::Zero();
+            currentRigidBody->acceleration = TESLA::Vector3::Zero();
         }
 
         if(currentRigidBody->hasGravity)
         {
-            currentRigidBody->velocity += TESLA::Vector(0, gravity, 0) * deltaTime;
+            currentRigidBody->velocity += TESLA::Vector3(0, gravity, 0) * deltaTime;
         }
         
         currentTransform->Translate(currentRigidBody->velocity * deltaTime);
         
-        currentRigidBody->velocity = TESLA::Vector::Zero();
+        currentRigidBody->velocity = TESLA::Vector3::Zero();
     }
 }
 
@@ -137,12 +137,12 @@ void TESLA::Physics::Disable()
     m_rays.clear();
 }
 
-TESLA::Vector TESLA::Physics::PerformSAT(std::vector<Vector>& verticesA, std::vector<Vector>& verticesB, std::vector<Vector>& axes)
+TESLA::Vector3 TESLA::Physics::PerformSAT(std::vector<Vector3>& verticesA, std::vector<Vector3>& verticesB, std::vector<Vector3>& axes)
 {
     float minDepth = 0;
-    TESLA::Vector minAxis = TESLA::Vector::Zero();
+    TESLA::Vector3 minAxis = TESLA::Vector3::Zero();
     
-    for (TESLA::Vector axis : axes)
+    for (TESLA::Vector3 axis : axes)
     {
         float bodyAMin = 0;
         float bodyAMax = 0;
@@ -152,7 +152,7 @@ TESLA::Vector TESLA::Physics::PerformSAT(std::vector<Vector>& verticesA, std::ve
 
         for (int i = 0; i < verticesA.size(); i++)
         {
-            float dotProduct = TESLA::Vector::Dot(verticesA[i], axis);
+            float dotProduct = TESLA::Vector3::Dot(verticesA[i], axis);
             if(i == 0)
             {
                 bodyAMax = dotProduct;
@@ -171,7 +171,7 @@ TESLA::Vector TESLA::Physics::PerformSAT(std::vector<Vector>& verticesA, std::ve
 
         for (int i = 0; i < verticesB.size(); i++)
         {
-            float dotProduct = TESLA::Vector::Dot(verticesB[i], axis);
+            float dotProduct = TESLA::Vector3::Dot(verticesB[i], axis);
             if(i == 0)
             {
                 bodyBMax = dotProduct;
@@ -192,7 +192,7 @@ TESLA::Vector TESLA::Physics::PerformSAT(std::vector<Vector>& verticesA, std::ve
         {
             float depth = abs(bodyBMin - bodyAMax);
 
-            if(depth < minDepth || minAxis == TESLA::Vector::Zero())
+            if(depth < minDepth || minAxis == TESLA::Vector3::Zero())
             {
                 minDepth = depth;
                 minAxis = axis * -1.0f;
@@ -202,7 +202,7 @@ TESLA::Vector TESLA::Physics::PerformSAT(std::vector<Vector>& verticesA, std::ve
         {
             float depth = abs(bodyAMin - bodyBMax);
 
-            if(depth < minDepth || minAxis == TESLA::Vector::Zero())
+            if(depth < minDepth || minAxis == TESLA::Vector3::Zero())
             {
                 minDepth = depth;
                 minAxis = axis;
@@ -210,7 +210,7 @@ TESLA::Vector TESLA::Physics::PerformSAT(std::vector<Vector>& verticesA, std::ve
         }
         else
         {
-            return TESLA::Vector::Zero();
+            return TESLA::Vector3::Zero();
         }
     }
     

@@ -41,9 +41,9 @@ void TESLA::Renderer::Render(TESLA::EntityComponentLookup& lookup)
         std::vector<Face> faces = TESLA::ProjectToWorld(model, mesh->faces);
         
         TESLA::CalculateLighting(faces, lightTransform->position * -1.0f, light->intensity, mesh->colour);
-        
-        faces = TESLA::ProjectToView(faces, cameraTransform->position,
-            CalculateView(cameraTransform->position, cameraTransform->forward, cameraTransform->up));
+
+        Matrix4x4 viewMatrix = CalculateView(cameraTransform->position, cameraTransform->forward, cameraTransform->up);
+        faces = TESLA::ProjectToView(faces, cameraTransform->position, viewMatrix);
         faces = TESLA::ProjectToScreen(faces, camera->GetProjection());
 
         std::vector<Face> nonClippedFaces;
@@ -75,7 +75,7 @@ void TESLA::Renderer::Render(TESLA::EntityComponentLookup& lookup)
             
         for (Face face : nonClippedFaces)
         {
-            std::array<Vector, 3> currentVertices = face.triangle.vertices;
+            std::array<Vector3, 3> currentVertices = face.triangle.vertices;
             Colour currentColour = face.colour;
                 
             App::DrawLine(currentVertices[0].x, currentVertices[0].y,
