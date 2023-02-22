@@ -16,8 +16,6 @@
 #include "ECS/Systems/Particles/Particles.h"
 #include "ECS/Systems/ScreenShake/ScreenShake.h"
 
-#include "../Enums/ClientComponentEnums.h"
-
 bool firstTime = true;
 
 class MeshTest : public TESLA::Scene

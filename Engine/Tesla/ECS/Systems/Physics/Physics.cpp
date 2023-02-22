@@ -19,29 +19,29 @@ void TESLA::Physics::Update(float deltaTime, TESLA::EntityComponentLookup& looku
     {
         if(!(rigidBodies[i] && transforms[i] && colliders[i]))
             continue;
-
+    
         TESLA::Rigidbody* rb1 = static_cast<TESLA::Rigidbody*>(rigidBodies[i]);
         TESLA::Transform* transform1 = static_cast<TESLA::Transform*>(transforms[i]);
         TESLA::Collider* collider1 = static_cast<TESLA::Collider*>(colliders[i]);
-
+    
         for (int j = i + 1; j < colliders.size(); j++)
         {
             if(!(rigidBodies[i] && transforms[i] && colliders[i]))
                 continue;
-
+    
             TESLA::Rigidbody* rb2 = static_cast<TESLA::Rigidbody*>(rigidBodies[j]);
             TESLA::Transform* transform2 = static_cast<TESLA::Transform*>(transforms[j]);
             TESLA::Collider* collider2 = static_cast<TESLA::Collider*>(colliders[j]);
-
+    
             //Perform SAT and update velocities
             std::vector<TESLA::Vector3> body1Axes = collider1->GetAxes(transform1->position, transform1->rotationMatrix, transform2->position);
             std::vector<TESLA::Vector3> body2Axes = collider2->GetAxes(transform2->position, transform2->rotationMatrix, transform1->position);
             
             std::vector<TESLA::Vector3> body1Vertices = collider1->GetVertices(transform1->position, transform1->rotationMatrix, transform2->position);
             std::vector<TESLA::Vector3> body2Vertices = collider2->GetVertices(transform2->position, transform2->rotationMatrix, transform1->position);
-
+    
             TESLA::Vector3 resolution = TESLA::Vector3::Zero();
-
+    
             resolution = PerformSAT(body1Vertices, body2Vertices,body1Axes);
             resolution = PerformSAT(body1Vertices, body2Vertices,body2Axes);
             
@@ -52,10 +52,10 @@ void TESLA::Physics::Update(float deltaTime, TESLA::EntityComponentLookup& looku
                     
                 rb1->velocity += resolution * (collider1->GetStiffness() + collider2->GetStiffness()) * deltaTime;
                 rb2->velocity += resolution * -1.0f * (collider1->GetStiffness() + collider2->GetStiffness()) * deltaTime;
-
+    
                 continue;
             }
-
+    
             collider1->InvokeResolved();
             collider2->InvokeResolved();
         }
@@ -70,7 +70,7 @@ void TESLA::Physics::Update(float deltaTime, TESLA::EntityComponentLookup& looku
         
         for (int v = 0; v < colliders.size(); v++)
         {
-            if(!(transforms[i] && colliders[i]))
+            if(!(transforms[v] && colliders[v]))
                 continue;
     
             TESLA::Transform* transform = static_cast<TESLA::Transform*>(transforms[v]);
