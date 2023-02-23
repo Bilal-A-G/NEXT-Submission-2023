@@ -15,6 +15,9 @@ My submission to the Ubisoft NEXT Programming category, it consists of 2 parts:
 - **Scene Graph / Transform Hierarchy**
 - **Scene Management**
 
+## Documentation
+
+Web documentation is available here, https://bilal-a-g.github.io/Next_2023_Submission
 
 ## Running
 
