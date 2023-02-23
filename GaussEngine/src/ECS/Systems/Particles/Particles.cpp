@@ -8,10 +8,10 @@
 #include "ECS/Components/Particles/ParticleProperties.h"
 #include "ECS/Systems/Particles/ParticleSystemProperties.h"
 
+#define NEW_SEED ((rand() / static_cast<float>(RAND_MAX) - 0.5f) * 2.0f)
+
 namespace GAUSS
 {
-    #define NEW_SEED ((rand() / static_cast<float>(RAND_MAX) - 0.5f) * 2.0f)
-
     std::vector<Entity*> Particles::m_particles;
 
     void Particles::Play(const ParticleSystemProperties& systemProperties, EntityComponentLookup& lookup)
@@ -48,7 +48,7 @@ namespace GAUSS
         }
     }
 
-    void Particles::Update(float deltaTime, EntityComponentLookup& lookup)
+    void Particles::Update(const float& deltaTime, EntityComponentLookup& lookup)
     {
         for (int i = 0; i < m_particles.size(); i++)
         {
@@ -78,11 +78,6 @@ namespace GAUSS
         
             mesh->colour = Colour::Lerp(mesh->colour, properties->endColour, properties->colourChangeSpeed * deltaTime);
         }
-    }
-
-    void Particles::Awake()
-    {
-        ParticlePool::Init();
     }
 
     void Particles::Disable()

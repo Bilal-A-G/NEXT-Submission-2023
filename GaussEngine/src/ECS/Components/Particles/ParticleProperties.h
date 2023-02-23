@@ -4,17 +4,22 @@
 
 namespace GAUSS
 {
-    struct ParticleProperties : public Component
+    struct ParticleProperties final : public Component
     {
+        friend class EntityComponentLookup;
+    protected:
+        ParticleProperties() : rotationAxis(Vector3::Zero()), endColour(Colour::White()), alphaFadeSpeed(0), colourChangeSpeed(0),
+        rotationSpeed(0), lifeTime(0), fadeOut(false) {}
+        ~ParticleProperties() override = default;
     public:
         std::vector<int> GetEnum() override {return {GAUSS_ENUMS::Particle};}
     public:
-        Vector3 rotationAxis = Vector3::Zero();
-        Colour endColour = Colour::White();
-        float alphaFadeSpeed = 0.0f;
-        float colourChangeSpeed = 0.0f;
-        float rotationSpeed = 0.0f;
-        float lifeTime = 0.0f;
-        bool fadeOut = false;
+        Vector3 rotationAxis;
+        Colour endColour;
+        float alphaFadeSpeed;
+        float colourChangeSpeed;
+        float rotationSpeed;
+        float lifeTime;
+        bool fadeOut;
     };   
 }

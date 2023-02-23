@@ -2,11 +2,9 @@
 #include "ResourceLoader.h"
 #include <cassert>
 
-std::string resourcesPath = RES_PATH;
-
 namespace GAUSS
 {
-    std::vector<Face> ResourceLoader::LoadObjFile(std::string fileName)
+    std::vector<Face> ResourceLoader::LoadObjFile(const std::string& fileName)
     {
         std::vector<Triangle> triangles;
         std::vector<Face> faces;
@@ -34,21 +32,16 @@ namespace GAUSS
             {
                 int f[3];
                 fileStringStream >> out >> f[0] >> f[1] >> f[2];
-                triangles.push_back({vertices[f[0] -1], vertices[f[1] - 1], vertices[f[2] - 1]});
+                triangles.push_back(Triangle({vertices[f[0] -1], vertices[f[1] - 1], vertices[f[2] - 1]}));
             }
         }
 
-        for (Triangle triangle : triangles)
+        for (const Triangle& triangle : triangles)
         {
             faces.push_back(Face(triangle, Colour::Black()));
         }
 
         return faces;
-    }
-
-    std::string ResourceLoader::GetWavLocation(std::string fileName)
-    {
-        return resourcesPath + "/" + fileName + ".wav";
     }
 }
 

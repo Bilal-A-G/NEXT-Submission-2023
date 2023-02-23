@@ -16,6 +16,4 @@ namespace GAUSS_ENUMS
         ParticleSystem,
         Last
     };
-
-#define LAST_COMPONENT (GAUSS::ComponentEnum::Last  - 1)
 }

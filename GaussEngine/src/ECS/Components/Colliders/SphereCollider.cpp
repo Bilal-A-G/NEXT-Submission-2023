@@ -3,25 +3,18 @@
 
 namespace GAUSS
 {
-    std::vector<Vector3> SphereCollider::GetAxes(Vector3 position, Matrix4x4 rotation, Vector3 otherPosition)
+    std::vector<Vector3> SphereCollider::GetAxes(const Vector3& position, const Matrix4x4& rotation, const Vector3& otherPosition) const
     {
-        Vector3 normalizedDirToOther = (otherPosition - position).Normalize();
-    
-        return {
-            normalizedDirToOther
-        };
+        return std::vector<Vector3>{(otherPosition - position).Normalize()};
     }
 
-    std::vector<Vector3> SphereCollider::GetVertices(Vector3 position, Matrix4x4 rotation, Vector3 otherPosition)
+    std::vector<Vector3> SphereCollider::GetVertices(const Vector3& position, const Matrix4x4& rotation, const Vector3& otherPosition) const
     {
-        Vector3 directionToOther = (otherPosition - position).Normalize();
-        Vector3 r0 = position + directionToOther * radius;
-        Vector3 r1 = position + directionToOther * -radius;
+        const Vector3 directionToOther = (otherPosition - position).Normalize();
+        const Vector3 r0 = position + directionToOther * radius;
+        const Vector3 r1 = position + directionToOther * -radius;
     
-        return {
-            r0,
-            r1
-        };
+        return std::vector<Vector3>{r0, r1};
     }
 }
 

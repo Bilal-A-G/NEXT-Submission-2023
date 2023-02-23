@@ -3,112 +3,66 @@
 
 namespace GAUSS
 {
-    Matrix4x4 GetRotationMatrix(Vector3 axis, float angle)
+    Matrix4x4 GetRotationMatrix(const Vector3& axis, const float& angle)
     {
-        float cosTheta = cos(angle);
-        float sinTheta = sin(angle);
+        const float cosTheta = cos(angle);
+        const float sinTheta = sin(angle);
 
-        Matrix4x4 rotationY;
-        Matrix4x4 rotationX;
-        Matrix4x4 rotationZ;
+        Matrix4x4 rotationY = Matrix4x4();
+        Matrix4x4 rotationX = Matrix4x4();
+        Matrix4x4 rotationZ = Matrix4x4();
             
-        if(axis.y == 0)
+        if(axis.y != 0)
         {
-            rotationY = Matrix4x4::Identity();
-        }
-        else
-        {
-            rotationY = 
-            {
+            rotationY = Matrix4x4
+            (
                 {cosTheta, 0.0f, -sinTheta, 0.0f},
                 {0.0f, 1.0f, 0.0f, 0.0f},
                 {sinTheta, 0.0f, cosTheta, 0.0f},
                 {0.0f, 0.0f, 0.0f, 1.0f}
-            };
+            );
         }
 
-        if(axis.x == 0)
-        {
-            rotationX = Matrix4x4::Identity();
-        }
-        else
+        if(axis.x != 0)
         {
             rotationX = Matrix4x4
-            {
+            (
                 {1.0f, 0.0f, 0.0f, 0.0f},
                 {0.0f, cosTheta, sinTheta, 0.0f},
                 {0.0f, -sinTheta, cosTheta, 0.0f},
                 {0.0f, 0.0f, 0.0f, 1.0f}
-            };
+            );
         }
             
-        if(axis.z == 0)
+        if(axis.z != 0)
         {
-            rotationZ = Matrix4x4::Identity();
-        }
-        else
-        {
-            rotationZ = 
-            {
+            rotationZ = Matrix4x4
+            (
                 {cosTheta, sinTheta, 0.0f, 0.0f},
                 {-sinTheta, cosTheta, 0.0f, 0.0f},
                 {0.0f, 0.0f, 1.0f, 0.0f},
                 {0.0f, 0.0f, 0.0f, 1.0f}
-            };
+            );
         }
 
         return (rotationY * rotationX * rotationZ);
     }
 
-    Vector3 Transform::GetTransformedToChildVector(Vector3 childPosition, Matrix4x4 finalMatrix)
+    Vector3 Transform::GetTransformedToChildVector(const Vector3& childPosition, const Matrix4x4& finalMatrix) const
     {
-        Vector3 vectorToChild = childPosition - position;
-        Vector4 transformedVectorToChild = Vector4(vectorToChild.x, vectorToChild.y, vectorToChild.z, 1) * finalMatrix;
+        const Vector3 vectorToChild = childPosition - position;
+        const Vector4 transformedVectorToChild = Vector4(vectorToChild.x, vectorToChild.y, vectorToChild.z, 1) * finalMatrix;
         return Vector3(transformedVectorToChild.x, transformedVectorToChild.y, transformedVectorToChild.z) - vectorToChild;
     }
 
-
-    void Transform::Rotate(Vector3 axis, float angle)
+    void Transform::Rotate(const Vector3& axis, const float& angle, const bool& set)
     {
-        Vector4 rotatedTarget = Vector4(0, 0, 1, 1) * rotationMatrix;
-        Vector3 vec3Target = Vector3(rotatedTarget.x, rotatedTarget.y, rotatedTarget.z);
-    
-        forward = vec3Target.Normalize();
-        right = Vector3::Cross(forward, Vector3(0, 1, 0)).Normalize();
-        up = Vector3::Cross(right, forward).Normalize();
-
+        PerformGramSchmidtProcess();
+        
         Matrix4x4 finalMatrix = GetRotationMatrix(axis, angle);
-        if(parent != nullptr)
-        {
-            finalMatrix = parent->rotationMatrix * finalMatrix;
-        }
+        if(parent != nullptr) finalMatrix = parent->rotationMatrix * finalMatrix;
     
-        rotationMatrix = rotationMatrix * finalMatrix;
-        rotation += axis * angle;
-
-        for (int i = 0; i < m_children.size(); i++)
-        {
-            m_children[i]->Translate(GetTransformedToChildVector(m_children[i]->position, finalMatrix));
-            m_children[i]->SetRotation(axis, 0);
-        }
-    }
-
-    void Transform::SetRotation(Vector3 axis, float angle)
-    {
-        Vector4 rotatedTarget = Vector4(0, 0, 1, 1) * rotationMatrix;
-        Vector3 vec3RotatedTarget = Vector3(rotatedTarget.x, rotatedTarget.y, rotatedTarget.z);
-    
-        forward = vec3RotatedTarget.Normalize();
-        right = Vector3::Cross(forward, Vector3(0, 1, 0)).Normalize();
-        up = Vector3::Cross(right, forward).Normalize();
-
-        Matrix4x4 finalMatrix = GetRotationMatrix(axis, angle);
-        if(parent != nullptr)
-        {
-            finalMatrix = parent->rotationMatrix * finalMatrix;
-        }
-    
-        rotationMatrix = finalMatrix;
+        rotationMatrix = set ? finalMatrix : rotationMatrix * finalMatrix;
         rotation = axis * angle;
 
         for (int i = 0; i < m_children.size(); i++)
@@ -118,38 +72,25 @@ namespace GAUSS
         }
     }
 
-    void Transform::Scale(Vector3 axis, float size)
+    void Transform::Scale(const Vector3& axis, const float& size, const bool& set)
     {
-        Vector3 normalizedAxis = axis.Normalize();
-        scaleMatrix = scaleMatrix * Matrix4x4
+        const Vector3 normalizedAxis = axis.Normalize();
+        const Matrix4x4 newScaleMatrix = Matrix4x4
         {
             {normalizedAxis.x * size, 0.0f, 0.0f, 0.0f},
             {0.0f, normalizedAxis.y * size, 0.0f, 0.0f},
             {0.0f, 0.0f, normalizedAxis.z * size, 0.0f},
             {0.0f, 0.0f, 0.0f, 1.0f}
         };
+        
+        scaleMatrix = set ? newScaleMatrix : scaleMatrix * newScaleMatrix;
     
-        scale += axis * size;
+        scale = set ? (axis * size) : (scale + axis * size);
     }
 
-    void Transform::SetScale(Vector3 axis, float size)
+    void Transform::Translate(const Vector3& translation, const bool& set)
     {
-        Vector3 normalizedAxis = axis.Normalize();
-        scaleMatrix = Matrix4x4
-        {
-            {normalizedAxis.x * size, 0.0f, 0.0f, 0.0f},
-            {0.0f, normalizedAxis.y * size, 0.0f, 0.0f},
-            {0.0f, 0.0f, normalizedAxis.z * size, 0.0f},
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
-    
-        scale = axis * size;
-    }
-
-
-    void Transform::Translate(Vector3 translation)
-    {
-        positionMatrix = positionMatrix * Matrix4x4
+        const Matrix4x4 newPositionMatrix = Matrix4x4
         {
             {1.0f, 0.0f, 0.0f, translation.x},
             {0.0f, 1.0f, 0.0f, translation.y},
@@ -157,7 +98,9 @@ namespace GAUSS
             {0.0f, 0.0f, 0.0f, 1.0f}
         };
 
-        position += translation;
+        positionMatrix = set ? newPositionMatrix : positionMatrix * newPositionMatrix;
+
+        position = set ? translation : position + translation;
         if(parent != nullptr)
         {
             positionMatrix = parent->positionMatrix * positionMatrix;
@@ -165,30 +108,38 @@ namespace GAUSS
     
         for (int i = 0; i < m_children.size(); i++)
         {
-            m_children[i]->Translate(translation);
+            m_children[i]->Translate(translation, set);
         }
     }
 
-    void Transform::SetTranslation(Vector3 translation)
+    void Transform::SetChild(Transform* child)
     {
-        positionMatrix = Matrix4x4
-        {
-            {1.0f, 0.0f, 0.0f, translation.x},
-            {0.0f, 1.0f, 0.0f, translation.y},
-            {0.0f, 0.0f, 1.0f, translation.z},
-            {0.0f, 0.0f, 0.0f, 1.0f}
-        };
+        m_children.push_back(child);
+        child->parent = this;
+    }
 
-        position = translation;
-        if(parent != nullptr)
-        {
-            positionMatrix = parent->positionMatrix * positionMatrix;
-        }
-    
+    void Transform::RemoveChild(Transform* child)
+    {
         for (int i = 0; i < m_children.size(); i++)
         {
-            m_children[i]->SetTranslation(translation);
+            if(m_children[i]->m_entityId == child->m_entityId)
+            {
+                m_children.erase(m_children.begin() + i);
+                return;
+            }
         }
+
+        child->parent = nullptr;
+    }
+
+    void Transform::PerformGramSchmidtProcess()
+    {
+        const Vector4 rotatedTarget = Vector4(0, 0, 1, 1) * rotationMatrix;
+        const Vector3 vec3RotatedTarget = Vector3(rotatedTarget.x, rotatedTarget.y, rotatedTarget.z);
+    
+        forward = vec3RotatedTarget.Normalize();
+        right = Vector3::Cross(forward, Vector3(0, 1, 0)).Normalize();
+        up = Vector3::Cross(right, forward).Normalize();
     }
 }
 

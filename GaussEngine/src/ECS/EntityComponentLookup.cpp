@@ -12,13 +12,6 @@ namespace GAUSS
         m_lastEntityId = 0; 
     }
 
-    EntityComponentLookup::EntityComponentLookup()
-    {
-        m_entities = std::vector<Entity*>();
-        m_components = std::vector<std::vector<Component*>>();
-        m_lastEntityId = 0;
-    }
-
     Entity* EntityComponentLookup::CreateEntity()
     {
         m_lastEntityId++;
@@ -29,9 +22,9 @@ namespace GAUSS
         return entity;
     }
 
-    Component* EntityComponentLookup::InitializeNewComponent(int entityId, Component* component)
+    Component* EntityComponentLookup::InitializeNewComponent(const int& entityId, Component* component)
     {
-        std::vector<int> indices = component->GetEnum();
+        const std::vector<int> indices = component->GetEnum();
         bool success = false;
     
         for (const int index : indices)
@@ -67,7 +60,7 @@ namespace GAUSS
         return component;
     }
 
-    Component* EntityComponentLookup::GetTypelessComponent(int index, int entityId)
+    Component* EntityComponentLookup::GetTypelessComponent(const int& index, const int& entityId) const
     {
         if(index >= m_components.size() || entityId >= m_components[index].size() || !m_components[index][entityId])
             return nullptr;
@@ -75,7 +68,7 @@ namespace GAUSS
         return m_components[index][entityId];
     }
 
-    Entity* EntityComponentLookup::GetEntity(int id)
+    Entity* EntityComponentLookup::GetEntity(const int& id) const
     {
         if(id - 1 <= m_entities.size())
         {
@@ -85,7 +78,7 @@ namespace GAUSS
         return nullptr;
     }
 
-    std::vector<Component*>& EntityComponentLookup::GetComponents(int index)
+    std::vector<Component*>& EntityComponentLookup::GetComponents(const int& index)
     {
         if(index < m_components.size())
         {
@@ -95,9 +88,9 @@ namespace GAUSS
         return m_components[0];
     }
 
-    Component* EntityComponentLookup::GetFirstValidTypelessComponent(int index)
+    Component* EntityComponentLookup::GetFirstValidTypelessComponent(const int& index)
     {
-        std::vector<Component*>& components = this->GetComponents(index);
+        const std::vector<Component*>& components = this->GetComponents(index);
         Component* returnComponent = nullptr;
 
         for (int i = 0; i < components.size(); i++)

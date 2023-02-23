@@ -6,8 +6,9 @@ namespace GAUSS
     std::vector<Scene*> SceneManager::m_scenes;
     Scene* SceneManager::m_activeScene;
 
-    void SceneManager::SwitchScene(std::string name)
+    void SceneManager::SwitchScene(const std::string& name)
     {
+        m_scenes;
         for(Scene* scene : m_scenes)
         {
             if(scene->GetName() == name)
@@ -24,7 +25,7 @@ namespace GAUSS
 
     void SceneManager::AddScene(Scene* scene)
     {
-        for(Scene* currentScene : m_scenes)
+        for(const Scene* currentScene : m_scenes)
         {
             if(currentScene->GetName() == scene->GetName())
             {

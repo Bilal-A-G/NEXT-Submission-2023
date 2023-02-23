@@ -1,5 +1,6 @@
 ﻿#include "GSPch.h"
 #include "EntryPoint.h"
+#include "Scenes/SceneManager.h"
 
 void Init()
 {

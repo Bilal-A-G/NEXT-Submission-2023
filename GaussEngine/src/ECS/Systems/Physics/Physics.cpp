@@ -8,15 +8,14 @@
 
 namespace GAUSS
 {
-    std::vector<Ray*> Physics::m_rays;
+    std::vector<Ray*> Physics::rays;
 
-    void Physics::Update(float deltaTime, EntityComponentLookup& lookup)
+    void Physics::Update(const float& deltaTime, EntityComponentLookup& lookup)
     {
         std::vector<Component*>& colliders = lookup.GetComponents(GAUSS_ENUMS::Collider);
         std::vector<Component*>& rigidBodies = lookup.GetComponents(GAUSS_ENUMS::RigidBody);
         std::vector<Component*>& transforms = lookup.GetComponents(GAUSS_ENUMS::Transform);
     
-        //Collision detection + resolution
         for(int i = 0; i < colliders.size() - 1; i++)
         {
             if(!(rigidBodies[i] && transforms[i] && colliders[i]))
@@ -35,7 +34,6 @@ namespace GAUSS
                 Transform* transform2 = static_cast<Transform*>(transforms[j]);
                 Collider* collider2 = static_cast<Collider*>(colliders[j]);
     
-                //Perform SAT and update velocities
                 std::vector<Vector3> body1Axes = collider1->GetAxes(transform1->position, transform1->rotationMatrix, transform2->position);
                 std::vector<Vector3> body2Axes = collider2->GetAxes(transform2->position, transform2->rotationMatrix, transform1->position);
             
@@ -44,8 +42,8 @@ namespace GAUSS
     
                 Vector3 resolution = Vector3::Zero();
     
-                resolution = PerformSAT(body1Vertices, body2Vertices,body1Axes);
-                resolution = PerformSAT(body1Vertices, body2Vertices,body2Axes);
+                resolution = PerformSAT(body1Vertices, body2Vertices, body1Axes);
+                resolution = PerformSAT(body1Vertices, body2Vertices, body2Axes);
             
                 if(resolution != Vector3::Zero())
                 {
@@ -63,47 +61,42 @@ namespace GAUSS
             }
         }
 
-        int eraseIndex = m_rays.size() + 1;
+        int eraseIndex = rays.size() + 1;
 
-        //Raycasting
-        for (int i = 0; i < m_rays.size(); i++)
+        for (int i = 0; i < rays.size(); i++)
         {
-            std::vector<Vector3> rayPosition{m_rays[i]->position};
+            std::vector<Vector3> rayPosition = std::vector<Vector3>{rays[i]->position};
         
             for (int v = 0; v < colliders.size(); v++)
             {
                 if(!(transforms[v] && colliders[v]))
                     continue;
     
-                Transform* transform = static_cast<Transform*>(transforms[v]);
-                Collider* collider = static_cast<Collider*>(colliders[v]);
+                const Transform* transform = static_cast<Transform*>(transforms[v]);
+                const Collider* collider = static_cast<Collider*>(colliders[v]);
     
-                std::vector<Vector3> bodyAxes = collider->GetAxes(transform->position, transform->rotationMatrix, m_rays[i]->position);
-                std::vector<Vector3> bodyVertices = collider->GetVertices(transform->position, transform->rotationMatrix, m_rays[i]->position);
+                std::vector<Vector3> bodyAxes = collider->GetAxes(transform->position, transform->rotationMatrix, rays[i]->position);
+                std::vector<Vector3> bodyVertices = collider->GetVertices(transform->position, transform->rotationMatrix, rays[i]->position);
 
                 if(PerformSAT(bodyVertices, rayPosition, bodyAxes) != Vector3::Zero())
                 {
-                    m_rays[i]->callback(*lookup.GetEntity(collider->m_entityId));
+                    rays[i]->callback(*lookup.GetEntity(collider->m_entityId));
                     eraseIndex = i;
                 }
             }
 
-            if(m_rays[i]->distance <= 0)
+            if(rays[i]->distance <= 0)
             {
                 eraseIndex = i;
                 continue;
             }
         
-            m_rays[i]->position += m_rays[i]->direction.Normalize() * m_rays[i]->step * deltaTime;
-            m_rays[i]->distance -= m_rays[i]->step * deltaTime;
+            rays[i]->position += rays[i]->direction.Normalize() * rays[i]->step * deltaTime;
+            rays[i]->distance -= rays[i]->step * deltaTime;
         }
 
-        if(eraseIndex < m_rays.size())
-        {
-            m_rays.erase(m_rays.begin() + eraseIndex);
-        }
+        if(eraseIndex < rays.size()) rays.erase(rays.begin() + eraseIndex);
 
-        //Integration
         for (int i = 0; i < rigidBodies.size(); i++)
         {
             Transform* currentTransform = static_cast<Transform*>(transforms[i]);
@@ -134,15 +127,15 @@ namespace GAUSS
         }
     }
 
-    void Physics::Disable()
+    void Physics::Raycast(const Vector3& position, const Vector3& direction, const float& distance, const float& step, const CollisionFunction& callback)
     {
-        m_rays.clear();
+        rays.push_back(new Ray(position, direction, step, distance, callback));
     }
 
-    Vector3 Physics::PerformSAT(std::vector<Vector3>& verticesA, std::vector<Vector3>& verticesB, std::vector<Vector3>& axes)
+    Vector3 Physics::PerformSAT(const std::vector<Vector3>& verticesA, const std::vector<Vector3>& verticesB, const std::vector<Vector3>& axes) const
     {
         float minDepth = 0;
-        Vector3 minAxis = Vector3::Zero();
+        Vector3 minAxis = Vector3();
     
         for (Vector3 axis : axes)
         {
@@ -154,7 +147,7 @@ namespace GAUSS
 
             for (int i = 0; i < verticesA.size(); i++)
             {
-                float dotProduct = Vector3::Dot(verticesA[i], axis);
+                const float dotProduct = Vector3::Dot(verticesA[i], axis);
                 if(i == 0)
                 {
                     bodyAMax = dotProduct;
@@ -173,7 +166,7 @@ namespace GAUSS
 
             for (int i = 0; i < verticesB.size(); i++)
             {
-                float dotProduct = Vector3::Dot(verticesB[i], axis);
+                const float dotProduct = Vector3::Dot(verticesB[i], axis);
                 if(i == 0)
                 {
                     bodyBMax = dotProduct;
@@ -192,9 +185,9 @@ namespace GAUSS
         
             if(bodyBMin < bodyAMax && bodyBMax > bodyAMax)
             {
-                float depth = abs(bodyBMin - bodyAMax);
+                const float depth = abs(bodyBMin - bodyAMax);
 
-                if(depth < minDepth || minAxis == Vector3::Zero())
+                if(depth < minDepth || minAxis == Vector3())
                 {
                     minDepth = depth;
                     minAxis = axis * -1.0f;
@@ -202,9 +195,9 @@ namespace GAUSS
             }
             else if(bodyAMin < bodyBMax && bodyAMax > bodyBMax)
             {
-                float depth = abs(bodyAMin - bodyBMax);
+                const float depth = abs(bodyAMin - bodyBMax);
 
-                if(depth < minDepth || minAxis == Vector3::Zero())
+                if(depth < minDepth || minAxis == Vector3())
                 {
                     minDepth = depth;
                     minAxis = axis;
@@ -212,7 +205,7 @@ namespace GAUSS
             }
             else
             {
-                return Vector3::Zero();
+                return Vector3();
             }
         }
     

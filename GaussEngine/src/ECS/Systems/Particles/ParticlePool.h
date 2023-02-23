@@ -1,14 +1,16 @@
 #pragma once
-#include "Particles.h"
 #include "ECS/Entity.h"
 
 namespace GAUSS
 {
-    class ParticlePool
+    class ParticlePool final
     {
     public:
-        static void Init(){m_pool = std::vector<Entity*>();}
-        static void CleanUp(){m_pool.clear();}
+        ParticlePool() = delete;
+        ~ParticlePool() = delete;
+        
+        static void Init() {m_pool = std::vector<Entity*>();}
+        static void CleanUp() {m_pool.clear();}
         static void Return(Entity* particle);
         static Entity* Query(EntityComponentLookup& entityComponentLookup);
     private:

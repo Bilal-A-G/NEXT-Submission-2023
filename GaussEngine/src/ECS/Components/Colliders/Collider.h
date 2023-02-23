@@ -10,43 +10,25 @@ namespace GAUSS
     
     struct Collider : public Component
     {
+        friend class EntityComponentLookup;
+    protected:
+        Collider() : collisionListeners(std::vector<CollisionFunction>()),
+        resolvedListeners(std::vector<CollisionResolvedFunction>()), resolvedCollision(false) {}
+        ~Collider() override = default;
     public:
-        virtual std::vector<Vector3> GetAxes(Vector3 position, Matrix4x4 rotation, Vector3 otherPosition) = 0;
-        virtual std::vector<Vector3> GetVertices(Vector3 position, Matrix4x4 rotation, Vector3 otherPosition) = 0;
-        virtual float GetStiffness() = 0;
+        virtual std::vector<Vector3> GetAxes(const Vector3& position, const Matrix4x4& rotation, const Vector3& otherPosition) const = 0;
+        virtual std::vector<Vector3> GetVertices(const Vector3& position, const Matrix4x4& rotation, const Vector3& otherPosition) const = 0;
+        virtual float GetStiffness() const = 0;
         
-        void OnCollisionStay(CollisionFunction listener)
-        {
-            _collisionListeners.push_back(listener);
-        }
-        void OnCollisionResolved(CollisionResolvedFunction listener)
-        {
-            _resolvedListeners.push_back(listener);
-        }
-        void InvokeCollision(Entity& other)
-        {
-            _resolvedCollision = false;
-            
-            for (int i = 0; i < _collisionListeners.size(); i++)
-            {
-                _collisionListeners[i](other);
-            }
-        }
-        void InvokeResolved()
-        {
-            if(_resolvedCollision)
-                return;
-
-            _resolvedCollision = true;
-            for (int i = 0; i < _resolvedListeners.size(); i++)
-            {
-                _resolvedListeners[i]();
-            }
-        }
+        void OnCollisionStay(const CollisionFunction& listener) {collisionListeners.push_back(listener);}
+        void OnCollisionResolved(const CollisionResolvedFunction& listener) {resolvedListeners.push_back(listener);}
+        
+        void InvokeCollision(Entity& other);
+        void InvokeResolved();
     private:
-        std::vector<CollisionFunction> _collisionListeners;
-        std::vector<CollisionResolvedFunction> _resolvedListeners;
-        bool _resolvedCollision = false;
+        std::vector<CollisionFunction> collisionListeners;
+        std::vector<CollisionResolvedFunction> resolvedListeners;
+        bool resolvedCollision;
     };    
 }
 

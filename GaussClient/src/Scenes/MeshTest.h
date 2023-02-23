@@ -143,7 +143,7 @@ public:
         App::Print(APP_VIRTUAL_WIDTH/2, APP_VIRTUAL_HEIGHT - 20, "Mesh Test, press L To Lose", 1, 1, 1, GLUT_BITMAP_HELVETICA_10);
     }
     
-    void Update(float deltaTime) override
+    void Update(const float& deltaTime) override
     {
         GAUSS::Vector3 moveVector = GAUSS::Vector3::Zero();
         

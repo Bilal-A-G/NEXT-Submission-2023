@@ -3,7 +3,7 @@
 
 namespace GAUSS
 {
-    void Scene::DisableSystems()
+    void Scene::DisableSystems() const
     {
         m_lookup->CleanUp();
     
@@ -13,7 +13,7 @@ namespace GAUSS
         }
     }
 
-    void Scene::UpdateSystems(float deltaTime)
+    void Scene::UpdateSystems(const float& deltaTime) const
     {
         for (System* system : m_systems)
         {
@@ -21,7 +21,7 @@ namespace GAUSS
         }
     }
 
-    void Scene::AwakeSystems()
+    void Scene::AwakeSystems() const
     {
         for (System* system : m_systems)
         {
@@ -29,7 +29,7 @@ namespace GAUSS
         }
     }
 
-    void Scene::RenderSystems()
+    void Scene::RenderSystems() const
     {
         for (System* system : m_systems)
         {

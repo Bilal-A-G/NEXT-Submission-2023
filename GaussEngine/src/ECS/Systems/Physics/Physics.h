@@ -5,12 +5,12 @@
 
 namespace GAUSS
 {
-    struct Ray
+    struct Ray final
     {
     public:
-        Ray(Vector3 position, Vector3 direction, float step, float distance, CollisionFunction callback):
-        position(position), direction(direction), step(step), distance(distance), callback(callback)
-        {}
+        Ray(const Vector3& position, const Vector3& direction, const float& step, const float& distance,
+            const CollisionFunction& callback) :
+        position(position), direction(direction), step(step), distance(distance), callback(callback) {}
         ~Ray() = default;
     public:
         Vector3 position;
@@ -20,20 +20,20 @@ namespace GAUSS
         CollisionFunction callback;
     };
     
-    class Physics : public System
+    class Physics final : public System
     {
+        friend class Scene;
+    protected:
+        Physics() = default;
+        ~Physics() override = default;
     public:
-        void Update(float deltaTime, EntityComponentLookup& lookup) override;
-        void Disable() override;
-        static void Raycast(Vector3 position, Vector3 direction, float distance, float step, CollisionFunction callback)
-        {
-            m_rays.push_back(new Ray(position, direction, step, distance, callback));
-        }
+        void Update(const float& deltaTime, EntityComponentLookup& lookup) override;
+        void Disable() override {rays.clear();}
+        static void Raycast(const Vector3& position, const Vector3& direction, const float& distance, const float& step, const CollisionFunction& callback);
     private:
-        Vector3 PerformSAT(std::vector<Vector3>& verticesA, std::vector<Vector3>& verticesB, std::vector<Vector3>& axes);
-    private:
-        static std::vector<Ray*> m_rays;
+        Vector3 PerformSAT(const std::vector<Vector3>& verticesA, const std::vector<Vector3>& verticesB, const std::vector<Vector3>& axes) const;
     public:
+        static std::vector<Ray*> rays;
         inline static float gravity = -9.8f;
     };   
 }

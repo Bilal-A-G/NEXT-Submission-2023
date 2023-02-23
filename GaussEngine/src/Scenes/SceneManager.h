@@ -3,12 +3,13 @@
 
 namespace GAUSS
 {
-    class SceneManager
+    class SceneManager final
     {
     public:
         SceneManager() = delete;
+        ~SceneManager() = delete;
         
-        static void SwitchScene(std::string name);
+        static void SwitchScene(const std::string& name);
         static void AddScene(Scene* scene);
     public:
         static Scene* m_activeScene;

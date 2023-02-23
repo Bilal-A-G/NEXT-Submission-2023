@@ -3,12 +3,14 @@
 
 namespace GAUSS
 {
-    struct Light : public Component
+    struct Light final : public Component
     {
-        std::vector<int> GetEnum() override
-        {
-            return {GAUSS_ENUMS::Light};
-        }
+        friend class EntityComponentLookup;
+    protected:
+        Light() : intensity(0) {}
+        ~Light() override = default;
+    public: 
+        std::vector<int> GetEnum() override {return {GAUSS_ENUMS::Light};}
     public:
         float intensity;
     }; 

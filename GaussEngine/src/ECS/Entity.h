@@ -9,8 +9,7 @@ namespace GAUSS
     {
         friend class EntityComponentLookup;
     private:
-        Entity(int id, EntityComponentLookup& lookup) : id(id), m_lookup(lookup)
-        {}
+        Entity(const int& id, EntityComponentLookup& lookup) : id(id), m_lookup(lookup) {}
         ~Entity() = default;
 
         void operator delete(void* ptr){ ::operator delete(ptr);}
@@ -20,7 +19,7 @@ namespace GAUSS
         T* AddComponent() {return m_lookup.CreateComponent<T>(id);}
 
         template <typename T>
-        T* GetComponent(int index) {return m_lookup.GetComponent<T>(index, id);}
+        T* GetComponent(const int& index) {return m_lookup.GetComponent<T>(index, id);}
     public:
         const int id;
         std::string name;

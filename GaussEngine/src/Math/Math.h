@@ -5,64 +5,33 @@ namespace GAUSS
 {
     struct Matrix4x4;
 
-    struct Vector3
+    struct Vector3 final
     {
     public:
-        Vector3(float x, float y, float z): x(x), y(y), z(z)
-        {}
-
-        Vector3(): x(0), y(0), z(0)
-        {}
+        Vector3(const float& x, const float& y, const float& z): x(x), y(y), z(z){}
+        Vector3(): x(0), y(0), z(0){}
         
-        float Magnitude()
-        {
-            return std::sqrt(x*x + y*y + z*z);
-        }
+        float Magnitude() const {return std::sqrt(x*x + y*y + z*z);}
+        Vector3 Abs() const {return Vector3(abs(x), abs(y), abs(z));}
 
-        Vector3 Normalize()
+        Vector3 Normalize() const
         {
             if(this->Magnitude() == 0)
             {
-                return Vector3{0,0,0};
+                return Vector3(0,0,0);
             }
             return *this/this->Magnitude();
         }
+        
+        static float Dot(const Vector3& a, const Vector3& b) {return a.x * b.x + a.y * b.y + a.z * b.z;}
+        static Vector3 Cross(const Vector3& a, const Vector3& b) {return Vector3((a.y * b.z - a.z * b.y), (a.z * b.x - b.z * a.x), (a.x * b.y - b.x * a.y));}
 
-        Vector3 Abs()
-        {
-            return {abs(x), abs(y), abs(z)};
-        }
+        static Vector3 Zero() {return Vector3(0, 0, 0);}
 
-        static float Dot(Vector3 a, Vector3 b)
-        {
-            return a.x * b.x + a.y * b.y + a.z * b.z;
-        }
+        bool operator ==(const Vector3& other) const {return x == other.x && y == other.y && z == other.z;}
+        bool operator !=(const Vector3& other) const {return x != other.x || y != other.y || z != other.z;}
 
-        static Vector3 Cross(Vector3 a, Vector3 b)
-        {
-            return {(a.y * b.z - a.z * b.y), (a.z * b.x - b.z * a.x), (a.x * b.y - b.x * a.y)};
-        }
-
-        static Vector3 Zero()
-        {
-            return {0, 0, 0};
-        }
-
-        bool operator ==(const Vector3& other) const
-        {
-            return x == other.x && y == other.y && z == other.z;
-        }
-
-        bool operator !=(const Vector3& other) const
-        {
-            return x != other.x || y != other.y || z != other.z;
-        }
-
-        Vector3 operator /(const float& other) const
-        {
-            return {x/other, y/other, z/other};
-        }
-
+        Vector3 operator /(const float& other) const {return Vector3(x/other, y/other, z/other);}
         void operator /= (const float& other)
         {
             x = x / other;
@@ -70,11 +39,7 @@ namespace GAUSS
             z = z / other;
         } 
 
-        Vector3 operator *(const float& other) const
-        {
-            return  {x * other, y * other, z * other};
-        }
-
+        Vector3 operator *(const float& other) const {return Vector3(x * other, y * other, z * other);}
         void operator *= (const float& other)
         {
             x = x * other;
@@ -82,11 +47,7 @@ namespace GAUSS
             z = z * other;
         }
 
-        Vector3 operator +(const Vector3& other) const
-        {
-            return {x + other.x, y + other.y, z + other.z};    
-        }
-
+        Vector3 operator +(const Vector3& other) const {return Vector3(x + other.x, y + other.y, z + other.z);}
         void operator +=(const Vector3& other)
         {
             x = x + other.x;
@@ -94,54 +55,37 @@ namespace GAUSS
             z = z + other.z;
         }
 
-        Vector3 operator -(const Vector3& other) const
-        {
-            return {x - other.x, y - other.y, z - other.z};
-        }
-
+        Vector3 operator -(const Vector3& other) const {return Vector3(x - other.x, y - other.y, z - other.z);}
         void operator -=(const Vector3& other)
         {
             x = x - other.x;
             y = y - other.y;
             z = z - other.z;
         }
-        
     public:
-        float x,y,z; 
+        float x;
+        float y;
+        float z; 
     };
     
-    struct Vector4
+    struct Vector4 final
     {
-        Vector4(float x, float y, float z, float w): x(x), y(y), z(z), w(w)
-        {}
-
-        Vector4() :x(0), y(0), z(0), w(0)
-        {}
+    public:
+        Vector4(const float& x, const float& y, const float& z, const float& w): x(x), y(y), z(z), w(w) {}
+        Vector4() :x(0), y(0), z(0), w(0) {}
 
         Vector3 PerspectiveDivide() const
         {
-            Vector3 returnVector{x, y, z};
+            Vector3 returnVector = Vector3(x, y, z);
         
-            if(w != 0)
-            {
-                returnVector.x/=-w;
-                returnVector.y/=-w;
-                returnVector.z/=-w;
-            }
+            if(w != 0) returnVector/= -w;
 
             return returnVector;
         }
 
-        static Vector4 Zero()
-        {
-            return {0, 0, 0, 0};
-        }
+        static Vector4 Zero() {return Vector4(0, 0, 0, 0);}
 
-        Vector4 operator *(const float& other) const
-        {
-            return  {x * other, y * other, z * other, w * other};
-        }
-
+        Vector4 operator *(const float& other) const {return Vector4(x * other, y * other, z * other, w * other);}
         void operator *= (const float& other)
         {
             x = x * other;
@@ -150,11 +94,7 @@ namespace GAUSS
             w = w * other;
         }
 
-        Vector4 operator /(const float& other) const
-        {
-            return {x/other, y/other, z/other, w/other};
-        }
-
+        Vector4 operator /(const float& other) const {return Vector4(x/other, y/other, z/other, w/other);}
         void operator /= (const float& other)
         {
             x = x / other;
@@ -163,11 +103,7 @@ namespace GAUSS
             w = w / other;
         } 
 
-        Vector4 operator +(const Vector4& other) const
-        {
-            return {x + other.x, y + other.y, z + other.z, w + other.w};    
-        }
-
+        Vector4 operator +(const Vector4& other) const {return Vector4(x + other.x, y + other.y, z + other.z, w + other.w);}
         void operator +=(const Vector4& other)
         {
             x = x + other.x;
@@ -176,11 +112,7 @@ namespace GAUSS
             w = w + other.w;
         }
 
-        Vector4 operator -(const Vector4& other) const
-        {
-            return {x - other.x, y - other.y, z - other.z, w - other.w};
-        }
-
+        Vector4 operator -(const Vector4& other) const {return Vector4(x - other.x, y - other.y, z - other.z, w - other.w);}
         void operator -=(const Vector4& other)
         {
             x = x - other.x;
@@ -190,35 +122,27 @@ namespace GAUSS
         }
 
         //Defined later on
-        Vector4 operator *(const Matrix4x4& b);
+        Vector4 operator *(const Matrix4x4& b) const;
     public:
-        float x,y,z,w;
+        float x;
+        float y;
+        float z;
+        float w;
     };
 
-    struct Matrix4x4
+    struct Matrix4x4 final
     {
-        Matrix4x4(Vector4 r0, Vector4 r1, Vector4 r2, Vector4 r3):
-        r0(r0), r1(r1), r2(r2), r3(r3){}
+        Matrix4x4(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3): r0(r0), r1(r1), r2(r2), r3(r3){}
+        Matrix4x4() : r0(Vector4(1, 0, 0, 0)), r1(Vector4(0, 1, 0, 0)),
+        r2(Vector4(0, 0, 1, 0)), r3(Vector4(0, 0, 0, 1)){}
 
-        Matrix4x4(){}
-
-        static Matrix4x4 Identity()
+        static Matrix4x4 PointAt(const Vector3& position, const Vector3& target, const Vector3& up)
         {
-            return Matrix4x4{
-                {1.0f, 0.0f, 0.0f, 0.0f},
-                {0.0f, 1.0f, 0.0f, 0.0f},
-                {0.0f, 0.0f, 1.0f, 0.0f},
-                {0.0f, 0.0f, 0.0f, 1.0f}
-            };
-        }
+            const Vector3 forward = (target - position).Normalize();
+            const Vector3 localUp = (up - forward * Vector3::Dot(up, forward)).Normalize();
+            const Vector3 right = Vector3::Cross(localUp, forward);
 
-        static Matrix4x4 PointAt(Vector3 position, Vector3 target, Vector3 up)
-        {
-            Vector3 forward = (target - position).Normalize();
-            Vector3 localUp = (up - forward * Vector3::Dot(up, forward)).Normalize();
-            Vector3 right = Vector3::Cross(localUp, forward);
-
-            Matrix4x4 pointAt = Matrix4x4
+            const Matrix4x4 pointAt = Matrix4x4
             {
                 {right.x, right.y, right.z, position.x},
                 {localUp.x, localUp.y, localUp.z, position.y},
@@ -229,7 +153,7 @@ namespace GAUSS
             return pointAt;
         }
 
-        static Matrix4x4 LookAt(Matrix4x4 pointAt)
+        static Matrix4x4 LookAt(const Matrix4x4& pointAt)
         {
             const Vector3 r0Vector = Vector3(pointAt.r0.x, pointAt.r0.y, pointAt.r0.z);
             const Vector3 r1Vector = Vector3(pointAt.r1.x, pointAt.r1.y, pointAt.r1.z);
@@ -237,7 +161,7 @@ namespace GAUSS
             
             const Vector3 r3Vector = Vector3(pointAt.r0.w, pointAt.r1.w, pointAt.r2.w);
             
-            Matrix4x4 lookAt = Matrix4x4
+            const Matrix4x4 lookAt = Matrix4x4
             {
                 {pointAt.r0.x, pointAt.r0.y, pointAt.r0.z, -Vector3::Dot(r0Vector, r3Vector)},
                 {pointAt.r1.x, pointAt.r1.y, pointAt.r1.z, -Vector3::Dot(r1Vector, r3Vector)},
@@ -292,7 +216,7 @@ namespace GAUSS
             returnVector.z = r2.x * b.x + r2.y * b.y + r2.z * b.z + r2.w;
             returnVector.w = r3.x * b.x + r3.y * b.y + r3.z * b.z + r3.w;
 
-            return  returnVector;
+            return returnVector;
         }
 
         Matrix4x4 operator+(const Matrix4x4& b) const
@@ -330,10 +254,13 @@ namespace GAUSS
             return returnMatrix;
         }
     public:
-        Vector4 r0, r1, r2, r3;
+        Vector4 r0;
+        Vector4 r1;
+        Vector4 r2;
+        Vector4 r3;
     };
 
-    inline Vector4 Vector4::operator*(const Matrix4x4& b)
+    inline Vector4 Vector4::operator*(const Matrix4x4& b) const
     {
         Vector4 returnVector;
 
@@ -342,10 +269,10 @@ namespace GAUSS
         returnVector.z = x * b.r0.z + y * b.r1.z + z * b.r2.z + b.r3.z;
         returnVector.w = x * b.r0.w + y * b.r1.w + z * b.r2.w + b.r3.w;
 
-        return  returnVector;
+        return returnVector;
     }
 
-    inline Vector3 IntersectPlane(Vector3 planePos, Vector3 planeNormal, Vector3 lineStart, Vector3 lineEnd)
+    inline Vector3 IntersectPlane(const Vector3& planePos, const Vector3& planeNormal, const Vector3& lineStart, const Vector3& lineEnd)
     {
         const Vector3 normal = planeNormal.Normalize();
         const float planeD = -Vector3::Dot(normal, planePos);

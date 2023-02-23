@@ -4,15 +4,16 @@
 
 namespace GAUSS
 {
-    struct Camera : public Component
+    struct Camera final : public Component
     {
+        friend class EntityComponentLookup;
+    protected:
+        Camera() : fov(0), nearPlane(0), farPlane(0) {}
+        ~Camera() override = default;
     public:
-        std::vector<int> GetEnum() override
-        {
-            return {GAUSS_ENUMS::Camera};
-        };
+        std::vector<int> GetEnum() override {return {GAUSS_ENUMS::Camera};}
         
-        Matrix4x4 GetProjection();
+        Matrix4x4 GetProjection() const;
     public:
         float fov;
         float nearPlane;

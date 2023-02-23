@@ -5,39 +5,33 @@ namespace GAUSS
     struct Entity;
     struct Component;
     
-    class EntityComponentLookup
+    class EntityComponentLookup final
     {
         friend class Scene;
     public:
         ~EntityComponentLookup() = delete;
     private:
-        EntityComponentLookup();
-        void* operator new(size_t size){return ::operator new(size);}
+        EntityComponentLookup() : m_entities(std::vector<Entity*>()), m_components(std::vector<std::vector<Component*>>()), m_lastEntityId(0) {}
+        void* operator new(size_t size) {return ::operator new(size);}
+        
         void CleanUp();
+        Component* GetTypelessComponent(const int& index, const int& entityId) const;
+        Component* GetFirstValidTypelessComponent(const int& index);
+        Component* InitializeNewComponent(const int& entityId, Component* component);
     public:
         Entity* CreateEntity();
+        Entity* GetEntity(const int& id) const;
+        
         template <typename T>
-        T* CreateComponent(int entityId)
-        {
-            T* component = new T();
-            return static_cast<T*>(InitializeNewComponent(entityId, component));
-        }
+        T* CreateComponent(const int& entityId) {return static_cast<T*>(InitializeNewComponent(entityId, new T()));}
+        
         template <typename T>
-        T* GetComponent(int index, int entityId)
-        {
-            return static_cast<T*>(GetTypelessComponent(index, entityId));
-        }
-        Entity* GetEntity(int id);
-        std::vector<Component*>& GetComponents(int index);
+        T* GetComponent(const int& index, const int& entityId) {return static_cast<T*>(GetTypelessComponent(index, entityId));}
+        
+        std::vector<Component*>& GetComponents(const int& index);
+        
         template <typename T>
-        T* GetFirstValidComponent(int index)
-        {
-            return static_cast<T*>(GetFirstValidTypelessComponent(index));
-        }
-    private:
-        Component* GetTypelessComponent(int index, int entityId);
-        Component* GetFirstValidTypelessComponent(int index);
-        Component* InitializeNewComponent(int entityId, Component* component);
+        T* GetFirstValidComponent(const int& index) {return static_cast<T*>(GetFirstValidTypelessComponent(index));}
     private:
         std::vector<Entity*> m_entities;
         std::vector<std::vector<Component*>> m_components;

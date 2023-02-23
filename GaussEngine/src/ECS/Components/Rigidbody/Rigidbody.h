@@ -3,13 +3,15 @@
 
 namespace GAUSS
 {
-    struct Rigidbody : public Component
+    struct Rigidbody final : public Component
     {
+        friend class EntityComponentLookup;
+    protected:
+        Rigidbody() : mass(0), friction(0), restitution(0), hasGravity(true),
+        velocity(Vector3::Zero()), acceleration(Vector3::Zero()) {}
+        ~Rigidbody() override = default;
     public:
-        std::vector<int> GetEnum() override
-        {
-            return {GAUSS_ENUMS::RigidBody};
-        }
+        std::vector<int> GetEnum() override {return {GAUSS_ENUMS::RigidBody};}
     public:
         float mass;
         float friction;
