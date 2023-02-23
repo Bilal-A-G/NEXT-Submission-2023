@@ -1,4 +1,4 @@
-workspace "Project NEXT"
+workspace "NEXTSubmission"
     architecture "x64"
 
     language "C++"
@@ -44,8 +44,8 @@ workspace "Project NEXT"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
-project "NextAPI"
-    location "NextAPI"
+project "NEXTAPI"
+    location "NEXTAPI"
     kind "StaticLib"
     warnings "off"
     
@@ -69,7 +69,7 @@ project "NextAPI"
 
     postbuildcommands
     {
-        ("{COPY} ../NextAPI/glut/binary/x64" .. " ../bin/" .. outputdir .. "/Executables")
+        ("{COPY} ../NEXTAPI/glut/binary/x64" .. " ../bin/" .. outputdir .. "/Executables")
     }
     
     links
@@ -90,8 +90,8 @@ project "GaussEngine"
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("int/" .. outputdir .. "/%{prj.name}")
     
-    libdirs{"NextAPI/glut/lib"}
-    includedirs{"GaussEngine/src", "NextAPI"}
+    libdirs{"NEXTAPI/glut/lib"}
+    includedirs{"GaussEngine/src", "NEXTAPI"}
 
     files
     {
@@ -102,7 +102,7 @@ project "GaussEngine"
     
     links
     {
-        "NextAPI",
+        "NEXTAPI",
         "freeglut"
     }
 
@@ -117,8 +117,8 @@ project "GaussClient"
     targetdir ("bin/" .. outputdir .. "/Executables")
     objdir ("int/" .. outputdir .. "/%{prj.name}")
 
-    libdirs{"NextAPI/glut/lib"}
-    includedirs{"GaussEngine/src", "NextAPI"}
+    libdirs{"NEXTAPI/glut/lib"}
+    includedirs{"GaussEngine/src", "NEXTAPI"}
 
     files
     {
