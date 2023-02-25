@@ -7,9 +7,9 @@ namespace GAUSS
     {
         friend class EntityComponentLookup;
     protected:
-        Transform() : scaleMatrix(Matrix4x4()), positionMatrix(Matrix4x4()), rotationMatrix(Matrix4x4()),
-        position(Vector3()), rotation(Vector3()), scale(Vector3()), right(Vector3(1, 0, 0)), up(Vector3(0, 1, 0)),
-        forward(0, 0, 1), parent(nullptr) {}
+        Transform() : m_scaleMatrix(Matrix4x4()), m_positionMatrix(Matrix4x4()), m_rotationMatrix(Matrix4x4()),
+        m_position(Vector3()), m_rotation(Vector3()), m_scale(Vector3()), right(Vector3(1, 0, 0)),
+        up(Vector3(0, 1, 0)), forward(0, 0, 1), m_parent(nullptr) {}
         ~Transform() override {m_children.clear();}
     public:
         std::vector<int> GetEnum() override {return {GAUSS_ENUMS::Transform};}
@@ -22,10 +22,21 @@ namespace GAUSS
         
         void Scale(const Vector3& axis, const float& size) {Scale(axis, size, false);}
         void SetScale(const Vector3& axis, const float& size) {Scale(axis, size, true);}
-        
+
+        const Vector3& GetPosition() const {return m_position;}
+        const Vector3& GetRotation() const {return m_rotation;}
+        const Vector3& GetScale() const {return m_scale;}
+
+        const Matrix4x4& GetPositionMatrix() const {return m_positionMatrix;}
+        const Matrix4x4& GetRotationMatrix() const {return m_rotationMatrix;}
+        const Matrix4x4& GetScaleMatrix() const {return m_scaleMatrix;}
+
+        const Transform* GetParent() const {return m_parent;}
+
         void SetChild(Transform* child);
         void RemoveChild(Transform* child);
     private:
+        void SetParent(Transform* newParent) {m_parent = newParent;}
         Vector3 GetTransformedToChildVector(const Vector3& childPosition, const Matrix4x4& finalMatrix) const;
         
         void PerformGramSchmidtProcess();
@@ -33,21 +44,22 @@ namespace GAUSS
         void Rotate(const Vector3& axis, const float& angle, const bool& set);
         void Scale(const Vector3& axis, const float& size, const bool& set);
         void Translate(const Vector3& translation, const bool& set);
+
+        Matrix4x4 GetRotationMatrixFromAxisAngle(const Vector3& axis, const float& angle) const;
     public:
-        Matrix4x4 scaleMatrix;
-        Matrix4x4 positionMatrix;
-        Matrix4x4 rotationMatrix;
-        
-        Vector3 position;
-        Vector3 rotation;
-        Vector3 scale;
-        
         Vector3 right;
         Vector3 up;
         Vector3 forward;
-
-        Transform* parent;
     private:
+        Vector3 m_position;
+        Vector3 m_rotation;
+        Vector3 m_scale;
+
+        Matrix4x4 m_scaleMatrix;
+        Matrix4x4 m_positionMatrix;
+        Matrix4x4 m_rotationMatrix;
+
+        Transform* m_parent;
         std::vector<Transform*> m_children;
     };   
 }

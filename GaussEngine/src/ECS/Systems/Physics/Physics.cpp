@@ -1,7 +1,6 @@
 #include "GSPch.h"
 #include "Physics.h"
 
-#include "ECS/Components/Colliders/Collider.h"
 #include "ECS/Components/Mesh/Mesh.h"
 #include "ECS/Components/Rigidbody/Rigidbody.h"
 #include "ECS/Components/Transform/Transform.h"
@@ -34,11 +33,15 @@ namespace GAUSS
                 Transform* transform2 = static_cast<Transform*>(transforms[j]);
                 Collider* collider2 = static_cast<Collider*>(colliders[j]);
     
-                std::vector<Vector3> body1Axes = collider1->GetAxes(transform1->position, transform1->rotationMatrix, transform2->position);
-                std::vector<Vector3> body2Axes = collider2->GetAxes(transform2->position, transform2->rotationMatrix, transform1->position);
+                std::vector<Vector3> body1Axes = collider1->GetAxes(transform1->GetPosition(),
+                    transform1->GetRotationMatrix(), transform2->GetPosition());
+                std::vector<Vector3> body2Axes = collider2->GetAxes(transform2->GetPosition(),
+                    transform2->GetRotationMatrix(), transform1->GetPosition());
             
-                std::vector<Vector3> body1Vertices = collider1->GetVertices(transform1->position, transform1->rotationMatrix, transform2->position);
-                std::vector<Vector3> body2Vertices = collider2->GetVertices(transform2->position, transform2->rotationMatrix, transform1->position);
+                std::vector<Vector3> body1Vertices = collider1->GetVertices(transform1->GetPosition(),
+                    transform1->GetRotationMatrix(), transform2->GetPosition());
+                std::vector<Vector3> body2Vertices = collider2->GetVertices(transform2->GetPosition(),
+                    transform2->GetRotationMatrix(), transform1->GetPosition());
     
                 Vector3 resolution = Vector3::Zero();
     
@@ -75,8 +78,10 @@ namespace GAUSS
                 const Transform* transform = static_cast<Transform*>(transforms[v]);
                 const Collider* collider = static_cast<Collider*>(colliders[v]);
     
-                std::vector<Vector3> bodyAxes = collider->GetAxes(transform->position, transform->rotationMatrix, rays[i]->position);
-                std::vector<Vector3> bodyVertices = collider->GetVertices(transform->position, transform->rotationMatrix, rays[i]->position);
+                std::vector<Vector3> bodyAxes = collider->GetAxes(transform->GetPosition(),
+                    transform->GetRotationMatrix(), rays[i]->position);
+                std::vector<Vector3> bodyVertices = collider->GetVertices(transform->GetPosition(),
+                    transform->GetRotationMatrix(), rays[i]->position);
 
                 if(PerformSAT(bodyVertices, rayPosition, bodyAxes) != Vector3::Zero())
                 {

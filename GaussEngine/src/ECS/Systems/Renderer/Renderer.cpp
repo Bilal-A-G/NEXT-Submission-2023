@@ -38,16 +38,16 @@ namespace GAUSS
         
             if(transform == nullptr) continue;
         
-            Matrix4x4 model = transform->positionMatrix * transform->rotationMatrix * transform->scaleMatrix;
+            Matrix4x4 model = transform->GetPositionMatrix() * transform->GetRotationMatrix() * transform->GetScaleMatrix();
             std::vector<Face> faces = mesh->faces;
         
             ProjectToWorld(model, faces);
             
-            CalculateLighting(faces, lightTransform->position * -1.0f, light->intensity, mesh->colour);
+            CalculateLighting(faces, lightTransform->GetPosition() * -1.0f, light->intensity, mesh->colour);
 
-            Matrix4x4 viewMatrix = CalculateView(cameraTransform->position, cameraTransform->forward, cameraTransform->up);
+            Matrix4x4 viewMatrix = CalculateView(cameraTransform->GetPosition(), cameraTransform->forward, cameraTransform->up);
             
-            faces = ProjectToView(faces, cameraTransform->position, viewMatrix);
+            faces = ProjectToView(faces, cameraTransform->GetPosition(), viewMatrix);
             ProjectToScreen(faces, camera->GetProjection());
 
             std::vector<Face> nonClippedFaces;

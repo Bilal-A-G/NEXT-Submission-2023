@@ -5,22 +5,22 @@ namespace GAUSS
 {
     void Collider::InvokeCollision(Entity& other)
     {
-        resolvedCollision = false;
-        for (int i = 0; i < static_cast<int>(collisionListeners.size()); i++)
+        m_resolvedCollision = false;
+        for (int i = 0; i < static_cast<int>(m_collisionListeners.size()); i++)
         {
-            collisionListeners[i](other);
+            m_collisionListeners[i](other);
         }
     }
 
     void Collider::InvokeResolved()
     {
-        if(resolvedCollision)
+        if(m_resolvedCollision)
             return;
 
-        resolvedCollision = true;
-        for (int i = 0; i < static_cast<int>(resolvedListeners.size()); i++)
+        m_resolvedCollision = true;
+        for (int i = 0; i < static_cast<int>(m_resolvedListeners.size()); i++)
         {
-            resolvedListeners[i]();
+            m_resolvedListeners[i]();
         }
     }
     
