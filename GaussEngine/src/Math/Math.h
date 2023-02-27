@@ -139,6 +139,17 @@ namespace GAUSS
         Matrix4x4() : r0(Vector4(1, 0, 0, 0)), r1(Vector4(0, 1, 0, 0)),
         r2(Vector4(0, 0, 1, 0)), r3(Vector4(0, 0, 0, 1)){}
 
+        static Matrix4x4 Identity()
+        {
+            return Matrix4x4
+            (
+                {1, 0, 0, 0},
+                {0, 1, 0, 0},
+                {0, 0, 1, 0},
+                {0, 0, 0, 1}
+            );
+        }
+
         static Matrix4x4 PointAt(const Vector3& position, const Vector3& target, const Vector3& up)
         {
             const Vector3 forward = (target - position).Normalize();
@@ -256,6 +267,8 @@ namespace GAUSS
         
             return returnMatrix;
         }
+
+        bool operator ==(const Matrix4x4& other) const {return r0 == other.r0 && r1 == other.r1 && r2 == other.r2 && r3 == other.r3;}
     public:
         Vector4 r0;
         Vector4 r1;

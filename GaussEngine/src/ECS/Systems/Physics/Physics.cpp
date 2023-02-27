@@ -140,7 +140,7 @@ namespace GAUSS
     Vector3 Physics::PerformSAT(const std::vector<Vector3>& verticesA, const std::vector<Vector3>& verticesB, const std::vector<Vector3>& axes) const
     {
         float minDepth = 0;
-        Vector3 minAxis = Vector3();
+        Vector3 minAxis;
     
         for (Vector3 axis : axes)
         {
@@ -192,7 +192,7 @@ namespace GAUSS
             {
                 const float depth = abs(bodyBMin - bodyAMax);
 
-                if(depth < minDepth || minAxis == Vector3())
+                if(depth < minDepth || minAxis == Vector3::Zero())
                 {
                     minDepth = depth;
                     minAxis = axis * -1.0f;
@@ -202,7 +202,7 @@ namespace GAUSS
             {
                 const float depth = abs(bodyAMin - bodyBMax);
 
-                if(depth < minDepth || minAxis == Vector3())
+                if(depth < minDepth || minAxis == Vector3::Zero())
                 {
                     minDepth = depth;
                     minAxis = axis;
@@ -210,7 +210,7 @@ namespace GAUSS
             }
             else
             {
-                return Vector3();
+                return Vector3::Zero();
             }
         }
     

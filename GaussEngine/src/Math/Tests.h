@@ -29,6 +29,23 @@ namespace GAUSS_TESTS
         assert(GAUSS::Vector3(-1, 1, 1).Abs() == GAUSS::Vector3(1, 1, 1));
 
         assert(GAUSS::Lerp<float>(1, 2, 0.5f) == 1.5f);
+
+        assert(GAUSS::Matrix4x4::Identity() ==
+            GAUSS::Matrix4x4(
+                {1, 0, 0, 0},
+                {0, 1, 0, 0},
+                {0, 0, 1, 0},
+                {0, 0, 0, 1}
+            ));
+        
+        assert(GAUSS::Matrix4x4::Identity() + GAUSS::Matrix4x4::Identity() == GAUSS::Matrix4x4(
+                                                            {2, 0, 0, 0},
+                                                            {0, 2, 0, 0},
+                                                            {0, 0, 2, 0},
+                                                            {0, 0, 0, 2}
+                                                        ));
+        assert(GAUSS::Matrix4x4::Identity() * GAUSS::Matrix4x4::Identity() == GAUSS::Matrix4x4::Identity());
+        assert(GAUSS::Matrix4x4::Identity() * GAUSS::Vector4(1, 1, 1, 1) == GAUSS::Vector4(1, 1, 1, 1));
     }   
 }
 
