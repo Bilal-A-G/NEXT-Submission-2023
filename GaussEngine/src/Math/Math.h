@@ -121,6 +121,9 @@ namespace GAUSS
             w = w - other.w;
         }
 
+        bool operator ==(const Vector4& other) const {return x == other.x && y == other.y && z == other.z && w == other.w;}
+        bool operator !=(const Vector4& other) const {return x != other.x || y != other.y || z != other.z || w != other.w;}
+
         //Defined later on
         Vector4 operator *(const Matrix4x4& b) const;
     public:
@@ -283,5 +286,11 @@ namespace GAUSS
         const Vector3 lineIntersection = lineVec * t;
         
         return lineStart + lineIntersection;
+    }
+
+    template <typename T>
+    inline T Lerp(const T& from, const T& to, const float& interpolator)
+    {
+        return from * (1 - interpolator) + to * interpolator;
     }
 }

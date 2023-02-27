@@ -26,11 +26,6 @@ namespace GAUSS
         static Colour White() {return {1, 1, 1};}
         static Colour Black() {return {0, 0, 0};}
 
-        static Colour Lerp(const Colour& from, const Colour& to, const float& interpolation)
-        {
-            return from * (1 - interpolation) + to * interpolation;
-        }
-
         static bool RoughlyEquals(const Colour& a, const Colour& b, const float& tolerance)
         {
             return (a.r >= b.r - tolerance && a.r <= b.r + tolerance) &&

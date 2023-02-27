@@ -1,6 +1,7 @@
 ﻿#include "GSPch.h"
 #include "EntryPoint.h"
 #include "Scenes/SceneManager.h"
+#include "Math/Tests.h"
 
 void Init()
 {
@@ -10,6 +11,8 @@ void Init()
     {
         GAUSS::SceneManager::AddScene(scene);
     }
+
+    GAUSS_TESTS::CheckMath();
 
     GAUSS::SceneManager::m_activeScene->Awake();
     GAUSS::SceneManager::m_activeScene->AwakeSystems();

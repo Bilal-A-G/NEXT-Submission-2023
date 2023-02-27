@@ -72,11 +72,11 @@ namespace GAUSS
 
             if(properties->fadeOut)
             {
-                mesh->colour = Colour::Lerp(mesh->colour, Colour::Black(), properties->alphaFadeSpeed * deltaTime);
+                mesh->colour = Lerp<Colour>(mesh->colour, Colour::Black(), properties->alphaFadeSpeed * deltaTime);
                 continue;
             }
         
-            mesh->colour = Colour::Lerp(mesh->colour, properties->endColour, properties->colourChangeSpeed * deltaTime);
+            mesh->colour = Lerp<Colour>(mesh->colour, properties->endColour, properties->colourChangeSpeed * deltaTime);
         }
     }
 
