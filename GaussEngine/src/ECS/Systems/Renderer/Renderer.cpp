@@ -20,8 +20,7 @@ namespace GAUSS
         const Light* light = lookup.GetFirstValidComponent<Light>(GAUSS_ENUMS::Light);
         const Transform* lightTransform = lookup.GetComponent<Transform>(GAUSS_ENUMS::Transform, light->m_entityId);
 
-        if(!lightTransform)
-            assert(false);
+        if(!lightTransform || !light) return;
     
         const Camera* camera = lookup.GetFirstValidComponent<Camera>(GAUSS_ENUMS::Camera);
         const Transform* cameraTransform = lookup.GetComponent<Transform>(GAUSS_ENUMS::Transform, camera->m_entityId);

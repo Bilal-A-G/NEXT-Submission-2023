@@ -11,7 +11,7 @@ namespace GAUSS
     public:
         ~EntityComponentLookup() = delete;
     private:
-        EntityComponentLookup() : m_entities(std::vector<Entity*>()), m_components(std::vector<std::vector<Component*>>()), m_lastEntityId(0) {}
+        EntityComponentLookup() : m_entities(std::vector<Entity*>()), m_components(std::vector<std::vector<Component*>>()), m_lastEntityId(0) {m_components.push_back(std::vector<Component*>());}
         void* operator new(size_t size) {return ::operator new(size);}
         
         void CleanUp();

@@ -1,12 +1,12 @@
 ﻿#pragma once
 #include "Scenes/Scene.h"
 
-class End final : public GAUSS::Scene
+class Game final : public GAUSS::Scene
 {
 public:
-    End(const std::string& name) : Scene(name) {}
+    Game(const std::string& name) : Scene(name) {}
     
-    void Render() override
+    void Awake() override
     {
         
     }

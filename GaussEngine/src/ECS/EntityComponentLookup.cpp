@@ -1,5 +1,8 @@
 ﻿#include "GSPch.h"
 #include "EntityComponentLookup.h"
+
+#include <cassert>
+
 #include "Entity.h"
 #include "Component.h"
 
@@ -84,7 +87,7 @@ namespace GAUSS
         {
             return m_components[index];
         }
-    
+        
         return m_components[0];
     }
 

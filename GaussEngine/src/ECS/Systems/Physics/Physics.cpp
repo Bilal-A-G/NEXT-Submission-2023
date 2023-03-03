@@ -14,8 +14,12 @@ namespace GAUSS
         std::vector<Component*>& colliders = lookup.GetComponents(GAUSS_ENUMS::Collider);
         std::vector<Component*>& rigidBodies = lookup.GetComponents(GAUSS_ENUMS::RigidBody);
         std::vector<Component*>& transforms = lookup.GetComponents(GAUSS_ENUMS::Transform);
-    
-        for(int i = 0; i < colliders.size() - 1; i++)
+
+        //For some reason, colliders.size() - 1 as the condition in the loop breaks it, but putting it in a variable works fine
+        const int colliderSizeMinusOne = colliders.size() - 1;
+
+        //Collision detection and resolution
+        for(int i = 0; i < colliderSizeMinusOne; i++)
         {
             if(!(rigidBodies[i] && transforms[i] && colliders[i]))
                 continue;
@@ -64,6 +68,7 @@ namespace GAUSS
             }
         }
 
+        //Raycasting
         int eraseIndex = rays.size() + 1;
 
         for (int i = 0; i < rays.size(); i++)
@@ -102,6 +107,7 @@ namespace GAUSS
 
         if(eraseIndex < rays.size()) rays.erase(rays.begin() + eraseIndex);
 
+        //Integration
         for (int i = 0; i < rigidBodies.size(); i++)
         {
             Transform* currentTransform = static_cast<Transform*>(transforms[i]);

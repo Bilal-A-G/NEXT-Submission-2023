@@ -18,6 +18,8 @@ namespace GAUSS
     
         const Component* mainCamera = lookup.GetFirstValidComponent<Camera>(GAUSS_ENUMS::Camera);
         Transform* cameraTransform = lookup.GetComponent<Transform>(GAUSS_ENUMS::Transform, mainCamera->m_entityId);
+
+        if(!mainCamera || !cameraTransform) return;
     
         cameraTransform->SetRotation(Vector3(rand() / static_cast<float>(RAND_MAX), rand() / static_cast<float>(RAND_MAX), 0), amount);
     }
