@@ -32,9 +32,9 @@ namespace GAUSS
         const Vector3 normalizedAxis = axis.Normalize();
         const Matrix4x4 newScaleMatrix = Matrix4x4
         {
-            {normalizedAxis.x * size, 0.0f, 0.0f, 0.0f},
-            {0.0f, normalizedAxis.y * size, 0.0f, 0.0f},
-            {0.0f, 0.0f, normalizedAxis.z * size, 0.0f},
+            { normalizedAxis.x == 0 ? 1 :normalizedAxis.x * size, 0.0f, 0.0f, 0.0f},
+            {0.0f, normalizedAxis.y == 0 ? 1 : normalizedAxis.y * size, 0.0f, 0.0f},
+            {0.0f, 0.0f, normalizedAxis.z == 0 ? 1 : normalizedAxis.z * size, 0.0f},
             {0.0f, 0.0f, 0.0f, 1.0f}
         };
         
@@ -77,7 +77,7 @@ namespace GAUSS
     {
         for (int i = 0; i < m_children.size(); i++)
         {
-            if(m_children[i]->m_entityId == child->m_entityId)
+            if(m_children[i]->entityId == child->entityId)
             {
                 m_children.erase(m_children.begin() + i);
                 return;

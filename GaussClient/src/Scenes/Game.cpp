@@ -1,5 +1,6 @@
 ﻿#include "Game.h"
 
+#include "../Bombs/BombPlacer.h"
 #include "API/app.h"
 #include "ECS/Entity.h"
 #include "ECS/Components/Camera/Camera.h"
@@ -11,6 +12,7 @@
 #include "IO/ResourceLoader.h"
 
 #include "../Maze/MazeGenerator.h"
+#include "ECS/Components/Colliders/SphereCollider.h"
 
 GAUSS::Entity* player;
 GAUSS::Entity* cameraParent;
@@ -38,6 +40,7 @@ void Game::Awake()
     lightTransform->Translate(GAUSS::Vector3(-40, 50, 0));
     
     player = m_lookup->CreateEntity();
+    player->name = "Player";
     GAUSS::Transform* transform = player->AddComponent<GAUSS::Transform>();
     transform->Scale(GAUSS::Vector3(1,1,1), 0.4f);
     transform->Translate(GAUSS::Vector3(0, 0, -cameraDistanceFromPlayer));
@@ -55,6 +58,15 @@ void Game::Awake()
     collider->depth = 0.7f;
     collider->height = 0.7f;
     collider->width = 0.7f;
+    collider->stiffness = 0.0f;
+    collider->OnCollisionResolved([](GAUSS::Entity& a, GAUSS::Entity& b)
+    {
+       if(b.name == "Bomb")
+       {
+           GAUSS::SphereCollider* collider = b.GetComponent<GAUSS::SphereCollider>(GAUSS_ENUMS::SphereCollider);
+           collider->stiffness = 120;
+       }
+    });
 
     MazeGenerator::GenerateMaze(m_lookup);
 }
@@ -82,6 +94,11 @@ void Game::Update(const float& deltaTime)
     if(App::IsKeyPressed('D'))
     {
         direction.x = 1;
+    }
+
+    if(App::IsKeyPressed(VK_SPACE))
+    {
+        BombPlacer::PlaceBomb(m_lookup, playerTransform->GetPosition());
     }
 
     rigidBody->acceleration += direction.Normalize() * 15 * deltaTime;

@@ -24,7 +24,7 @@ namespace GAUSS
         //Collision detection and resolution
         for(int i = 0; i < colliderSizeMinusOne; i++)
         {
-            if(!(rigidBodies[i] && transforms[i] && colliders[i]))
+            if(!(rigidBodies[i] && transforms[i] && colliders[i]) || !(rigidBodies[i]->active && transforms[i]->active && colliders[i]->active))
                 continue;
     
             Rigidbody* rb1 = static_cast<Rigidbody*>(rigidBodies[i]);
@@ -33,7 +33,7 @@ namespace GAUSS
     
             for (int j = i + 1; j < colliders.size(); j++)
             {
-                if(!(rigidBodies[j] && transforms[j] && colliders[j]))
+                if(!(rigidBodies[j] && transforms[j] && colliders[j]) || !(rigidBodies[j]->active && transforms[j]->active && colliders[j]->active))
                     continue;
     
                 Rigidbody* rb2 = static_cast<Rigidbody*>(rigidBodies[j]);
@@ -54,31 +54,37 @@ namespace GAUSS
     
                 resolution = PerformSAT(body1Vertices, body2Vertices, body1Axes);
                 resolution = PerformSAT(body1Vertices, body2Vertices, body2Axes);
-            
+
+                Entity* collider1Entity = lookup.GetEntity(collider1->entityId);
+                Entity* collider2Entity = lookup.GetEntity(collider2->entityId);
+                
                 if(resolution != Vector3::Zero())
                 {
-                    collider1->InvokeCollision(*lookup.GetEntity(rb2->m_entityId));
-                    collider2->InvokeCollision(*lookup.GetEntity(rb1->m_entityId));
+                    collider1->InvokeCollision(collider1Entity, collider2Entity);
+                    collider2->InvokeCollision(collider2Entity, collider1Entity);
 
                     if(!rb1->isStatic && !rb2->isStatic)
                     {
-                        rb1->velocity += resolution * (collider1->GetStiffness() + collider2->GetStiffness()) * deltaTime;
-                        rb2->velocity += resolution * -1.0f * (collider1->GetStiffness() + collider2->GetStiffness()) * deltaTime;  
+                        rb1->velocity += resolution * (collider1->stiffness + collider2->stiffness) * deltaTime;
+                        rb2->velocity += resolution * -1.0f * (collider1->stiffness + collider2->stiffness) * deltaTime;  
                     }
                     else if(!rb1->isStatic)
                     {
-                        rb1->velocity += resolution * 2 * (collider1->GetStiffness() + collider2->GetStiffness()) * deltaTime;
+                        rb1->velocity += resolution * 2 * (collider1->stiffness + collider2->stiffness) * deltaTime;
                     }
                     else if(!rb2->isStatic)
                     {
-                        rb2->velocity += resolution * -2.0f * (collider1->GetStiffness() + collider2->GetStiffness()) * deltaTime;  
+                        rb2->velocity += resolution * -2.0f * (collider1->stiffness + collider2->stiffness) * deltaTime;  
                     }
                     
                     continue;
                 }
-    
-                collider1->InvokeResolved();
-                collider2->InvokeResolved();
+
+                if(collider1->m_collidingWith.size() > 0)
+                {
+                    collider1->InvokeResolved(collider1Entity, collider2Entity);
+                    collider2->InvokeResolved(collider2Entity, collider1Entity);
+                }
             }
         }
 
@@ -91,7 +97,7 @@ namespace GAUSS
         
             for (int v = 0; v < colliders.size(); v++)
             {
-                if(!(transforms[v] && colliders[v]))
+                if(!(transforms[v] && colliders[v]) || !(transforms[v]->active && colliders[v]->active))
                     continue;
     
                 const Transform* transform = static_cast<Transform*>(transforms[v]);
@@ -104,7 +110,7 @@ namespace GAUSS
 
                 if(PerformSAT(bodyVertices, rayPosition, bodyAxes) != Vector3::Zero())
                 {
-                    rays[i]->callback(*lookup.GetEntity(collider->m_entityId));
+                    rays[i]->callback(*lookup.GetEntity(collider->entityId), *lookup.GetEntity(collider->entityId));
                     eraseIndex = i;
                 }
             }
@@ -127,7 +133,7 @@ namespace GAUSS
             Transform* currentTransform = static_cast<Transform*>(transforms[i]);
             Rigidbody* currentRigidBody = static_cast<Rigidbody*>(rigidBodies[i]);
 
-            if(!currentTransform || !currentRigidBody)
+            if(!currentTransform || !currentRigidBody || !currentTransform->active || !currentRigidBody->active)
                 continue;
         
             currentRigidBody->velocity += currentRigidBody->acceleration * deltaTime;

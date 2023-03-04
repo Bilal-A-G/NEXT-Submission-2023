@@ -21,6 +21,7 @@ namespace GAUSS
         Component* InitializeNewComponent(const int& entityId, Component* component);
     public:
         Entity* CreateEntity();
+        void DestroyEntity(const int& id) const;
         Entity* GetEntity(const int& id) const;
         
         template <typename T>

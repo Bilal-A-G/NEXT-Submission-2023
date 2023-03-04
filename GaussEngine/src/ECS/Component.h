@@ -8,7 +8,7 @@ namespace GAUSS
     {
         friend class EntityComponentLookup;
     protected:
-        Component() : m_entityId(0){}
+        Component() : entityId(0){}
         virtual ~Component() = default;
         
         void operator delete(void* ptr){::operator delete(ptr);}
@@ -16,6 +16,7 @@ namespace GAUSS
     public:
         virtual std::vector<int> GetEnum() = 0;
     public:
-        int m_entityId;
+        int entityId;
+        bool active;
     };
 }

@@ -25,6 +25,26 @@ namespace GAUSS
         return entity;
     }
 
+    void EntityComponentLookup::DestroyEntity(const int& id) const
+    {
+        for (int i = 1; i < m_components.size(); i++)
+        {
+            if(m_components[i].size() <= id) continue;
+            
+            if(m_components[i][id])
+            {
+                if(i == GAUSS_ENUMS::SphereCollider)
+                {
+                   m_components[i][id]->active = false;
+                    continue;
+                }
+                
+                m_components[i][id]->active = false;
+                m_components[i][id]->active = false;
+            }
+        }
+    }
+
     Component* EntityComponentLookup::InitializeNewComponent(const int& entityId, Component* component)
     {
         const std::vector<int> indices = component->GetEnum();
@@ -34,23 +54,12 @@ namespace GAUSS
         {
             success = false;
         
-            if(m_components.size() <= index + 1)
-            {
-                m_components.resize(index + 1);
-            }
-
-            if(m_components[index].size() <= entityId + 1)
-            {
-                m_components[index].resize(entityId + 1);
-            }
-    
-            if(m_components[index][entityId])
-            {
-                continue;
-            }
+            if(m_components.size() <= index + 1) {m_components.resize(index + 1);}
+            if(m_components[index].size() <= entityId + 1) {m_components[index].resize(entityId + 1);}
+            if(m_components[index][entityId]) {continue;}
 
             m_components[index][entityId] = component;
-            component->m_entityId = entityId;
+            component->entityId = entityId;
             success = true;
         }
 
@@ -78,7 +87,7 @@ namespace GAUSS
             return m_entities[id - 1];
         }
     
-        return nullptr;
+        return m_entities[0];
     }
 
     std::vector<Component*>& EntityComponentLookup::GetComponents(const int& index)

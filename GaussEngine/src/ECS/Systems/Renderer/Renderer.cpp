@@ -17,25 +17,25 @@ namespace GAUSS
         if(meshComponents.size() == 0 || transformComponents.size() == 0) return;
     
         const Light* light = lookup.GetFirstValidComponent<Light>(GAUSS_ENUMS::Light);
-        if(!light) return;
+        if(!light || !light->active) return;
         
-        const Transform* lightTransform = lookup.GetComponent<Transform>(GAUSS_ENUMS::Transform, light->m_entityId);
-        if(!lightTransform) return;
+        const Transform* lightTransform = lookup.GetComponent<Transform>(GAUSS_ENUMS::Transform, light->entityId);
+        if(!lightTransform || !lightTransform->active) return;
     
         const Camera* camera = lookup.GetFirstValidComponent<Camera>(GAUSS_ENUMS::Camera);
-        if(!camera) return;
+        if(!camera || !camera->active) return;
         
-        const Transform* cameraTransform = lookup.GetComponent<Transform>(GAUSS_ENUMS::Transform, camera->m_entityId);
-        if(!cameraTransform) return;
+        const Transform* cameraTransform = lookup.GetComponent<Transform>(GAUSS_ENUMS::Transform, camera->entityId);
+        if(!cameraTransform || !cameraTransform->active) return;
     
         for (Component* component : meshComponents)
         {
-            if(component == nullptr) continue;
+            if(component == nullptr || !component->active) continue;
         
             const Mesh* mesh = static_cast<Mesh*>(component);
-            const Transform* transform = static_cast<Transform*>(transformComponents[mesh->m_entityId]);
+            const Transform* transform = static_cast<Transform*>(transformComponents[mesh->entityId]);
         
-            if(transform == nullptr) continue;
+            if(transform == nullptr || !transform->active) continue;
         
             Matrix4x4 model = transform->GetPositionMatrix() * transform->GetRotationMatrix() * transform->GetScaleMatrix();
             std::vector<Face> faces = mesh->faces;

@@ -9,89 +9,127 @@
 #include "IO/ResourceLoader.h"
 #include "Math/Geometry.h"
 
-constexpr int mazeWidth = 5;
-constexpr int mazeHeight = 5;
+constexpr int mazeWidth = 4;
+constexpr int mazeHeight = 3;
 const GAUSS::Colour blockColour = GAUSS::Colour::White();
+const GAUSS::Colour breakableBlockColour = GAUSS::Colour(0.7f, 0.5f, 0.5f);
 constexpr float blockSize = 0.8f;
-constexpr float spacing = 2.5f;
+constexpr float spacing = 1.3f;
 constexpr float cameraDistance = -10;
 
 void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
 {
     //Generate bounding box
-    GAUSS::Entity* mazeBoundaryLeft = lookup->CreateEntity();
-    GAUSS::Transform* mazeBoundaryLeftTransform = mazeBoundaryLeft->AddComponent<GAUSS::Transform>();
-    mazeBoundaryLeftTransform->SetTranslation(GAUSS::Vector3(-(mazeWidth + 0.72f) * blockSize * spacing, -blockSize  - blockSize/4, -cameraDistance));
-    mazeBoundaryLeftTransform->Scale(GAUSS::Vector3(0.1f, 1, 0.1f), mazeHeight * 2.02f);
-    GAUSS::BoxCollider* mazeBoundaryLeftCollider = mazeBoundaryLeft->AddComponent<GAUSS::BoxCollider>();
-    mazeBoundaryLeftCollider->depth = mazeHeight * 3.8f;
-    mazeBoundaryLeftCollider->width = mazeHeight * 3.8f * 0.1f;
-    mazeBoundaryLeftCollider->height = mazeHeight * 3.8f;
-    GAUSS::Rigidbody* mazeBoundaryLeftRigidBody = mazeBoundaryLeft->AddComponent<GAUSS::Rigidbody>();
-    mazeBoundaryLeftRigidBody->isStatic = true;
-    mazeBoundaryLeftRigidBody->hasGravity = false;
+    for (int i = 0; i < 4; i++)
+    {
+        GAUSS::Vector3 translation;
+        GAUSS::Vector3 scaleAxis;
+        float scaleAmount;
+        
+        constexpr float offsetFromCenter = -1.2f;
+        constexpr float totalSpacing = blockSize * spacing;
+        constexpr float boundaryDistanceFromMaze = 1.2f;
+        constexpr float mazeHeightScaleAmount = mazeHeight % 2 != 0 ? (mazeHeight - 2) * 2 : mazeHeight * 2;
+        constexpr float mazeWidthScaleAmount = mazeWidth % 2 != 0 ? (mazeWidth - 2) * 2 : mazeWidth * 2;
+        
+        switch (i)
+        {
+        case 0:
+            translation = GAUSS::Vector3((-mazeWidth - boundaryDistanceFromMaze) * totalSpacing, offsetFromCenter, -cameraDistance);
+            scaleAxis = GAUSS::Vector3(0, 1, 0);
+            scaleAmount = mazeHeightScaleAmount;
+            break;
+        case 1:
+            translation = GAUSS::Vector3((mazeWidth - 2 + boundaryDistanceFromMaze) * totalSpacing, offsetFromCenter, -cameraDistance);
+            scaleAxis = GAUSS::Vector3(0, 1, 0);
+            scaleAmount = mazeHeightScaleAmount;
+            break;
+        case 2:
+            translation = GAUSS::Vector3(offsetFromCenter, (mazeHeight - 2 + boundaryDistanceFromMaze) * totalSpacing, -cameraDistance);
+            scaleAxis = GAUSS::Vector3(1, 0, 0);
+            scaleAmount = mazeWidthScaleAmount;
+            break;
+        case 3:
+            translation = GAUSS::Vector3(offsetFromCenter, (-mazeHeight - boundaryDistanceFromMaze) * totalSpacing, -cameraDistance);
+            scaleAxis = GAUSS::Vector3(1, 0, 0);
+            scaleAmount = mazeWidthScaleAmount;
+            break;
+        default:
+            break;
+        }
+        
+        GAUSS::Entity* mazeBoundary = lookup->CreateEntity();
+        mazeBoundary->name = "Boundary";
+        GAUSS::Transform* mazeBoundaryTransform = mazeBoundary->AddComponent<GAUSS::Transform>();
+        mazeBoundaryTransform->SetTranslation(translation);
+        mazeBoundaryTransform->Scale(scaleAxis, scaleAmount);
+        
+        constexpr float colliderPadding = 1.8f;
+        GAUSS::BoxCollider* mazeBoundaryCollider = mazeBoundary->AddComponent<GAUSS::BoxCollider>();
+        mazeBoundaryCollider->height = mazeBoundaryTransform->GetScale().y * colliderPadding;
+        mazeBoundaryCollider->width = mazeBoundaryTransform->GetScale().x * colliderPadding;
+        mazeBoundaryCollider->depth = mazeBoundaryTransform->GetScale().z * colliderPadding;
+        mazeBoundaryCollider->stiffness = 200;
+        
+        GAUSS::Rigidbody* mazeBoundaryRigidBody = mazeBoundary->AddComponent<GAUSS::Rigidbody>();
+        mazeBoundaryRigidBody->isStatic = true;
+        mazeBoundaryRigidBody->hasGravity = false;
+    }
 
-    GAUSS::Entity* mazeBoundaryRight = lookup->CreateEntity();
-    GAUSS::Transform* mazeBoundaryRightTransform = mazeBoundaryRight->AddComponent<GAUSS::Transform>();
-    mazeBoundaryRightTransform->SetTranslation(GAUSS::Vector3(mazeWidth + 2.27f * blockSize * spacing, -blockSize  - blockSize/4, -cameraDistance));
-    mazeBoundaryRightTransform->SetScale(GAUSS::Vector3(0.1f, 1, 0.1f), mazeHeight * 2.02f);
-    GAUSS::BoxCollider* mazeBoundaryRightCollider = mazeBoundaryRight->AddComponent<GAUSS::BoxCollider>();
-    mazeBoundaryRightCollider->depth = mazeHeight * 3.8f;
-    mazeBoundaryRightCollider->width = mazeHeight * 3.8f  * 0.1f;
-    mazeBoundaryRightCollider->height = mazeHeight * 3.8f;
-    GAUSS::Rigidbody* mazeBoundaryRightRigidBody = mazeBoundaryRight->AddComponent<GAUSS::Rigidbody>();
-    mazeBoundaryRightRigidBody->isStatic = true;
-    mazeBoundaryRightRigidBody->hasGravity = false;
-    
-    GAUSS::Entity* mazeBoundaryUp = lookup->CreateEntity();
-    GAUSS::Transform* mazeBoundaryUpTransform = mazeBoundaryUp->AddComponent<GAUSS::Transform>();
-    mazeBoundaryUpTransform->SetTranslation(GAUSS::Vector3(-blockSize - blockSize/4, mazeHeight + 2.27f * blockSize * spacing, -cameraDistance));
-    mazeBoundaryUpTransform->SetScale(GAUSS::Vector3(1, 0.1f, 0.1f), mazeWidth * 2.02f);
-    GAUSS::BoxCollider* mazeBoundaryUpCollider = mazeBoundaryUp->AddComponent<GAUSS::BoxCollider>();
-    mazeBoundaryUpCollider->depth = mazeHeight * 3.8f;
-    mazeBoundaryUpCollider->width = mazeHeight * 3.8f;
-    mazeBoundaryUpCollider->height = mazeHeight * 3.8f * 0.1f;
-    GAUSS::Rigidbody* mazeBoundaryUpRigidBody = mazeBoundaryUp->AddComponent<GAUSS::Rigidbody>();
-    mazeBoundaryUpRigidBody->isStatic = true;
-    mazeBoundaryUpRigidBody->hasGravity = false;
-    
-    GAUSS::Entity* mazeBoundaryDown = lookup->CreateEntity();
-    GAUSS::Transform* mazeBoundaryDownTransform = mazeBoundaryDown->AddComponent<GAUSS::Transform>();
-    mazeBoundaryDownTransform->SetTranslation(GAUSS::Vector3(-blockSize - blockSize/4, -(mazeHeight + 0.72f) * blockSize * spacing, -cameraDistance));
-    mazeBoundaryDownTransform->SetScale(GAUSS::Vector3(1, 0.1f, 0.1f), mazeWidth * 2.02f);
-    GAUSS::BoxCollider* mazeBoundaryDownCollider = mazeBoundaryDown->AddComponent<GAUSS::BoxCollider>();
-    mazeBoundaryDownCollider->depth = mazeHeight * 3.8f;
-    mazeBoundaryDownCollider->width = mazeHeight * 3.8f;
-    mazeBoundaryDownCollider->height = mazeHeight * 3.8f * 0.1f;
-    GAUSS::Rigidbody* mazeBoundaryDownRigidBody = mazeBoundaryDown->AddComponent<GAUSS::Rigidbody>();
-    mazeBoundaryDownRigidBody->isStatic = true;
-    mazeBoundaryDownRigidBody->hasGravity = false;
+    constexpr float destructibleBlockSpawnChance = 0.2f;
     
     for (int i = 0; i < mazeWidth * 2; i++)
     {
         for (int j = 0; j < mazeHeight * 2; j++)
         {
-            GAUSS::Entity* block = lookup->CreateEntity();
-            
-            GAUSS::Transform* transform = block->AddComponent<GAUSS::Transform>();
-            transform->SetTranslation(GAUSS::Vector3((i - mazeWidth) * blockSize * spacing, (j - mazeHeight) * blockSize * spacing, -cameraDistance));
-            transform->SetScale(GAUSS::Vector3(1, 1, 1), blockSize);
-            
-            GAUSS::Rigidbody* rigidbody = block->AddComponent<GAUSS::Rigidbody>();
-            rigidbody->mass = 20;
-            rigidbody->hasGravity = false;
-            rigidbody->friction = 1;
-            rigidbody->isStatic = true;
+            //Generate destructible blocks
+            if(i % 2 != 0 || j % 2 != 0)
+            {
+                if(i >= mazeWidth * 2 - 2 || j >= mazeHeight * 2 - 2)
+                    continue;
+                
+                float random = rand() / static_cast<float>(RAND_MAX);
+                if(random >= destructibleBlockSpawnChance)
+                    continue;
+                
+                GAUSS::Entity* destructibleBlock = CreateMazeBlock(lookup, i, j);
+                GAUSS::Mesh* mesh = destructibleBlock->GetComponent<GAUSS::Mesh>(GAUSS_ENUMS::Mesh);
+                mesh->colour = breakableBlockColour;
+                
+                continue;
+            }
 
-            GAUSS::BoxCollider* collider = block->AddComponent<GAUSS::BoxCollider>();
-            collider->depth = blockSize;
-            collider->width = blockSize;
-            collider->height = blockSize;
-            
-            GAUSS::Mesh* mesh = block->AddComponent<GAUSS::Mesh>();
-            mesh->faces = GAUSS::ResourceLoader::LoadObjFile("Cube");
-            mesh->colour = blockColour;
+            //Generate non destructible blocks
+            CreateMazeBlock(lookup, i, j);
         }
     }
 }
+
+GAUSS::Entity* MazeGenerator::CreateMazeBlock(GAUSS::EntityComponentLookup* lookup, int widthIndex, int heightIndex)
+{
+    GAUSS::Entity* block = lookup->CreateEntity();
+            
+    GAUSS::Transform* transform = block->AddComponent<GAUSS::Transform>();
+    transform->SetTranslation(GAUSS::Vector3((widthIndex - mazeWidth) * blockSize * spacing, (heightIndex - mazeHeight) * blockSize * spacing, -cameraDistance));
+    transform->SetScale(GAUSS::Vector3(1, 1, 1), blockSize);
+            
+    GAUSS::Rigidbody* rigidbody = block->AddComponent<GAUSS::Rigidbody>();
+    rigidbody->mass = 20;
+    rigidbody->hasGravity = false;
+    rigidbody->friction = 1;
+    rigidbody->isStatic = true;
+
+    GAUSS::BoxCollider* collider = block->AddComponent<GAUSS::BoxCollider>();
+    collider->depth = blockSize;
+    collider->width = blockSize;
+    collider->height = blockSize;
+    collider->stiffness = 200.0f;
+            
+    GAUSS::Mesh* mesh = block->AddComponent<GAUSS::Mesh>();
+    mesh->faces = GAUSS::ResourceLoader::LoadObjFile("Cube");
+
+    return block;
+}
+
+
 
