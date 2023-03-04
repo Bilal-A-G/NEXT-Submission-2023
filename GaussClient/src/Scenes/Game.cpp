@@ -10,10 +10,12 @@
 #include "ECS/Components/Transform/Transform.h"
 #include "IO/ResourceLoader.h"
 
+#include "../Maze/MazeGenerator.h"
+
 GAUSS::Entity* player;
 GAUSS::Entity* cameraParent;
 
-constexpr int cameraDistanceFromPlayer = -5;
+constexpr int cameraDistanceFromPlayer = -10;
 constexpr float cameraCatchUpSpeed = 1;
 
 void Game::Awake()
@@ -48,6 +50,13 @@ void Game::Awake()
     rigidBody->hasGravity = false;
     rigidBody->mass = 20;
     rigidBody->friction = 1;
+
+    GAUSS::BoxCollider* collider = player->AddComponent<GAUSS::BoxCollider>();
+    collider->depth = 0.7f;
+    collider->height = 0.7f;
+    collider->width = 0.7f;
+
+    MazeGenerator::GenerateMaze(m_lookup);
 }
 
 void Game::Update(const float& deltaTime)
@@ -58,19 +67,19 @@ void Game::Update(const float& deltaTime)
     
     GAUSS::Vector3 direction;
 
-    if(App::IsKeyPressed(VK_UP))
+    if(App::IsKeyPressed('W'))
     {
         direction.y = 1;
     }
-    if(App::IsKeyPressed(VK_DOWN))
+    if(App::IsKeyPressed('S'))
     {
         direction.y = -1;
     }
-    if(App::IsKeyPressed(VK_LEFT))
+    if(App::IsKeyPressed('A'))
     {
         direction.x = -1;
     }
-    if(App::IsKeyPressed(VK_RIGHT))
+    if(App::IsKeyPressed('D'))
     {
         direction.x = 1;
     }

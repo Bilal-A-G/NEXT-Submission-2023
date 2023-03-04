@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "EntityComponentLookup.h"
+#include "string"
 
 namespace GAUSS
 {

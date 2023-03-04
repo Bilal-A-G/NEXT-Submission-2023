@@ -33,7 +33,7 @@ namespace GAUSS
     
             for (int j = i + 1; j < colliders.size(); j++)
             {
-                if(!(rigidBodies[i] && transforms[i] && colliders[i]))
+                if(!(rigidBodies[j] && transforms[j] && colliders[j]))
                     continue;
     
                 Rigidbody* rb2 = static_cast<Rigidbody*>(rigidBodies[j]);
@@ -59,10 +59,21 @@ namespace GAUSS
                 {
                     collider1->InvokeCollision(*lookup.GetEntity(rb2->m_entityId));
                     collider2->InvokeCollision(*lookup.GetEntity(rb1->m_entityId));
+
+                    if(!rb1->isStatic && !rb2->isStatic)
+                    {
+                        rb1->velocity += resolution * (collider1->GetStiffness() + collider2->GetStiffness()) * deltaTime;
+                        rb2->velocity += resolution * -1.0f * (collider1->GetStiffness() + collider2->GetStiffness()) * deltaTime;  
+                    }
+                    else if(!rb1->isStatic)
+                    {
+                        rb1->velocity += resolution * 2 * (collider1->GetStiffness() + collider2->GetStiffness()) * deltaTime;
+                    }
+                    else if(!rb2->isStatic)
+                    {
+                        rb2->velocity += resolution * -2.0f * (collider1->GetStiffness() + collider2->GetStiffness()) * deltaTime;  
+                    }
                     
-                    rb1->velocity += resolution * (collider1->GetStiffness() + collider2->GetStiffness()) * deltaTime;
-                    rb2->velocity += resolution * -1.0f * (collider1->GetStiffness() + collider2->GetStiffness()) * deltaTime;
-    
                     continue;
                 }
     
