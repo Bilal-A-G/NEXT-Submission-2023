@@ -15,6 +15,9 @@ namespace GAUSS
         std::vector<Component*>& rigidBodies = lookup.GetComponents(GAUSS_ENUMS::RigidBody);
         std::vector<Component*>& transforms = lookup.GetComponents(GAUSS_ENUMS::Transform);
 
+        if(rigidBodies.size() == 0 || transforms.size() == 0)
+            return;
+
         //For some reason, colliders.size() - 1 as the condition in the loop breaks it, but putting it in a variable works fine
         const int colliderSizeMinusOne = colliders.size() - 1;
 

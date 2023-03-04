@@ -17,9 +17,10 @@ namespace GAUSS
         const float amount = rand() / static_cast<float>(RAND_MAX) * m_trauma * m_trauma;
     
         const Component* mainCamera = lookup.GetFirstValidComponent<Camera>(GAUSS_ENUMS::Camera);
+        if(!mainCamera) return;
+        
         Transform* cameraTransform = lookup.GetComponent<Transform>(GAUSS_ENUMS::Transform, mainCamera->m_entityId);
-
-        if(!mainCamera || !cameraTransform) return;
+        if(!cameraTransform) return;
     
         cameraTransform->SetRotation(Vector3(rand() / static_cast<float>(RAND_MAX), rand() / static_cast<float>(RAND_MAX), 0), amount);
     }

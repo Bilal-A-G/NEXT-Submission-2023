@@ -1,8 +1,6 @@
 ﻿#include "GSPch.h"
 #include "Renderer.h"
 
-#include <cassert>
-
 #include "API/app.h"
 #include "ECS/Components/Mesh/Mesh.h"
 #include "ECS/Components/Camera/Camera.h"
@@ -16,17 +14,19 @@ namespace GAUSS
     {
         const std::vector<Component*>& meshComponents = lookup.GetComponents(GAUSS_ENUMS::Mesh);
         const std::vector<Component*>& transformComponents = lookup.GetComponents(GAUSS_ENUMS::Transform);
+        if(meshComponents.size() == 0 || transformComponents.size() == 0) return;
     
         const Light* light = lookup.GetFirstValidComponent<Light>(GAUSS_ENUMS::Light);
+        if(!light) return;
+        
         const Transform* lightTransform = lookup.GetComponent<Transform>(GAUSS_ENUMS::Transform, light->m_entityId);
-
-        if(!lightTransform || !light) return;
+        if(!lightTransform) return;
     
         const Camera* camera = lookup.GetFirstValidComponent<Camera>(GAUSS_ENUMS::Camera);
+        if(!camera) return;
+        
         const Transform* cameraTransform = lookup.GetComponent<Transform>(GAUSS_ENUMS::Transform, camera->m_entityId);
-
-        if(!cameraTransform)
-            assert(false);
+        if(!cameraTransform) return;
     
         for (Component* component : meshComponents)
         {

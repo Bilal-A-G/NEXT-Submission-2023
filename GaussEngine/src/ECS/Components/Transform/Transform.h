@@ -8,7 +8,7 @@ namespace GAUSS
         friend class EntityComponentLookup;
     protected:
         Transform() : m_scaleMatrix(Matrix4x4::Identity()), m_positionMatrix(Matrix4x4::Identity()), m_rotationMatrix(Matrix4x4::Identity()),
-        m_position(Vector3::Zero()), m_rotation(Vector3::Zero()), m_scale(Vector3::Zero()), right(Vector3(1, 0, 0)),
+        m_position(Vector3::Zero()), m_rotation(Vector3::Zero()), m_scale(Vector3(1, 1, 1)), right(Vector3(1, 0, 0)),
         up(Vector3(0, 1, 0)), forward(0, 0, 1), m_parent(nullptr) {}
         ~Transform() override {m_children.clear();}
     public:
