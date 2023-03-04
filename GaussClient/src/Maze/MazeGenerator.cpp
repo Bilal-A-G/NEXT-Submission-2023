@@ -64,7 +64,7 @@ void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
         mazeBoundaryTransform->SetTranslation(translation);
         mazeBoundaryTransform->Scale(scaleAxis, scaleAmount);
         
-        constexpr float colliderPadding = 1.8f;
+        constexpr float colliderPadding = 1.9f;
         GAUSS::BoxCollider* mazeBoundaryCollider = mazeBoundary->AddComponent<GAUSS::BoxCollider>();
         mazeBoundaryCollider->height = mazeBoundaryTransform->GetScale().y * colliderPadding;
         mazeBoundaryCollider->width = mazeBoundaryTransform->GetScale().x * colliderPadding;
@@ -108,6 +108,7 @@ void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
 GAUSS::Entity* MazeGenerator::CreateMazeBlock(GAUSS::EntityComponentLookup* lookup, int widthIndex, int heightIndex)
 {
     GAUSS::Entity* block = lookup->CreateEntity();
+    block->name = "Wall";
             
     GAUSS::Transform* transform = block->AddComponent<GAUSS::Transform>();
     transform->SetTranslation(GAUSS::Vector3((widthIndex - mazeWidth) * blockSize * spacing, (heightIndex - mazeHeight) * blockSize * spacing, -cameraDistance));
@@ -119,10 +120,12 @@ GAUSS::Entity* MazeGenerator::CreateMazeBlock(GAUSS::EntityComponentLookup* look
     rigidbody->friction = 1;
     rigidbody->isStatic = true;
 
+    constexpr float colliderPadding = 1.25f;
+    
     GAUSS::BoxCollider* collider = block->AddComponent<GAUSS::BoxCollider>();
-    collider->depth = blockSize;
-    collider->width = blockSize;
-    collider->height = blockSize;
+    collider->depth = blockSize * colliderPadding;
+    collider->width = blockSize * colliderPadding;
+    collider->height = blockSize * colliderPadding;
     collider->stiffness = 200.0f;
             
     GAUSS::Mesh* mesh = block->AddComponent<GAUSS::Mesh>();

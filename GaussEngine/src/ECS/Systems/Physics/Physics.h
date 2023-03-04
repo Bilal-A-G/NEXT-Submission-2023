@@ -1,7 +1,7 @@
 #pragma once
-#include "ECS/Component.h"
 #include "ECS/System.h"
-#include "ECS/Components/Colliders/Collider.h"
+#include "ECS/Components/Colliders/CollisionFunctions.h"
+#include "Math/Math.h"
 
 namespace GAUSS
 {

@@ -14,6 +14,8 @@
 
 constexpr float bombSize = 0.8f;
 constexpr float timeBetweenBombs = 3.0f;
+constexpr float blockSize = 0.8f;
+constexpr float spacing = 1.3f;
 const GAUSS::Colour bombColour = GAUSS::Colour::Red();
 
 std::chrono::time_point<std::chrono::steady_clock> lastPlacedBombTime;
@@ -31,7 +33,7 @@ void BombPlacer::PlaceBomb(GAUSS::EntityComponentLookup* lookup, GAUSS::Vector3 
     
     GAUSS::Entity* bombEntity = lookup->CreateEntity();
     GAUSS::Transform* transform =  bombEntity->AddComponent<GAUSS::Transform>();
-    transform->SetTranslation(position);
+    transform->SetTranslation(GAUSS::Vector3(round(position.x) * blockSize * spacing, round(position.y) * blockSize * spacing, position.z));
     transform->SetScale(GAUSS::Vector3(1, 1, 1), bombSize);
     GAUSS::Mesh* mesh = bombEntity->AddComponent<GAUSS::Mesh>();
     mesh->faces = GAUSS::ResourceLoader::LoadObjFile("Sphere");
@@ -40,7 +42,7 @@ void BombPlacer::PlaceBomb(GAUSS::EntityComponentLookup* lookup, GAUSS::Vector3 
     rigidBody->hasGravity = false;
     rigidBody->isStatic = true;
     GAUSS::SphereCollider*  collider = bombEntity->AddComponent<GAUSS::SphereCollider>();
-    collider->radius = bombSize * 0.5f;
+    collider->radius = bombSize * 0.65f;
     collider->stiffness = 0.0f;
     bombEntity->name = "Bomb";
     

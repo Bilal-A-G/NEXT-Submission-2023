@@ -42,7 +42,7 @@ void Game::Awake()
     player = m_lookup->CreateEntity();
     player->name = "Player";
     GAUSS::Transform* transform = player->AddComponent<GAUSS::Transform>();
-    transform->Scale(GAUSS::Vector3(1,1,1), 0.4f);
+    transform->Scale(GAUSS::Vector3(1,1,1), 0.6f);
     transform->Translate(GAUSS::Vector3(0, 0, -cameraDistanceFromPlayer));
     
     GAUSS::Mesh* mesh = player->AddComponent<GAUSS::Mesh>();
@@ -64,7 +64,7 @@ void Game::Awake()
        if(b.name == "Bomb")
        {
            GAUSS::SphereCollider* collider = b.GetComponent<GAUSS::SphereCollider>(GAUSS_ENUMS::SphereCollider);
-           collider->stiffness = 120;
+           collider->stiffness = 150;
        }
     });
 

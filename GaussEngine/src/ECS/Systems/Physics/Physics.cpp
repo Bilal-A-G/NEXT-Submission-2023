@@ -1,6 +1,7 @@
 #include "GSPch.h"
 #include "Physics.h"
 
+#include "ECS/Components/Colliders/Collider.h"
 #include "ECS/Components/Mesh/Mesh.h"
 #include "ECS/Components/Rigidbody/Rigidbody.h"
 #include "ECS/Components/Transform/Transform.h"

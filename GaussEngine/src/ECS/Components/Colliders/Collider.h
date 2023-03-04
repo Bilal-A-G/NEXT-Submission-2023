@@ -2,13 +2,11 @@
 #include "ECS/Component.h"
 #include "ECS/Entity.h"
 #include "Math/Math.h"
+#include "CollisionFunctions.h"
 
 namespace GAUSS
 {
     struct Collider;
-    
-    using CollisionFunction = void(*)(Entity& a, Entity& b);
-    using CollisionResolvedFunction = void(*)(Entity& a, Entity& b);
     
     struct Collider : public Component
     {
