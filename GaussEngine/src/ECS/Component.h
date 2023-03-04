@@ -8,7 +8,7 @@ namespace GAUSS
     {
         friend class EntityComponentLookup;
     protected:
-        Component() : entityId(0){}
+        Component() : entityId(0), active(true){}
         virtual ~Component() = default;
         
         void operator delete(void* ptr){::operator delete(ptr);}
