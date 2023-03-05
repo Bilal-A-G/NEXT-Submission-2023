@@ -12,11 +12,11 @@
 #include "ECS/Systems/Particles/Particles.h"
 
 GAUSS::Vector3 explodeDirection;
-GAUSS::EntityComponentLookup* globalLookup;
+GAUSS::EntityComponentLookup* globalLookup2;
 
 void Explosion::Update(const float& deltaTime, GAUSS::EntityComponentLookup& lookup)
 {
-    globalLookup = &lookup;
+    globalLookup2 = &lookup;
     std::vector<GAUSS::Component*> bombComponents = lookup.GetComponents(CLIENT_ENUMS::Bomb);
     std::vector<GAUSS::Component*> transformComponents = lookup.GetComponents(GAUSS_ENUMS::Transform);
 
@@ -88,8 +88,8 @@ void Explosion::Update(const float& deltaTime, GAUSS::EntityComponentLookup& loo
              bombTransform->SetTranslation(transform->GetPosition());
              
              collider->depth = 10.0f;
-             collider->width = 0.8f;
-             collider->height = 0.8f;
+             collider->width = 0.9f;
+             collider->height = 0.9f;
              collider->stiffness = 0;
              
              collider->OnCollisionStay([](GAUSS::Entity& a, GAUSS::Entity& b)
@@ -98,7 +98,7 @@ void Explosion::Update(const float& deltaTime, GAUSS::EntityComponentLookup& loo
                  CLIENT::Destructible* destructible = b.GetComponent<CLIENT::Destructible>(CLIENT_ENUMS::Destructible);
                 if(destructible)
                 {
-                    GAUSS::Particles::Play(destructible->explosionParticleProperties, *globalLookup);
+                    GAUSS::Particles::Play(destructible->explosionParticleProperties, *globalLookup2);
                     destructible->OnDestroy();
                     b.SetActive(false);
                 }

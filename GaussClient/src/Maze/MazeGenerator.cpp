@@ -1,6 +1,5 @@
 ﻿#include "MazeGenerator.h"
 
-#include "../Components/Bomb.h"
 #include "../Components/Destructible.h"
 #include "ECS/Entity.h"
 #include "ECS/EntityComponentLookup.h"
@@ -10,16 +9,11 @@
 #include "ECS/Components/Transform/Transform.h"
 #include "IO/ResourceLoader.h"
 #include "Math/Geometry.h"
-
-constexpr int mazeWidth = 4;
-constexpr int mazeHeight = 3;
-const GAUSS::Colour blockColour = GAUSS::Colour::White();
-const GAUSS::Colour breakableBlockColour = GAUSS::Colour(0.7f, 0.5f, 0.5f);
-constexpr float blockSize = 0.8f;
-constexpr float spacing = 1.3f;
-constexpr float cameraDistance = -10;
+#include "../GameSettings.h"
+#include "../Components/Enemy.h"
 
 std::vector<GAUSS::Entity*> MazeGenerator::destructibleBlocks;
+#define NEW_SEED rand() / static_cast<float>(RAND_MAX)
 
 void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
 {
@@ -80,46 +74,81 @@ void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
         mazeBoundaryRigidBody->hasGravity = false;
     }
 
-    constexpr float destructibleBlockSpawnChance = 0.2f;
+    GAUSS::ParticleSystemProperties properties;
+
+    properties.amount = 5;
+    properties.faces = GAUSS::ResourceLoader::LoadObjFile("Cube");
+    properties.averageLifetime = 3.0f;
+    properties.averageSize = 0.3f;
+    properties.averageSpeed = 5.0f;
+    properties.colourVariation = 0.01f;
+    properties.endColour = GAUSS::Colour::Black();
+    properties.lifetimeVariation = 0.1f;
+    properties.rotationAxis = GAUSS::Vector3(1, 1, 1);
+    properties.sizeVariation = 0.0f;
+    properties.speedVariation = 0.1f;
+    properties.averageRotationSpeed = 0.01f;
+    properties.rotationSpeedVariation = 0.001f;
+    properties.colourChangeSpeed = 0.3f;
     
     for (int i = 0; i < mazeWidth * 2; i++)
     {
         for (int j = 0; j < mazeHeight * 2; j++)
         {
-            //Generate destructible blocks
             if(i % 2 != 0 || j % 2 != 0)
             {
                 if(i >= mazeWidth * 2 - 2 || j >= mazeHeight * 2 - 2)
                     continue;
                 
-                float random = rand() / static_cast<float>(RAND_MAX);
-                if(random >= destructibleBlockSpawnChance)
-                    continue;
+                float breakableBlockRandom = NEW_SEED;
+                float enemyRandom = NEW_SEED;
                 
+                //Generate enemies
+                if(breakableBlockRandom >= breakableBlockSpawnChance)
+                {
+                    if(enemyRandom >= enemySpawnChance) continue;
+                    
+                    GAUSS::Entity* enemyEntity = lookup->CreateEntity();
+                    
+                    GAUSS::Mesh* enemyMesh = enemyEntity->AddComponent<GAUSS::Mesh>();
+                    enemyMesh->faces = GAUSS::ResourceLoader::LoadObjFile("Cube");
+                    enemyMesh->colour = GAUSS::Colour::Red();
+                    
+                    GAUSS::Transform* enemyTransform = enemyEntity->AddComponent<GAUSS::Transform>();
+                    enemyTransform->SetScale(GAUSS::Vector3(1, 1, 1), 0.6f);
+                    enemyTransform->SetTranslation(GAUSS::Vector3((i - mazeWidth) * blockSize * spacing, (j - mazeHeight) * blockSize * spacing, -cameraDistance));
+                    
+                    GAUSS::Rigidbody* enemyRigidBody = enemyEntity->AddComponent<GAUSS::Rigidbody>();
+                    enemyRigidBody->hasGravity = false;
+                    
+                    GAUSS::BoxCollider* enemyCollider = enemyEntity->AddComponent<GAUSS::BoxCollider>();
+                    enemyCollider->depth = 0.8f;
+                    enemyCollider->height = 0.8f;
+                    enemyCollider->width = 0.8f;
+                    enemyCollider->stiffness = 0;
+                    
+                    CLIENT::Enemy* enemy = enemyEntity->AddComponent<CLIENT::Enemy>();
+                    float moveDirectionXRandom = NEW_SEED;
+                    enemy->moveDirection = GAUSS::Vector3(moveDirectionXRandom > 0.5f ? 1 : -1, 0, 0);
+                    enemy->moveSpeed = enemySpeed;
+
+                    CLIENT::Destructible* enemyDestruction = enemyEntity->AddComponent<CLIENT::Destructible>();
+                    properties.position = enemyTransform->GetPosition();
+                    properties.initialColour = GAUSS::Colour(1.0f, 0.4f, 0.1f);
+                    enemyDestruction->explosionParticleProperties = properties;
+                    
+                    continue;
+                }
+                
+                //Generate destructible blocks
                 GAUSS::Entity* destructibleBlock = CreateMazeBlock(lookup, i, j);
                 GAUSS::Mesh* mesh = destructibleBlock->GetComponent<GAUSS::Mesh>(GAUSS_ENUMS::Mesh);
                 mesh->colour = breakableBlockColour;
 
                 CLIENT::Destructible* destructible = destructibleBlock->AddComponent<CLIENT::Destructible>();
-                GAUSS::ParticleSystemProperties properties;
 
-                properties.amount = 5;
-                properties.faces = GAUSS::ResourceLoader::LoadObjFile("Cube");
                 properties.position = destructibleBlock->GetComponent<GAUSS::Transform>(GAUSS_ENUMS::Transform)->GetPosition();
-                properties.averageLifetime = 3.0f;
-                properties.averageSize = 0.3f;
-                properties.averageSpeed = 5.0f;
-                properties.colourVariation = 0.01f;
-                properties.endColour = GAUSS::Colour::Black();
-                properties.initialColour = GAUSS::Colour(0.5f, 0.3f, 0.3f);
-                properties.lifetimeVariation = 0.1f;
-                properties.rotationAxis = GAUSS::Vector3(1, 1, 1);
-                properties.sizeVariation = 0.0f;
-                properties.speedVariation = 0.1f;
-                properties.averageRotationSpeed = 0.01f;
-                properties.rotationSpeedVariation = 0.001f;
-                properties.colourChangeSpeed = 0.3f;
-
+                properties.initialColour = GAUSS::Colour(0.2f, 0.5f, 0.8f);
                 destructible->explosionParticleProperties = properties;
                 destructibleBlocks.push_back(destructibleBlock);
                 continue;

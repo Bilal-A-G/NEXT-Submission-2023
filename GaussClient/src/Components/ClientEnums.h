@@ -4,5 +4,6 @@
 enum CLIENT_ENUMS
 {
     Bomb = GAUSS_ENUMS::Last,
-    Destructible
+    Destructible,
+    Enemy
 };

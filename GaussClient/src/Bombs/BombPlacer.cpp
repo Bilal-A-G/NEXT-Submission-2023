@@ -11,12 +11,7 @@
 #include "IO/ResourceLoader.h"
 #include "Math/Math.h"
 #include "../Components/Bomb.h"
-
-constexpr float bombSize = 0.8f;
-constexpr float timeBetweenBombs = 3.0f;
-constexpr float blockSize = 0.8f;
-constexpr float spacing = 1.3f;
-const GAUSS::Colour bombColour = GAUSS::Colour::Red();
+#include "../GameSettings.h"
 
 std::chrono::time_point<std::chrono::steady_clock> lastPlacedBombTime;
 bool firstTime = true;
