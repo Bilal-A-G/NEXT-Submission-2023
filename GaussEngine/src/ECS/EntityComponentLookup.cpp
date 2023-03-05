@@ -35,13 +35,6 @@ namespace GAUSS
                 
             if(m_components[i][id])
             {
-                if(i == GAUSS_ENUMS::SphereCollider)
-                {
-                    m_components[i][id]->m_active = active;
-                    continue;
-                }
-                    
-                m_components[i][id]->m_active = active;
                 m_components[i][id]->m_active = active;
             }
         }

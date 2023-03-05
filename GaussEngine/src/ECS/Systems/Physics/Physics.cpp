@@ -1,6 +1,7 @@
 #include "GSPch.h"
 #include "Physics.h"
 
+#include "API/app.h"
 #include "ECS/Components/Colliders/Collider.h"
 #include "ECS/Components/Mesh/Mesh.h"
 #include "ECS/Components/Rigidbody/Rigidbody.h"
@@ -60,6 +61,8 @@ namespace GAUSS
                 {
                     collider1->InvokeCollision(collider1Entity, collider2Entity);
                     collider2->InvokeCollision(collider2Entity, collider1Entity);
+
+                    if(collider1->stiffness == 0 || collider2->stiffness == 0) continue;
 
                     if(!rb1->isStatic && !rb2->isStatic)
                     {
@@ -165,6 +168,11 @@ namespace GAUSS
     {
         float minDepth = 0;
         Vector3 minAxis;
+
+        if(App::IsKeyPressed('L'))
+        {
+            int i = 0;
+        }
     
         for (Vector3 axis : axes)
         {
@@ -212,7 +220,7 @@ namespace GAUSS
                 }
             }
         
-            if(bodyBMin < bodyAMax && bodyBMax > bodyAMax)
+            if(bodyBMin <= bodyAMax && bodyBMax >= bodyAMax)
             {
                 const float depth = abs(bodyBMin - bodyAMax);
 
@@ -222,7 +230,7 @@ namespace GAUSS
                     minAxis = axis * -1.0f;
                 }
             }
-            else if(bodyAMin < bodyBMax && bodyAMax > bodyBMax)
+            else if(bodyAMin <= bodyBMax && bodyAMax >= bodyBMax)
             {
                 const float depth = abs(bodyAMin - bodyBMax);
 

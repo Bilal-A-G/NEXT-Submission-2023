@@ -15,7 +15,6 @@ namespace CLIENT
     public:
         float fuse;
         float fuseDrainSpeed;
-        float explosionRange;
     };    
 }
 

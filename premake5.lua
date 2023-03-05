@@ -3,7 +3,7 @@ workspace "NEXTSubmission"
 
     language "C++"
     cppdialect "C++17"
-    staticruntime "off"
+    staticruntime "on"
 
     configurations
     {
@@ -118,7 +118,7 @@ project "GaussClient"
     objdir ("int/" .. outputdir .. "/%{prj.name}")
 
     libdirs{"NEXTAPI/glut/lib"}
-    includedirs{"GaussEngine/src", "NEXTAPI"}
+    includedirs{"GaussEngine/src", "NEXTAPI", "GaussClient/src"}
 
     files
     {

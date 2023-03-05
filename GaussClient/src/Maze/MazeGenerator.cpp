@@ -1,6 +1,5 @@
 ﻿#include "MazeGenerator.h"
 
-#include "../Components/Destructible.h"
 #include "ECS/Entity.h"
 #include "ECS/EntityComponentLookup.h"
 #include "ECS/Components/Colliders/BoxCollider.h"
@@ -8,12 +7,13 @@
 #include "ECS/Components/Rigidbody/Rigidbody.h"
 #include "ECS/Components/Transform/Transform.h"
 #include "IO/ResourceLoader.h"
-#include "Math/Geometry.h"
-#include "../GameSettings.h"
-#include "../Components/Enemy.h"
+
+#include "GameUtils.h"
+#include "ClientECS/Components/Enemy/SimpleDestruction.h"
+#include "ClientECS/Components/Enemy/SimpleMovement.h"
+#include "ECS/Systems/Particles/ParticleSystemProperties.h"
 
 std::vector<GAUSS::Entity*> MazeGenerator::destructibleBlocks;
-#define NEW_SEED rand() / static_cast<float>(RAND_MAX)
 
 void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
 {
@@ -57,7 +57,7 @@ void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
         }
         
         GAUSS::Entity* mazeBoundary = lookup->CreateEntity();
-        mazeBoundary->name = "Boundary";
+        mazeBoundary->name = wallTag;
         GAUSS::Transform* mazeBoundaryTransform = mazeBoundary->AddComponent<GAUSS::Transform>();
         mazeBoundaryTransform->SetTranslation(translation);
         mazeBoundaryTransform->Scale(scaleAxis, scaleAmount);
@@ -75,7 +75,7 @@ void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
     }
 
     GAUSS::ParticleSystemProperties properties;
-
+    
     properties.amount = 5;
     properties.faces = GAUSS::ResourceLoader::LoadObjFile("Cube");
     properties.averageLifetime = 3.0f;
@@ -85,7 +85,7 @@ void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
     properties.endColour = GAUSS::Colour::Black();
     properties.lifetimeVariation = 0.1f;
     properties.rotationAxis = GAUSS::Vector3(1, 1, 1);
-    properties.sizeVariation = 0.0f;
+    properties.sizeVariation = 0.05f;
     properties.speedVariation = 0.1f;
     properties.averageRotationSpeed = 0.01f;
     properties.rotationSpeedVariation = 0.001f;
@@ -109,6 +109,7 @@ void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
                     if(enemyRandom >= enemySpawnChance) continue;
                     
                     GAUSS::Entity* enemyEntity = lookup->CreateEntity();
+                    enemyEntity->name = enemyTag;
                     
                     GAUSS::Mesh* enemyMesh = enemyEntity->AddComponent<GAUSS::Mesh>();
                     enemyMesh->faces = GAUSS::ResourceLoader::LoadObjFile("Cube");
@@ -125,17 +126,15 @@ void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
                     enemyCollider->depth = 0.8f;
                     enemyCollider->height = 0.8f;
                     enemyCollider->width = 0.8f;
-                    enemyCollider->stiffness = 0;
+                    enemyCollider->stiffness = 200;
                     
-                    CLIENT::Enemy* enemy = enemyEntity->AddComponent<CLIENT::Enemy>();
-                    float moveDirectionXRandom = NEW_SEED;
-                    enemy->moveDirection = GAUSS::Vector3(moveDirectionXRandom > 0.5f ? 1 : -1, 0, 0);
-                    enemy->moveSpeed = enemySpeed;
+                    enemyEntity->AddComponent<CLIENT::SimpleMovement>();
 
-                    CLIENT::Destructible* enemyDestruction = enemyEntity->AddComponent<CLIENT::Destructible>();
+                    CLIENT::SimpleDestruction* enemyDestruction = enemyEntity->AddComponent<CLIENT::SimpleDestruction>();
                     properties.position = enemyTransform->GetPosition();
                     properties.initialColour = GAUSS::Colour(1.0f, 0.4f, 0.1f);
-                    enemyDestruction->explosionParticleProperties = properties;
+                    enemyDestruction->particleProperties = properties;
+                    enemyDestruction->collisionTags = {explosionTag};
                     
                     continue;
                 }
@@ -144,13 +143,14 @@ void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
                 GAUSS::Entity* destructibleBlock = CreateMazeBlock(lookup, i, j);
                 GAUSS::Mesh* mesh = destructibleBlock->GetComponent<GAUSS::Mesh>(GAUSS_ENUMS::Mesh);
                 mesh->colour = breakableBlockColour;
-
-                CLIENT::Destructible* destructible = destructibleBlock->AddComponent<CLIENT::Destructible>();
-
+                
+                CLIENT::SimpleDestruction* blockDestruction = destructibleBlock->AddComponent<CLIENT::SimpleDestruction>();
                 properties.position = destructibleBlock->GetComponent<GAUSS::Transform>(GAUSS_ENUMS::Transform)->GetPosition();
                 properties.initialColour = GAUSS::Colour(0.2f, 0.5f, 0.8f);
-                destructible->explosionParticleProperties = properties;
+                blockDestruction->particleProperties = properties;
+                blockDestruction->collisionTags = {explosionTag};
                 destructibleBlocks.push_back(destructibleBlock);
+                
                 continue;
             }
 
@@ -163,7 +163,7 @@ void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
 GAUSS::Entity* MazeGenerator::CreateMazeBlock(GAUSS::EntityComponentLookup* lookup, int widthIndex, int heightIndex)
 {
     GAUSS::Entity* block = lookup->CreateEntity();
-    block->name = "Wall";
+    block->name = wallTag;
             
     GAUSS::Transform* transform = block->AddComponent<GAUSS::Transform>();
     transform->SetTranslation(GAUSS::Vector3((widthIndex - mazeWidth) * blockSize * spacing, (heightIndex - mazeHeight) * blockSize * spacing, -cameraDistance));
