@@ -45,6 +45,7 @@ namespace CLIENT
     
             GAUSS::SphereCollider*  collider = bombEntity->AddComponent<GAUSS::SphereCollider>();
             collider->radius = bombSize * 0.65f;
+            collider->stiffness = 0.1f;
     
             CLIENT::Bomb* bomb = bombEntity->AddComponent<CLIENT::Bomb>();
             bomb->fuse = fuse;

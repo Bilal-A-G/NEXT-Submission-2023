@@ -19,7 +19,6 @@ namespace GAUSS
         for (int i = 0; i < systemProperties.amount; i++)
         {
             Entity* particle = ParticlePool::Query(lookup);
-            particle->SetActive(true);
             
             ParticleProperties* properties = particle->GetComponent<ParticleProperties>(GAUSS_ENUMS::Particle);
             Transform* transform = particle->GetComponent<Transform>(GAUSS_ENUMS::Transform);

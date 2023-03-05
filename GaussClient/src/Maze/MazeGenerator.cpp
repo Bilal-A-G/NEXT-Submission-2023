@@ -78,7 +78,7 @@ void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
     
     properties.amount = 5;
     properties.faces = GAUSS::ResourceLoader::LoadObjFile("Cube");
-    properties.averageLifetime = 3.0f;
+    properties.averageLifetime = 1.0f;
     properties.averageSize = 0.3f;
     properties.averageSpeed = 5.0f;
     properties.colourVariation = 0.01f;
@@ -135,6 +135,7 @@ void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
                     properties.initialColour = GAUSS::Colour(1.0f, 0.4f, 0.1f);
                     enemyDestruction->particleProperties = properties;
                     enemyDestruction->collisionTags = {explosionTag};
+                    enemyDestruction->useParticles = true;
                     
                     continue;
                 }
