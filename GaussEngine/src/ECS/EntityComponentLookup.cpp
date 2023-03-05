@@ -27,7 +27,7 @@ namespace GAUSS
         return entity;
     }
 
-    void EntityComponentLookup::SetActiveOnComponents(bool active, const int& id)
+    void EntityComponentLookup::SetActiveOnComponents(const bool& active, const int& id) const
     {
         for (int i = 1; i < m_components.size(); i++)
         {

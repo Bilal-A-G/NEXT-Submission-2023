@@ -1,8 +1,8 @@
 ﻿#include "SimpleDestruction.h"
 #include "ECS/Entity.h"
 #include "ECS/Components/Colliders/Collider.h"
-#include "GameUtils.h"
 #include "ECS/Systems/Particles/Particles.h"
+#include "ECS/Systems/ScreenShake/ScreenShake.h"
 
 namespace CLIENT
 {
@@ -29,6 +29,7 @@ namespace CLIENT
             
             if(!foundMatch || !a.GetActive()) return;
             if(useParticles) {GAUSS::Particles::Play(particleProperties, lookup);}
+            GAUSS::ScreenShake::ShakeScreen(0.1f);
             
             a.SetActive(false);
         });

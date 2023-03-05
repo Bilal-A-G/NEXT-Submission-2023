@@ -25,8 +25,8 @@ constexpr float cameraCatchUpSpeed = 1;
 inline constexpr float cameraDistance = -10;
 
 //Maze Settings//
-inline constexpr int mazeWidth = 10;
-inline constexpr int mazeHeight = 5;
+inline constexpr int mazeWidth = 5;
+inline constexpr int mazeHeight = 3;
 
 inline const GAUSS::Colour blockColour = GAUSS::Colour::White();
 inline const GAUSS::Colour breakableBlockColour = GAUSS::Colour(0.2f, 0.5f, 0.7f);

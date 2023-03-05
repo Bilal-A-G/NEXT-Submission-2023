@@ -78,11 +78,12 @@ void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
     
     properties.amount = 5;
     properties.faces = GAUSS::ResourceLoader::LoadObjFile("Cube");
-    properties.averageLifetime = 1.0f;
+    properties.averageLifetime = 2.5f;
     properties.averageSize = 0.3f;
-    properties.averageSpeed = 5.0f;
+    properties.averageSpeed = 7.0f;
     properties.colourVariation = 0.01f;
     properties.endColour = GAUSS::Colour::Black();
+    properties.alphaFadeSpeed = 0.0f;
     properties.lifetimeVariation = 0.1f;
     properties.rotationAxis = GAUSS::Vector3(1, 1, 1);
     properties.sizeVariation = 0.05f;

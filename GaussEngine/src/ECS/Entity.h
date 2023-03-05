@@ -22,7 +22,7 @@ namespace GAUSS
         template <typename T>
         T* GetComponent(const int& index) {return m_lookup.GetComponent<T>(index, id);}
 
-        void SetActive(bool active);
+        void SetActive(const bool& active);
         const bool& GetActive() const {return m_active;}
     public:
         const int id;

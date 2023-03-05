@@ -3,7 +3,7 @@
 
 namespace GAUSS
 {
-    void Entity::SetActive(bool active)
+    void Entity::SetActive(const bool& active)
     {
         if(!active)
         {

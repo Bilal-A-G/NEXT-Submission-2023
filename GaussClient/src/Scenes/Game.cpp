@@ -15,6 +15,7 @@
 #include "ClientECS/Components/Player/BombAttack.h"
 #include "ClientECS/Components/Player/KeyboardMovement.h"
 #include "ClientECS/Components/Player/PlayerDestruction.h"
+#include "ECS/Systems/ScreenShake/ScreenShake.h"
 #include "Scenes/SceneManager.h"
 
 GAUSS::Entity* player;
@@ -77,6 +78,8 @@ void Game::Awake()
 
     InitPlayer();
     MazeGenerator::GenerateMaze(m_lookup);
+
+    GAUSS::ScreenShake::traumaDecreaseRate = 1.0f;
 }
 
 void Game::Update(const float& deltaTime)

@@ -12,6 +12,7 @@
 #include "ClientECS/Components/Enemy/SimpleDestruction.h"
 
 #include "GameUtils.h"
+#include "ECS/Systems/ScreenShake/ScreenShake.h"
 
 namespace CLIENT
 {
@@ -35,6 +36,8 @@ namespace CLIENT
                 bomb->fuse -= bomb->fuseDrainSpeed * deltaTime;
                 continue;
             }
+
+            GAUSS::ScreenShake::ShakeScreen(0.1f);
 
             for(int v = 0; v < 4; v++)
             {

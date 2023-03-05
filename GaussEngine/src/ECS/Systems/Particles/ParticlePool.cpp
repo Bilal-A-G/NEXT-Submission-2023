@@ -13,8 +13,11 @@ namespace GAUSS
     void ParticlePool::Return(Entity* particle)
     {
         particle->GetComponent<Mesh>(GAUSS_ENUMS::Mesh)->colour = Colour::Black();
-        particle->GetComponent<Transform>(GAUSS_ENUMS::Transform)->SetTranslation(Vector3::Zero());
+        particle->GetComponent<Transform>(GAUSS_ENUMS::Transform)->SetTranslation(Vector3(100, 100, -100));
         particle->GetComponent<ParticleProperties>(GAUSS_ENUMS::Particle)->fadeOut = false;
+        GAUSS::Rigidbody* rigidBody = particle->GetComponent<Rigidbody>(GAUSS_ENUMS::RigidBody);
+        rigidBody->acceleration = GAUSS::Vector3::Zero();
+        rigidBody->velocity = GAUSS::Vector3::Zero();
 
         m_pool.push_back(particle);
     }

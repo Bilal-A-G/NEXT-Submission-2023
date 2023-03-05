@@ -19,7 +19,7 @@ namespace GAUSS
         Component* GetTypelessComponent(const int& index, const int& entityId) const;
         Component* GetFirstValidTypelessComponent(const int& index);
         Component* InitializeNewComponent(const int& entityId, Component* component);
-        void SetActiveOnComponents(bool active, const int& id);
+        void SetActiveOnComponents(const bool& active, const int& id) const;
     public:
         Entity* CreateEntity();
         Entity* GetEntity(const int& id) const;
