@@ -9,7 +9,8 @@ public:
     
     void Render() override
     {
-        App::Print(100, 100, "Congratulations, you have won the game! Press 'R' to restart", 0, 1, 0, GLUT_BITMAP_HELVETICA_10);
+        App::Print(380, 500, "Congratulations, you have won Bomber Cube!", 0.4f, 0.8f, 0.4f, GLUT_BITMAP_HELVETICA_12);
+        App::Print(550, 460, "Press 'R' to restart", 0.8f, 0.8f, 0.8f, GLUT_BITMAP_HELVETICA_10);
     }
     
     void Update(const float& deltaTime) override
