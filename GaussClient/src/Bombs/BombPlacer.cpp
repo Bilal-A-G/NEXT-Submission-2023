@@ -1,7 +1,4 @@
 ﻿#include "BombPlacer.h"
-
-#include <chrono>
-
 #include "ECS/Entity.h"
 #include "ECS/EntityComponentLookup.h"
 #include "ECS/Components/Colliders/SphereCollider.h"
@@ -9,22 +6,21 @@
 #include "ECS/Components/Rigidbody/Rigidbody.h"
 #include "ECS/Components/Transform/Transform.h"
 #include "IO/ResourceLoader.h"
-#include "Math/Math.h"
 #include "../Components/Bomb.h"
 #include "../GameSettings.h"
 
-std::chrono::time_point<std::chrono::steady_clock> lastPlacedBombTime;
-bool firstTime = true;
+bool BombPlacer::m_firstTime;
+std::chrono::time_point<std::chrono::steady_clock> BombPlacer::m_lastPlacedBombTime;
 
 void BombPlacer::PlaceBomb(GAUSS::EntityComponentLookup* lookup, GAUSS::Vector3 position)
 {
     std::chrono::time_point<std::chrono::steady_clock> currentTime = std::chrono::steady_clock::now();
     
-    if(std::chrono::duration_cast<std::chrono::seconds>(currentTime - lastPlacedBombTime).count() < timeBetweenBombs && !firstTime)
+    if(std::chrono::duration_cast<std::chrono::seconds>(currentTime - m_lastPlacedBombTime).count() < timeBetweenBombs && !m_firstTime)
         return;
 
-    firstTime = false;
-    lastPlacedBombTime = currentTime;
+    m_firstTime = false;
+    m_lastPlacedBombTime = currentTime;
     
     GAUSS::Entity* bombEntity = lookup->CreateEntity();
     GAUSS::Transform* transform =  bombEntity->AddComponent<GAUSS::Transform>();
