@@ -1,5 +1,6 @@
 #pragma once
 #include "ECS/Component.h"
+#include "Math/Math.h"
 
 namespace GAUSS
 {

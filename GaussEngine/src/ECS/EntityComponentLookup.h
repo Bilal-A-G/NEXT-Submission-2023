@@ -19,10 +19,13 @@ namespace GAUSS
         Component* GetTypelessComponent(const int& index, const int& entityId) const;
         Component* GetFirstValidTypelessComponent(const int& index);
         Component* InitializeNewComponent(const int& entityId, Component* component);
+        void SetActiveOnComponents(bool active, const int& id);
     public:
         Entity* CreateEntity();
-        void DestroyEntity(const int& id) const;
         Entity* GetEntity(const int& id) const;
+        
+        void DestroyEntity(const int& id) {SetActiveOnComponents(false, id);}
+        void ActivateEntity(const int& id) {SetActiveOnComponents(true, id);}
         
         template <typename T>
         T* CreateComponent(const int& entityId) {return static_cast<T*>(InitializeNewComponent(entityId, new T()));}

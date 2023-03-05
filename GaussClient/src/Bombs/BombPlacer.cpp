@@ -2,7 +2,6 @@
 
 #include <chrono>
 
-#include "Bomb.h"
 #include "ECS/Entity.h"
 #include "ECS/EntityComponentLookup.h"
 #include "ECS/Components/Colliders/SphereCollider.h"
@@ -11,6 +10,7 @@
 #include "ECS/Components/Transform/Transform.h"
 #include "IO/ResourceLoader.h"
 #include "Math/Math.h"
+#include "../Components/Bomb.h"
 
 constexpr float bombSize = 0.8f;
 constexpr float timeBetweenBombs = 3.0f;
@@ -46,9 +46,10 @@ void BombPlacer::PlaceBomb(GAUSS::EntityComponentLookup* lookup, GAUSS::Vector3 
     collider->stiffness = 0.0f;
     bombEntity->name = "Bomb";
     
-    Client::Bomb* bomb = bombEntity->AddComponent<Client::Bomb>();
+    CLIENT::Bomb* bomb = bombEntity->AddComponent<CLIENT::Bomb>();
     bomb->fuse = 10.0f;
     bomb->fuseDrainSpeed = 1.0f;
+    bomb->explosionRange = 100.0f;
 }
 
 

@@ -1,5 +1,7 @@
 ﻿#include "MazeGenerator.h"
 
+#include "../Components/Bomb.h"
+#include "../Components/Destructible.h"
 #include "ECS/Entity.h"
 #include "ECS/EntityComponentLookup.h"
 #include "ECS/Components/Colliders/BoxCollider.h"
@@ -16,6 +18,8 @@ const GAUSS::Colour breakableBlockColour = GAUSS::Colour(0.7f, 0.5f, 0.5f);
 constexpr float blockSize = 0.8f;
 constexpr float spacing = 1.3f;
 constexpr float cameraDistance = -10;
+
+std::vector<GAUSS::Entity*> MazeGenerator::destructibleBlocks;
 
 void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
 {
@@ -95,7 +99,29 @@ void MazeGenerator::GenerateMaze(GAUSS::EntityComponentLookup* lookup)
                 GAUSS::Entity* destructibleBlock = CreateMazeBlock(lookup, i, j);
                 GAUSS::Mesh* mesh = destructibleBlock->GetComponent<GAUSS::Mesh>(GAUSS_ENUMS::Mesh);
                 mesh->colour = breakableBlockColour;
-                
+
+                CLIENT::Destructible* destructible = destructibleBlock->AddComponent<CLIENT::Destructible>();
+                GAUSS::ParticleSystemProperties properties;
+
+                properties.amount = 5;
+                properties.faces = GAUSS::ResourceLoader::LoadObjFile("Cube");
+                properties.position = destructibleBlock->GetComponent<GAUSS::Transform>(GAUSS_ENUMS::Transform)->GetPosition();
+                properties.averageLifetime = 3.0f;
+                properties.averageSize = 0.3f;
+                properties.averageSpeed = 5.0f;
+                properties.colourVariation = 0.01f;
+                properties.endColour = GAUSS::Colour::Black();
+                properties.initialColour = GAUSS::Colour(0.5f, 0.3f, 0.3f);
+                properties.lifetimeVariation = 0.1f;
+                properties.rotationAxis = GAUSS::Vector3(1, 1, 1);
+                properties.sizeVariation = 0.0f;
+                properties.speedVariation = 0.1f;
+                properties.averageRotationSpeed = 0.01f;
+                properties.rotationSpeedVariation = 0.001f;
+                properties.colourChangeSpeed = 0.3f;
+
+                destructible->explosionParticleProperties = properties;
+                destructibleBlocks.push_back(destructibleBlock);
                 continue;
             }
 
@@ -133,6 +159,3 @@ GAUSS::Entity* MazeGenerator::CreateMazeBlock(GAUSS::EntityComponentLookup* look
 
     return block;
 }
-
-
-

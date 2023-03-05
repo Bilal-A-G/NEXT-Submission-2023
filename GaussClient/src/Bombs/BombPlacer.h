@@ -8,7 +8,7 @@ namespace GAUSS
     class EntityComponentLookup;
 }
 
-class BombPlacer
+class BombPlacer final
 {
 public:
     static void PlaceBomb(GAUSS::EntityComponentLookup* lookup, GAUSS::Vector3 position);

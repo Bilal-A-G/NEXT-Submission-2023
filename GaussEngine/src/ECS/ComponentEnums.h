@@ -2,7 +2,7 @@
 
 namespace GAUSS_ENUMS
 {
-    enum ComponentEnum : uint8_t
+    enum ComponentEnum
     {
         Mesh = 1,
         Transform,

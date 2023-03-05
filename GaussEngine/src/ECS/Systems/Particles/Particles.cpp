@@ -19,8 +19,9 @@ namespace GAUSS
         for (int i = 0; i < systemProperties.amount; i++)
         {
             Entity* particle = ParticlePool::Query(lookup);
+            particle->SetActive(true);
+            
             ParticleProperties* properties = particle->GetComponent<ParticleProperties>(GAUSS_ENUMS::Particle);
-        
             Transform* transform = particle->GetComponent<Transform>(GAUSS_ENUMS::Transform);
             Rigidbody* rb = particle->GetComponent<Rigidbody>(GAUSS_ENUMS::RigidBody);
             rb->hasGravity = false;
@@ -29,8 +30,8 @@ namespace GAUSS
             mesh->faces = systemProperties.faces;
             mesh->colour = systemProperties.initialColour + Colour(NEW_SEED, NEW_SEED, NEW_SEED) * systemProperties.colourVariation;
         
-            transform->Translate(systemProperties.position);
-            transform->Scale(Vector3(1, 1, 1), systemProperties.averageSize + NEW_SEED * systemProperties.sizeVariation);
+            transform->SetTranslation(systemProperties.position);
+            transform->SetScale(Vector3(1, 1, 1), systemProperties.averageSize + NEW_SEED * systemProperties.sizeVariation);
         
             rb->acceleration = Vector3(NEW_SEED, NEW_SEED, NEW_SEED) * (systemProperties.averageSpeed + NEW_SEED * systemProperties.speedVariation);
 

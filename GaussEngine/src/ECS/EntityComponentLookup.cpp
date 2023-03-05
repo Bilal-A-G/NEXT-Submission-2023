@@ -12,7 +12,9 @@ namespace GAUSS
     {
         m_entities.clear();
         m_components.clear();
-        m_lastEntityId = 0; 
+        m_lastEntityId = 0;
+
+        m_components.push_back(std::vector<Component*>());
     }
 
     Entity* EntityComponentLookup::CreateEntity()
@@ -25,22 +27,22 @@ namespace GAUSS
         return entity;
     }
 
-    void EntityComponentLookup::DestroyEntity(const int& id) const
+    void EntityComponentLookup::SetActiveOnComponents(bool active, const int& id)
     {
         for (int i = 1; i < m_components.size(); i++)
         {
             if(m_components[i].size() <= id) continue;
-            
+                
             if(m_components[i][id])
             {
                 if(i == GAUSS_ENUMS::SphereCollider)
                 {
-                   m_components[i][id]->active = false;
+                    m_components[i][id]->m_active = active;
                     continue;
                 }
-                
-                m_components[i][id]->active = false;
-                m_components[i][id]->active = false;
+                    
+                m_components[i][id]->m_active = active;
+                m_components[i][id]->m_active = active;
             }
         }
     }

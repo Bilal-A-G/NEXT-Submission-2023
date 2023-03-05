@@ -1,6 +1,7 @@
 ﻿#include "Game.h"
 
 #include "../Bombs/BombPlacer.h"
+#include "../Components/PlayerDestruction.h"
 #include "API/app.h"
 #include "ECS/Entity.h"
 #include "ECS/Components/Camera/Camera.h"
@@ -68,6 +69,8 @@ void Game::Awake()
        }
     });
 
+    player->AddComponent<CLIENT::PlayerDestruction>();
+
     MazeGenerator::GenerateMaze(m_lookup);
 }
 
@@ -110,5 +113,25 @@ void Game::Update(const float& deltaTime)
 
     GAUSS::Vector3 adjustedPlayerPosition = GAUSS::Vector3(playerPosition.x, playerPosition.y, cameraDistanceFromPlayer);
     cameraTransform->SetTranslation(GAUSS::Lerp<GAUSS::Vector3>(cameraPosition, adjustedPlayerPosition, deltaTime * cameraCatchUpSpeed));
+
+    int inactiveBlocks = 0;
+    for (int i = 0; i < MazeGenerator::destructibleBlocks.size(); i++)
+    {
+        if(!MazeGenerator::destructibleBlocks[i]->GetActive())
+        {
+            inactiveBlocks++;
+        }
+    }
+
+    if(inactiveBlocks == MazeGenerator::destructibleBlocks.size())
+    {
+        GAUSS::SceneManager::SwitchScene("End");
+    }
 }
+
+void Game::Disable()
+{
+    MazeGenerator::CleanUp();
+}
+
 

@@ -16,16 +16,13 @@ namespace GAUSS
         std::vector<Component*>& rigidBodies = lookup.GetComponents(GAUSS_ENUMS::RigidBody);
         std::vector<Component*>& transforms = lookup.GetComponents(GAUSS_ENUMS::Transform);
 
-        if(rigidBodies.size() == 0 || transforms.size() == 0)
-            return;
-
-        //For some reason, colliders.size() - 1 as the condition in the loop breaks it, but putting it in a variable works fine
-        const int colliderSizeMinusOne = colliders.size() - 1;
-
         //Collision detection and resolution
-        for(int i = 0; i < colliderSizeMinusOne; i++)
+        for(int i = 0; i < colliders.size() - 1; i++)
         {
-            if(!(rigidBodies[i] && transforms[i] && colliders[i]) || !(rigidBodies[i]->active && transforms[i]->active && colliders[i]->active))
+            if(rigidBodies.size() == 0 || transforms.size() == 0)
+                return;
+            
+            if(!(rigidBodies[i] && transforms[i] && colliders[i]) || !(rigidBodies[i]->GetActive() && transforms[i]->GetActive() && colliders[i]->GetActive()))
                 continue;
     
             Rigidbody* rb1 = static_cast<Rigidbody*>(rigidBodies[i]);
@@ -34,7 +31,7 @@ namespace GAUSS
     
             for (int j = i + 1; j < colliders.size(); j++)
             {
-                if(!(rigidBodies[j] && transforms[j] && colliders[j]) || !(rigidBodies[j]->active && transforms[j]->active && colliders[j]->active))
+                if(!(rigidBodies[j] && transforms[j] && colliders[j]) || !(rigidBodies[j]->GetActive() && transforms[j]->GetActive() && colliders[j]->GetActive()))
                     continue;
     
                 Rigidbody* rb2 = static_cast<Rigidbody*>(rigidBodies[j]);
@@ -98,7 +95,7 @@ namespace GAUSS
         
             for (int v = 0; v < colliders.size(); v++)
             {
-                if(!(transforms[v] && colliders[v]) || !(transforms[v]->active && colliders[v]->active))
+                if(!(transforms[v] && colliders[v]) || !(transforms[v]->GetActive() && colliders[v]->GetActive()))
                     continue;
     
                 const Transform* transform = static_cast<Transform*>(transforms[v]);
@@ -134,7 +131,7 @@ namespace GAUSS
             Transform* currentTransform = static_cast<Transform*>(transforms[i]);
             Rigidbody* currentRigidBody = static_cast<Rigidbody*>(rigidBodies[i]);
 
-            if(!currentTransform || !currentRigidBody || !currentTransform->active || !currentRigidBody->active)
+            if(!currentTransform || !currentRigidBody || !currentTransform->GetActive() || !currentRigidBody->GetActive())
                 continue;
         
             currentRigidBody->velocity += currentRigidBody->acceleration * deltaTime;

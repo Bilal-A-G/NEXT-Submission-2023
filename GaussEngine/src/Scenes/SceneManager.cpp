@@ -13,8 +13,8 @@ namespace GAUSS
         {
             if(scene->GetName() == name)
             {
-                m_activeScene->Disable();
                 m_activeScene->DisableSystems();
+                m_activeScene->Disable();
                 m_activeScene = scene;
                 scene->Awake();
                 scene->AwakeSystems();

@@ -1,12 +1,8 @@
 ﻿#pragma once
+#include "ClientEnums.h"
 #include "ECS/Component.h"
 
-enum ClientEnums
-{
-    Bomb = GAUSS_ENUMS::Last + 1
-};
-
-namespace Client
+namespace CLIENT
 {
     class Bomb final : public GAUSS::Component
     {
@@ -15,10 +11,11 @@ namespace Client
         Bomb() : fuse(1.0f), fuseDrainSpeed(1.0f) {}
         ~Bomb() override = default;
     public:
-        std::vector<int> GetEnum() override {return {ClientEnums::Bomb};}
+        std::vector<int> GetEnum() override {return {CLIENT_ENUMS::Bomb};}
     public:
         float fuse;
         float fuseDrainSpeed;
+        float explosionRange;
     };    
 }
 

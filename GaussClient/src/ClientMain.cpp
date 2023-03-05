@@ -5,7 +5,7 @@
 #include "ECS/Systems/Physics/Physics.h"
 #include "ECS/Systems/Renderer/Renderer.h"
 #include "ECS/Systems/ScreenShake/ScreenShake.h"
-#include "Bombs/BombSystem.h"
+#include "Systems/Explosion.h"
 
 #include "Scenes/End.h"
 #include "Scenes/Game.h"
@@ -20,7 +20,7 @@ void SetUp(std::vector<GAUSS::Scene*>& scenes)
     game->RegisterSystem<GAUSS::Renderer>();
     game->RegisterSystem<GAUSS::ScreenShake>();
     game->RegisterSystem<GAUSS::Particles>();
-    game->RegisterSystem<BombSystem>();
+    game->RegisterSystem<Explosion>();
 
     GAUSS::Scene* start = new Start("Start");
     GAUSS::Scene* end = new End("End");

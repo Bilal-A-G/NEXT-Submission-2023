@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <vector>
 
 namespace GAUSS
 {
@@ -11,6 +12,9 @@ class MazeGenerator final
 {
 public:
     static void GenerateMaze(GAUSS::EntityComponentLookup* lookup);
+    static void CleanUp() {destructibleBlocks.clear();}
 private:
     static GAUSS::Entity* CreateMazeBlock(GAUSS::EntityComponentLookup* lookup, int widthIndex, int heightIndex);
+public:
+    static std::vector<GAUSS::Entity*> destructibleBlocks;
 };

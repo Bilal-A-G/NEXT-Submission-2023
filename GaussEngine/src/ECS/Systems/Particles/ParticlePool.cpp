@@ -15,6 +15,7 @@ namespace GAUSS
         particle->GetComponent<Mesh>(GAUSS_ENUMS::Mesh)->colour = Colour::Black();
         particle->GetComponent<Transform>(GAUSS_ENUMS::Transform)->SetTranslation(Vector3::Zero());
         particle->GetComponent<ParticleProperties>(GAUSS_ENUMS::Particle)->fadeOut = false;
+        particle->SetActive(false);
 
         m_pool.push_back(particle);
     }

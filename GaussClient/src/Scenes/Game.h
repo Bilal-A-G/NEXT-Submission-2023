@@ -8,4 +8,5 @@ public:
     
     void Awake() override;
     void Update(const float& deltaTime) override;
+    void Disable() override;
 };
