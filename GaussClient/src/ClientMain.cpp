@@ -26,8 +26,8 @@ void SetUp(std::vector<GAUSS::Scene*>& scenes)
     GAUSS::Scene* end = new End("End");
     GAUSS::Scene* gameOver = new GameOver("GameOver");
 
-    scenes.push_back(game);
     scenes.push_back(start);
+    scenes.push_back(game);
     scenes.push_back(gameOver);
     scenes.push_back(end);
 }

@@ -9,12 +9,12 @@ public:
     
     void Render() override
     {
-        App::Print(50, 500, "Welcome to the Game, Press 'Space' to play", 1, 1, 1, GLUT_BITMAP_HELVETICA_10);
+        App::Print(50, 500, "Welcome to the Game, Press 'P' to play", 1, 1, 1, GLUT_BITMAP_HELVETICA_10);
     }
     
     void Update(const float& deltaTime) override
     {
-        if(App::IsKeyPressed(VK_SPACE))
+        if(App::IsKeyPressed('P'))
             GAUSS::SceneManager::SwitchScene("Game");
     }
 };
