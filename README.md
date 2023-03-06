@@ -2,8 +2,8 @@
 
 My submission to the Ubisoft NEXT Programming category, it consists of 2 parts:
 
-- The Game (name pending)
 - The Engine (Ga_U_SS)
+- The Game (Bomber Cube)
 
 ## Engine Features
 
@@ -15,6 +15,13 @@ My submission to the Ubisoft NEXT Programming category, it consists of 2 parts:
 - **Scene Graph / Transform Hierarchy**
 - **Scene Management**
 - **Unit Tests**
+
+## Game Features
+
+- **Procedurally Generated Maze**
+- **Smooth Movement**
+- **Particles, and Screenshake**
+- **Polymorphism and Composition based design**
 
 ## Running
 
