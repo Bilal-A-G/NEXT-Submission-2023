@@ -45,4 +45,4 @@ Lastly, open the .sln and build the .exe (Ctrl B) and then run it (Ctrl F5)
 
 ### Via the release
 
-Download the release .zip, then unzip it and double click the .exe
+Doesn't work, need to fix
