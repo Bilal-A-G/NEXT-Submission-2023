@@ -25,7 +25,7 @@ My submission to the Ubisoft NEXT Programming category, it consists of 2 parts:
 
 ## Running
 
-### (Visual Studio or Rider preferred)
+### Visual Studio or Rider preferred
 
 This project uses Premake 5 as its build system
 
