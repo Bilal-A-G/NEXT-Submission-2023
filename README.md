@@ -42,7 +42,3 @@ Feel free to change the ```vs2019``` part of the call to whatever version of Vis
 Studio you are using
 
 Lastly, open the .sln and build the .exe (Ctrl B) and then run it (Ctrl F5)
-
-### Via the release
-
-Doesn't work, need to fix
