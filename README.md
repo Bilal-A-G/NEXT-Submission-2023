@@ -23,6 +23,10 @@ My submission to the Ubisoft NEXT Programming category, it consists of 2 parts:
 - **Particles, and Screenshake**
 - **Polymorphism and Composition based design**
 
+## Submission Video
+
+https://www.youtube.com/watch?v=2k23c5eRCwE
+
 ## Running
 
 ### Visual Studio or Rider preferred
